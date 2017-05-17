@@ -1,0 +1,25 @@
+{
+  "name": "hangin'hubs",
+  "version": "1.0.0",
+  "description": "discover and plan hangouts collaboratively with friends",
+  "main": "src/server/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/server/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/joelcamacho/loopy-leopards.git"
+  },
+  "author": "[Joel Camacho, Willian Hua, Guangyu Xu]",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/joelcamacho/loopy-leopards/issues"
+  },
+  "homepage": "https://github.com/joelcamacho/loopy-leopards#readme",
+  "dependencies": {
+    "bookshelf": "^0.10.3",
+    "express": "^4.15.3",
+    "knex": "^0.13.0"
+  }
+}

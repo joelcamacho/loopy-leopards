@@ -1,0 +1,34 @@
+{
+  "name": "loopy-leopards",
+  "version": "1.0.0",
+  "description": "> Hangin'Hubs is a social app that lets you collaboratively discover and plan group outings with your friends.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/.bin/webpack -p",
+    "dev": "./node_modules/.bin/webpack --watch",
+    "start": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loopy-leopards/loopy-leopards.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/loopy-leopards/loopy-leopards/issues"
+  },
+  "homepage": "https://github.com/loopy-leopards/loopy-leopards#readme",
+  "dependencies": {
+    "babel-loader": "^7.0.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "webpack": "^2.5.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0"
+  }
+}

@@ -58,3 +58,5 @@ typings/
 .env
 
 src/server/config
+
+.DS_Store

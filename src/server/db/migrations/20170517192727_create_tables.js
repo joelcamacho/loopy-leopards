@@ -34,14 +34,6 @@ exports.up = function(knex, Promise) {
   		table.integer('creator').unsigned();
   		table.foreign('creator').references('users.id');
   	}),
-    knex.schema.createTable('tags', function(table) {
-      table.increments('id').primary();
-      table.string('name');
-    }),
-    knex.schema.createTable('tags', function(table) {
-      table.increments('id').primary();
-      table.string('name');
-    })
   ]);
 };
 

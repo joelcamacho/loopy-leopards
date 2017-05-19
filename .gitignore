@@ -60,3 +60,5 @@ typings/
 src/server/config
 
 .DS_Store
+
+src/client/public/

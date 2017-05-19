@@ -8,11 +8,15 @@ let Tag = bookshelf.Model.extend({
 	tablename: 'tags',
 
 	users: () => {
-		return this.hasMany(User)
+		return this.belongsToMany(User);
 	},
 
 	activities: () => {
-		return this.hasMany(Activity)
+		return this.belongsToMany(Activity);
+	},
+
+	groups: () => {
+		return this.belongsToMany(Group);
 	},
 
 	

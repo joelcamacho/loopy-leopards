@@ -7,11 +7,15 @@ let Tag = require('./tag.js');
 let User = bookshelf.Model.extend({
   tablename: 'users',
 
-  groups: () => {
-  	return this.belongsToMany(Group)
+  showAllGroups: () => {
+  	return this.belongsToMany(Group);
   },
 
   activities: () => {
-  	return this.hasMany(Activity)
+  	return this.belongsToMany(Activity);
   },
+
+  tags: () => {
+  	return this.belongsToMany(Tag);
+  }
 });

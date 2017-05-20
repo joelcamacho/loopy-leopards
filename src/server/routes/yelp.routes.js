@@ -48,11 +48,8 @@ routes.get('/api/yelp', (req, res) => {
 	};
 
 	rp.get(options)
-		.then((body) => res.send(body)) 
-		.catch((error) => {
-			console.log(error);
-			res.status(500).send(error);
-		});
+		.then((body) => res.send(body))
+		.catch((error) => res.status(500).send(error));
 });
 
 module.exports = routes;

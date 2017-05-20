@@ -1,5 +1,6 @@
 import React from 'react';
 
+// Example Components 
 export function Todo(props) {
   const { todo } = props;
   if(todo.isDone) {

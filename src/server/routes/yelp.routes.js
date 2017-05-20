@@ -48,7 +48,7 @@ routes.get('/api/yelp', (req, res) => {
 	};
 
 	rp.get(options)
-		.then((body) => res.send(body)) 
+		.then((body) => res.send(body)
 		.catch((error) => {
 			console.log(error);
 			res.status(500).send(error);

@@ -13,19 +13,17 @@ const rp = require('request-promise');
 // eg. https://www.eventbriteapi.com/v3/events/search/?token=ALPXUSBHYYOPXWXOSA54&location.address=Manhattan&location.within=5mi
 
 routes.get('/api/eventbrite', (req, res) => {
-
   const q = req.query.q || undefined
   const locationAddress = req.query.location || undefined
   const locationLongitude = locationAddress ? undefined : req.query.longitude || undefined
   const locationlatitude = locationAddress ? undefined : req.query.latitude || undefined
   const locationWithin = req.query.within || undefined
 
-  console.log("hello you!!!")
 	const options = {
 	    uri: 'https://www.eventbriteapi.com/v3/events/search/?',
 	    qs: {
           token: apiKeys.eventbriteAccessToken,
-          q: "party",
+          q: q,
           "location.address": locationAddress,
           "location.latitude": locationlatitude,
           "location.longitude": locationLongitude,
@@ -34,8 +32,17 @@ routes.get('/api/eventbrite', (req, res) => {
 	};
 
 	rp.get(options)
-		.then((body) => res.send(body)) 
-		.catch((error) => {
+		.then((body) => {
+      body = JSON.parse(body);
+      
+      body.events = body.events.map(event => {
+        event.description.html = null;
+        return event;
+      });
+
+      res.send(body) 
+		})
+    .catch((error) => {
 			console.log(error);
 			res.status(500).send(error);
 		});

@@ -3,21 +3,37 @@ import { render } from 'react-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { HashRouter, Route, Switch } from 'react-router-dom'
-import reducer from './reducer.jsx';
-import * as containers from './containers.jsx';
+
+// import reducers
+import reducer from './reducers/index.jsx';
+
+// import components
 import NavComponent from './components/nav.component.jsx';
+
+// import containers
 import HomePageContainer from './containers/home.container.jsx';
 import ProfilePageContainer from './containers/profile.container.jsx';
 import GroupPageContainer from './containers/group.container.jsx';
 import FindPageContainer from './containers/find.container.jsx';
 import EventsPageContainer from './containers/events.container.jsx';
 
+// Create store using reducer
 const store = createStore(reducer);
 
-render(
-  <Provider store={store}>
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+	  // <button onClick={() => store.dispatch({
+	  // 	type: 'UPDATE_USER',
+	  // 	payload: {name: 'billy joel'}
+	  // })}> Button  </button>
+  }
+
+  render() {
+  	return (
+    <Provider store={store}>
 	  <div>
-	  <NavComponent state={store} />
+	  <NavComponent profile={store.getState().profile} store={store} />
 		<HashRouter>
 			<Switch>
 	          <Route exact path="/home" component={HomePageContainer}/>
@@ -28,6 +44,11 @@ render(
 	     	</Switch>
 	     </HashRouter>
       </div>
-  </Provider>,
-  document.getElementById('app')
-);
+  </Provider>
+  )}
+}
+
+
+
+
+render( <App /> , document.getElementById('app'));

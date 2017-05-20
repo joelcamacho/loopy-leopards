@@ -14,26 +14,23 @@ const rp = require('request-promise');
 
 routes.get('/api/eventbrite', (req, res) => {
 
-  const q = req.query.q || null
-  const locationAddress = req.query.location || null;
-  const locationLongitude = locationAddress ? null : req.query.longitude || null;
-  const locationlatitude = locationLongitude ? null : req.query.latitude || null;
-
-  const locationWithin = req.query.within || null;
+  const q = req.query.q || undefined
+  const locationAddress = req.query.location || undefined
+  const locationLongitude = locationAddress ? undefined : req.query.longitude || undefined
+  const locationlatitude = locationAddress ? undefined : req.query.latitude || undefined
+  const locationWithin = req.query.within || undefined
 
   console.log("hello you!!!")
 	const options = {
 	    uri: 'https://www.eventbriteapi.com/v3/events/search/?',
 	    qs: {
-          token: apiKeys.eventbriteAccessToken
-	    },
-	    headers: {
-	        q: q,
-          'location.address': locationAddress,
-          'location.longitude': locationLongitude,
-          'location.latitude': locationlatitude,
-          'location.within': locationWithin
-	     }
+          token: apiKeys.eventbriteAccessToken,
+          q: "party",
+          "location.address": locationAddress,
+          "location.latitude": locationlatitude,
+          "location.longitude": locationLongitude,
+          "location.within": locationWithin
+	    }
 	};
 
 	rp.get(options)

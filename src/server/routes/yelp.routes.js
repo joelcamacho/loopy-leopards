@@ -1,5 +1,5 @@
 const routes = require('express').Router();
-const apiKeys = require('../config/config.example.js');
+const apiKeys = require('../config/config.js');
 const rp = require('request-promise');
 
 // GET /api/yelp

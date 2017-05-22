@@ -6,7 +6,7 @@ export default class EventsPageComponent extends React.Component {
   }
 
   render() {
-    return (<div> EVENTS COMPONENT</div>);
+    return (<div> EVENTS COMPONENT </div>);
   }
 }
 

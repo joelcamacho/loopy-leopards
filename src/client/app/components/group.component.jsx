@@ -6,6 +6,6 @@ export default class GroupPageComponent extends React.Component {
   }
 
   render() {
-    return (<div> GROUP COMPONENT</div>);
+    return (<div> GROUP COMPONENT </div>);
   }
 }

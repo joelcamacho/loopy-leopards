@@ -17,35 +17,35 @@ import GroupPageContainer from './containers/group.container.jsx';
 import FindPageContainer from './containers/find.container.jsx';
 import EventsPageContainer from './containers/events.container.jsx';
 
+// import styles
+import style from './styles/main.scss';
+
 // Create store using reducer
 const store = createStore(reducer);
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-	  // <button onClick={() => store.dispatch({
-	  // 	type: 'UPDATE_USER',
-	  // 	payload: {name: 'billy joel'}
-	  // })}> Button  </button>
   }
 
   render() {
   	return (
-    <Provider store={store}>
-	  <div>
-	  <NavComponent profile={store.getState().profile} store={store} />
-		<HashRouter>
-			<Switch>
-	          <Route exact path="/home" component={HomePageContainer}/>
-	          <Route exact path="/profile" component={ProfilePageContainer}/>
-	          <Route exact path="/group" component={GroupPageContainer}/>
-	          <Route exact path="/find" component={FindPageContainer}/>
-	          <Route exact path="/events" component={EventsPageContainer}/>
-	     	</Switch>
-	     </HashRouter>
-      </div>
-  </Provider>
-  )}
+      <Provider store={store}>
+    	  <div>
+      	  <NavComponent profile={store.getState().profile} store={store} />
+      		<HashRouter>
+      			<Switch>
+              <Route exact path="/home" component={HomePageContainer}/>
+              <Route exact path="/profile" component={ProfilePageContainer}/>
+              <Route exact path="/group" component={GroupPageContainer}/>
+              <Route exact path="/find" component={FindPageContainer}/>
+              <Route exact path="/events" component={EventsPageContainer}/>
+      	    </Switch>
+          </HashRouter>
+        </div>
+      </Provider>
+    );
+  }
 }
 
 

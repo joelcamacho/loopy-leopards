@@ -6,6 +6,6 @@ export default class FindPageComponent extends React.Component {
   }
 
   render() {
-    return (<div> FIND COMPONENT</div>);
+    return (<div> FIND COMPONENT </div>);
   }
 }

@@ -6,6 +6,8 @@ export default connect(
     return { state: state };
   },
   function mapDispatchToProps(dispatch) {
-    return {dispatch: dispatch};
+  	return {
+  		return { dispatch: dispatch };
+  	}
   }
 )(HomePageComponent);

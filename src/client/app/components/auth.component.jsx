@@ -6,11 +6,13 @@ export default class AuthComponent extends React.Component {
   }
 
   render() {
-    return (<div>
-    	<a href="/auth/google"> LOG IN </a>
-    	<a href="/logout"> LOG OUT </a>
-    	<a href="/user"> USER DATA </a>
-    	<a href="/auth"> ISAUTHENTICATED</a>
-    </div>);
+    return (
+      <div>
+      	<a href="/auth/google"> LOG IN </a>
+      	<a href="/logout"> LOG OUT </a>
+      	<a href="/user"> USER DATA </a>
+      	<a href="/auth"> ISAUTHENTICATED </a>
+      </div>
+    );
   }
 }

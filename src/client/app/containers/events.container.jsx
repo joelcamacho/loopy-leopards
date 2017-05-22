@@ -6,6 +6,6 @@ export default connect(
     return { state: state };
   },
   function mapDispatchToProps(dispatch) {
-    return {dispatch: dispatch};
+    return { dispatch: dispatch };
   }
 )(EventsPageComponent);

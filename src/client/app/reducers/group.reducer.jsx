@@ -17,7 +17,7 @@ export default function group(state = group, action) {
     case 'ADD_TO_GROUP':
       state.list.push(action.payload);
       return Object.assign({}, state);
- 	  case 'REMOVE_FROM_GROUP':
+    case 'REMOVE_FROM_GROUP':
       state.list = state.list.map((obj) => obj.name === action.payload.name && obj.phone === action.payload.phone ? null : obj);
       state.list = state.list.filter((obj) => !!obj);
       return Object.assign({}, state);

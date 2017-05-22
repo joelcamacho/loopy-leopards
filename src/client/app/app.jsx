@@ -2,8 +2,15 @@ import React from 'react';
 import { render } from 'react-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
-import { HashRouter, Route, Switch } from 'react-router-dom'
-const { fromJS, Map, List } = require('immutable')
+import { HashRouter, Route, Switch } from 'react-router-dom';
+import { fromJS, Map, List } from 'immutable';
+
+// material
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import RaisedButton from 'material-ui/RaisedButton';
+
 
 // import reducers
 import reducer from './reducers/index.jsx';
@@ -31,20 +38,23 @@ class App extends React.Component {
 
   render() {
   	return (
-      <Provider store={store}>
-    	  <div>  
-      	  <NavComponent />
-      		<HashRouter>
-      			<Switch>
-              <Route exact path="/home" component={HomePageContainer}/>
-              <Route exact path="/profile" component={ProfilePageContainer}/>
-              <Route exact path="/group" component={GroupPageContainer}/>
-              <Route exact path="/find" component={FindPageContainer}/>
-              <Route exact path="/events" component={EventsPageContainer}/>
-      	    </Switch>
-          </HashRouter>
-        </div>
-      </Provider>
+      <MuiThemeProvider>
+        <Provider store={store}>
+      	  <div>  
+            <RaisedButton label="Default" />
+        	  <NavComponent />
+        		<HashRouter>
+        			<Switch>
+                <Route exact path="/home" component={HomePageContainer}/>
+                <Route exact path="/profile" component={ProfilePageContainer}/>
+                <Route exact path="/group" component={GroupPageContainer}/>
+                <Route exact path="/find" component={FindPageContainer}/>
+                <Route exact path="/events" component={EventsPageContainer}/>
+        	    </Switch>
+            </HashRouter>
+          </div>
+        </Provider>
+      </MuiThemeProvider>
     )
   }
 }

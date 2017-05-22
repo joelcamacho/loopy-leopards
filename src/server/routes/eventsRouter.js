@@ -50,6 +50,21 @@ router.route('/events')
 	let eventId = req.params.eventId,
 	updateAttributes = {};
 
+	// {
+	// 	name:
+	// 	date_time:
+	// 	description:
+	// 	address:
+	// 	city:
+	// 	state:
+	// 	phone:
+	// 	latitute:
+	// 	longitude:
+	// 	cost:
+	// 	voting_deadline:
+	// 	creator_id:
+	// }
+
 	for(var key in req.body) {
 		updateAttributes[key] = req.body[key]
 	}

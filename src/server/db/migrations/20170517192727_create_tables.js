@@ -18,10 +18,8 @@ exports.up = function(knex, Promise) {
     }),
     knex.schema.createTable('events', function(table) {
       table.increments('id').primary();
-      table.string('title')
-      //.notNullable();
-      table.dateTime('date_time');
-      // .notNullable();
+      table.string('name').notNullable();
+      table.dateTime('date_time').notNullable();
       table.string('description');
       // .notNullable();
       table.string('address',[20]);
@@ -32,7 +30,7 @@ exports.up = function(knex, Promise) {
       //.notNullable()
       table.string('longitude');
       // .notNullable();
-      table.decimal('cost',[2]);
+      table.string('cost',[4]);
       table.string('status').defaultTo('suggested');
       table.dateTime('voting_deadline');
       // .notNullable();

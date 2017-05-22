@@ -1,0 +1,15 @@
+$container-width: 100%;
+
+.nav {
+  width: ($container-width / 4);
+  
+  div {
+    background-color: red;
+  }
+
+  a {
+    &:hover {
+      background-color: white;
+    }
+  }
+}

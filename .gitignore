@@ -61,4 +61,7 @@ src/server/config/config.js
 
 .DS_Store
 
-src/client/public/
+src/client/public
+src/client/public/bundle.js
+src/client/public/styles.css
+

@@ -11,6 +11,13 @@ const rp = require('request-promise');
 // Examples: 
 // eg. localhost:3000/api/yelp?id=kabab-paradise-lake-hiawatha
 // eg. localhost:3000/api/yelp?longitude=-74.0059&latitude=42
+//
+// Addition Query Params:
+// terms =  'food,park,restaurant'
+// 
+// Add these in the client side
+// For food, food,restaurants,pizza,italian, etc...
+// For places, active, parks, museums, bowling, etc...
 
 routes.get('/api/yelp', (req, res) => {
 	if(!apiKeys.yelpAccessToken) res.send('yelp access token not set!');
@@ -19,6 +26,7 @@ routes.get('/api/yelp', (req, res) => {
 	const location = id ? null : req.query.location || null;
 	const longitude = location ? null : req.query.longitude || null;
 	const latitude = location ? null : req.query.latitude || null;
+	const terms = req.query.terms || null;
 
 	const options = {
 	    uri: id ? `https://api.yelp.com/v3/businesses/${id}`
@@ -27,7 +35,10 @@ routes.get('/api/yelp', (req, res) => {
 	        location: location,
 	        longitude: longitude,
 	        latitude: latitude,
-	        limit: 10,
+	        limit: 20,
+	        term: terms,
+	        sort_by: 'distance',
+	        radius: 10000
 	    },
 	    headers: {
 	        'User-Agent': 'Request-Promise',
@@ -37,11 +48,8 @@ routes.get('/api/yelp', (req, res) => {
 	};
 
 	rp.get(options)
-		.then((body) => res.send(body)) 
-		.catch((error) => {
-			console.log(error);
-			res.status(500).send(error);
-		});
+		.then((body) => res.send(body))
+		.catch((error) => res.status(500).send(error));
 });
 
 module.exports = routes;

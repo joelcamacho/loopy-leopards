@@ -3,11 +3,22 @@ const express = require('express');
 const morgan  = require('morgan');
 const bodyParser = require('body-parser')
 
+// initialize express server
 const app = express();
 const eventRouter = require('./routes/eventsRouter.js');
 const config = require('./config/config.example.js');
 
-
+// Passport
+const passport = require('passport');
+app.use(require('express-session')({
+  secret: 'loopyleopards',
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
 
 // add morgan middleware logger
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -10,7 +10,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import RaisedButton from 'material-ui/RaisedButton';
-
+import {responsiveStoreEnhancer} from 'redux-responsive';
 
 // import reducers
 import reducer from './reducers/index.jsx';
@@ -29,7 +29,7 @@ import EventsPageContainer from './containers/events.container.jsx';
 import style from './styles/main.scss';
 
 // Create store using reducer
-const store = createStore(reducer);
+const store = createStore(reducer, responsiveStoreEnhancer);
 
 class App extends React.Component {
   constructor(props) {
@@ -45,6 +45,7 @@ class App extends React.Component {
         	  <NavComponent />
         		<HashRouter>
         			<Switch>
+                <Route exact path="/" component={HomePageContainer}/>
                 <Route exact path="/home" component={HomePageContainer}/>
                 <Route exact path="/profile" component={ProfilePageContainer}/>
                 <Route exact path="/group" component={GroupPageContainer}/>

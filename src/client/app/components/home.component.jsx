@@ -7,6 +7,10 @@ export default class HomePageComponent extends React.Component {
 
   render() {
     console.log(this.props.profile);
-    return (<div className="home"> HOME PAGE COMPONENT </div>);
+    return (
+      <div>
+        
+      </div>
+    );
   }
 }

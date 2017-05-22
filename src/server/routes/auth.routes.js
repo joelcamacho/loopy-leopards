@@ -10,13 +10,12 @@ routes.get('/logout', function (req, res){
 
 // GET auth to checkout current session is authenticated
 routes.get('/auth', function (req, res){
-  res.send(req.isAuthenticated());
+  res.send({result: req.isAuthenticated()});
 });
 
 // GET auth to checkout current session is authenticated
 routes.get('/user', function (req, res){
-	console.log(req.user);
-  	res.send(req.user || "User is not authenticated");
+	res.send({result: req.user || "User is not authenticated"});
 });
 
 

@@ -1,4 +1,6 @@
-let group = {
+const { fromJS, Map, List } = require('immutable')
+
+const groupInit = fromJS({
   name: 'Loopy Leopards',
   list: [
     {
@@ -10,22 +12,29 @@ let group = {
       phone: '987 merge sort'
     }
   ]
-};
+});
 
-export default function group(state = group, action) {
+export default function group(state = groupInit, action) {
   switch (action.type) {
     case 'ADD_TO_GROUP':
-      state.list.push(action.payload);
-      return Object.assign({}, state);
+      return state.map((v, k) => k === 'list' ? v.push(action.payload) : v);
     case 'REMOVE_FROM_GROUP':
-      state.list = state.list.map((obj) => obj.name === action.payload.name && obj.phone === action.payload.phone ? null : obj);
-      state.list = state.list.filter((obj) => !!obj);
-      return Object.assign({}, state);
+      let idx;
+
+      state.toJS().list.forEach((v, index) => {
+        if(v.phone === action.payload.phone) {
+          idx = index;
+        }
+      });
+
+      return idx !== undefined ?
+        state.map((v, k) => k === 'list' ? v.splice(idx, 1) : v)
+        : state;
     case 'RESET_GROUP': 
-   		return  {
+   		return fromJS({
         name: '',
         list: []
-      };
+      });
     default:
      	return state
   }

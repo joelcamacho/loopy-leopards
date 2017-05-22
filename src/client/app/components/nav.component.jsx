@@ -11,7 +11,7 @@ export default class NavComponent extends React.Component {
     return (
     	<div className="nav">
     		<HashRouter>
-    			<div  >
+    			<div>
 		    		<Link to="/home"> HOME </Link>
 		    		<Link to="/profile"> PROFILE </Link>
 		    		<Link to="/group"> GROUPS </Link>

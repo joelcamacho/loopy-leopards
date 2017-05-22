@@ -1,4 +1,6 @@
-let events = [
+const { fromJS, Map, List } = require('immutable')
+
+const eventsInit = fromJS([
   {
     photo: '',
     title: '',
@@ -35,24 +37,24 @@ let events = [
     ],
     activeState: null
   }
-];
+]);
 
-export default function events(state = events, action) {
+export default function events(state = eventsInit, action) {
   switch (action.type) {
     case 'ADD_TO_EVENTS':
-      state.push(action.payload);
-      return state.slice();
+      return state.push(action.payload);
     case 'REMOVE_FROM_EVENT':
-      let idx = 0;
-      state.forEach((event, i) => {
-        if(event.title === action.payload.title) {
-          idx = i;
-        } 
+      let idx;
+
+      state.toJS().forEach((v, index) => {
+        if(v.title === action.payload.title) {
+          idx = index;
+        }
       });
-      state.splice(idx, 1);
-      return state.slice();
+
+      return idx !== undefined ? state.splice(idx, 1) : state;
     case 'RESET_GROUP': 
-      return  [];
+      return fromJS([]);
     default:
       return state
   }

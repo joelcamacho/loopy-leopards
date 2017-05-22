@@ -3,7 +3,7 @@ import GroupPageComponent from '../components/group.component.jsx';
 
 export default connect(
   function mapStateToProps(state) {
-    return { state: state };
+    return { group: state.group.toJS() };
   },
   function mapDispatchToProps(dispatch) {
     return { dispatch: dispatch };

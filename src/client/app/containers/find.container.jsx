@@ -3,7 +3,7 @@ import FindPageComponent from '../components/find.component.jsx';
 
 export default connect(
   function mapStateToProps(state) {
-    return { state: state };
+    return { events: state.events.toJS() };
   },
   function mapDispatchToProps(dispatch) {
     return { dispatch: dispatch };

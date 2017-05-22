@@ -6,6 +6,7 @@ export default class FindPageComponent extends React.Component {
   }
 
   render() {
+    console.log(this.props.events);
     return (<div> FIND COMPONENT </div>);
   }
 }

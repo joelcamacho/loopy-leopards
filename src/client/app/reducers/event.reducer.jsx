@@ -1,4 +1,6 @@
-let event = {
+const { fromJS, Map, List } = require('immutable')
+
+const eventInit = fromJS({
   photo: 'http://dedicatedtodlp.com/wp-content/uploads/2013/06/photopass-front.jpg',
   title: 'Disney Land Get Together!',
   date: Date.now(),
@@ -15,17 +17,14 @@ let event = {
     }
   ],
   activeState: 'In progress'
-}
+});
 
-export default function event(state = event, action) {
+export default function event(state = eventInit, action) {
   switch (action.type) {
     case 'MODIFY_EVENT':
-      for(let key in action.payload) {
-        state[key] = action.payload[key];
-      }
-      return Object.assign({}, state);
+      return state.map((v, k) => !!action.payload[k] ? action.payload[k] : v);
     case 'RESET_GROUP': 
-      return  {
+      return  fromJS({
         photo: '',
         title: '',
         date: Date.now(),
@@ -42,7 +41,7 @@ export default function event(state = event, action) {
           }
         ],
         activeState: null
-      }
+      });
     default:
       return state
   }

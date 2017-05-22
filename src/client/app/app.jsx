@@ -3,6 +3,7 @@ import { render } from 'react-dom';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { HashRouter, Route, Switch } from 'react-router-dom'
+const { fromJS, Map, List } = require('immutable')
 
 // import reducers
 import reducer from './reducers/index.jsx';
@@ -31,8 +32,8 @@ class App extends React.Component {
   render() {
   	return (
       <Provider store={store}>
-    	  <div>
-      	  <NavComponent profile={store.getState().profile} store={store} />
+    	  <div>  
+      	  <NavComponent />
       		<HashRouter>
       			<Switch>
               <Route exact path="/home" component={HomePageContainer}/>
@@ -44,7 +45,7 @@ class App extends React.Component {
           </HashRouter>
         </div>
       </Provider>
-    );
+    )
   }
 }
 

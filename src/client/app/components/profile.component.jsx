@@ -6,6 +6,6 @@ export default class ProfilePageComponent extends React.Component {
   }
 
   render() {
-    return (<div> PROFILE COMPONENT</div>);
+    return (<div> PROFILE COMPONENT </div>);
   }
 }

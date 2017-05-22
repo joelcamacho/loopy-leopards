@@ -1,21 +1,23 @@
-let bookshelf = require('./bookshelf.js');
+const bookshelf = require('./db.js');
 
-let Activity = require('./activity.js');
-let User = require('./user.js');
-let Tag = require('./tag.js');
+const Event = require('./event.js');
+const User = require('./user.js');
+const Tag = require('./tag.js');
 
-let Group = bookshelf.Model.extend({
-	tablename: 'groups',
+const Group = bookshelf.Model.extend({
+	tableName: 'groups',
 
-	users: () => {
+	members: function() {
 		return this.belongsToMany(User);
 	},
 
-	activities: () => {
-		return this.belongsToMany(Activity);
+	events: function() {
+		return this.hasMany(Event);
 	},
 
-	tags: () => {
+	tags: function() {
 		return this.belongsToMany(Tag);
 	}
 })
+
+module.exports = bookshelf.model('Group', Group);

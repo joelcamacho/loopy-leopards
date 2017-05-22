@@ -11,6 +11,20 @@ export default class FindPageComponent extends React.Component {
     var randomNumbers = [];
     var eventsArray = [];
 
+    function pickupEvents(array) {
+      ////pick up 10 events from api
+      let length = array.length;
+        for (var i = 0; i < 10; i++) {
+          var randomNumber = Math.floor(Math.random()*length);
+          if (randomNumbers.indexOf(randomNumber) == -1) {
+            randomNumbers.push(randomNumber);
+            eventsArray.push(array[randomNumber]);
+          } else {
+            --i;
+          }
+        }
+    }
+
     fetch('/api/eventbrite', {credentials: 'include'})
       .then(res => res.json())
       .catch(error => {
@@ -18,17 +32,8 @@ export default class FindPageComponent extends React.Component {
       })
       .then(res => {
         console.log('Received data from eventbrite api', res);
-        //pick up 10 events from eventbrite
-        let length = res.events.length;
-        for (var i = 0; i < 10; i++) {
-          var randomNumber = Math.floor(Math.random()*length);
-          if (randomNumbers.indexOf(randomNumber) == -1) {
-            randomNumbers.push(randomNumber);
-            eventsArray.push(res.events[randomNumber])
-          } else {
-            --i;
-          }
-        }
+        pickupEvents(res.events);
+        //console.log("pickup 10 events: ", eventsArray);
         this.props.addEvents(eventsArray);
       })
       .then(res => fetch('/api/yelp', {
@@ -47,6 +52,10 @@ export default class FindPageComponent extends React.Component {
       })
       .then(res =>{
         console.log('received data from Yelo api: ', res);
+        randomNumbers = [];
+
+        pickupEvents(res.businesses);
+        console.log("pickup 10 events from yelp: ", eventsArray)
       }))
   }
 

@@ -39,6 +39,10 @@ let events = [
 
 export default function events(state = events, action) {
   switch (action.type) {
+    case 'ADD_BULK_TO_EVENTS':
+      state = state.concat(action.payload);
+      console.log("Now the state looks like: ", state[35].logo.original.url);
+      return state.slice();
     case 'ADD_TO_EVENTS':
       state.push(action.payload);
       return state.slice();

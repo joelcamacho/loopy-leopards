@@ -5,8 +5,8 @@ const bodyParser = require('body-parser')
 
 // initialize express server
 const app = express();
-const routes = require('./routes');
-const config = require('./config/config.js');
+const eventRouter = require('./routes/eventsRouter.js');
+const config = require('./config/config.example.js');
 
 // Passport
 const passport = require('passport');
@@ -30,7 +30,7 @@ app.use(morgan('short'));
 app.use(express.static(__dirname + '/../client'));
 
 //  Connect routes
-app.use('/', routes);
+app.use('/api', eventRouter);
 
 
 app.listen(process.env.PORT || 3000, () => {

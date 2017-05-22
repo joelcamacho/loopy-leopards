@@ -10,7 +10,8 @@ export default class FindPageComponent extends React.Component {
 
     var randomNumbers = [];
     var eventsArray = [];
-
+    var eventsbriteData;
+    var eventsYelpData;
     function pickupEvents(array) {
       ////pick up 10 events from api
       let length = array.length;
@@ -33,8 +34,15 @@ export default class FindPageComponent extends React.Component {
       .then(res => {
         console.log('Received data from eventbrite api', res);
         pickupEvents(res.events);
-        //console.log("pickup 10 events: ", eventsArray);
-        this.props.addEvents(eventsArray);
+        console.log("pickup 10 events: ", eventsArray);
+        var eventsbrite = eventsArray.map(event => {
+          return {
+            img: event.logo.original.url,
+            title: event.name.text
+          }
+        })
+        eventsbriteData = eventsbrite;
+        //this.props.addEvents(eventsArray);
       })
       .then(res => fetch('/api/yelp', {
         method: "POST",
@@ -53,10 +61,31 @@ export default class FindPageComponent extends React.Component {
       .then(res =>{
         console.log('received data from Yelo api: ', res);
         randomNumbers = [];
-
+        eventsArray = [];
         pickupEvents(res.businesses);
-        console.log("pickup 10 events from yelp: ", eventsArray)
+        console.log("pickup 10 events from yelp: ", eventsArray);
+        var eventsYelp = eventsArray.map(event => {
+          return {
+            img: event.image_url,
+            title: event.name
+          }
+        })
+        eventsYelpData = eventsYelp;
       }))
+      .then(res => {
+        randomNumbers = [];
+        let mixedEvents = eventsbriteData.concat(eventsYelpData)
+        let result = []
+        for(let key of mixedEvents) {
+          var randomNumber = Math.floor(Math.random() * 20);
+          if (randomNumbers.indexOf(randomNumber) === -1) {
+            result.push(mixedEvents[randomNumber]);
+          } else {
+            key--;
+          }
+        }
+        this.props.addEvents(result);
+      })
   }
 
   render() {
@@ -75,9 +104,9 @@ export default class FindPageComponent extends React.Component {
             events.slice(2).map(event => {
               return (
                 <div className="find">
-                  <div className="eventImg"><img src={event.logo.original.url} alt=""/></div>
+                  <div className="eventImg"><img src={event.img} alt=""/></div>
                     <div className="info">
-                        <div className="name">{event.name.text}</div>
+                        <div className="name">{event.title}</div>
                     </div>
                   <div className="btn-div">
                     <button>DETAL</button>

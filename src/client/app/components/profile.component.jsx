@@ -15,7 +15,7 @@ export default class ProfilePageComponent extends React.Component {
       <div>
         <p> {this.props.profile.phone} </p>
         <p> {this.props.profile.address}, {this.props.profile.city}, {this.props.profile.state}</p>
-        <p> {this.props.profile.birthday} </p>
+        <p> {this.props.profile.birthdate} </p>
       </div>
     ) : (<div> 
       <p> Please log in </p>

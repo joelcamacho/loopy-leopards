@@ -1,15 +1,20 @@
 const { Map } = require('immutable')
 
 const profileInit = Map({
-  name: 'Willian Hua',
-  photo: 'http://www.sheffield.com/wp-content/uploads/2013/06/placeholder.png',
-  gender: 'Male',
   id: null,
-  birthday: 'February 31, 2020',
-  address: '369 Lexington Ave',
-  city: 'New York City',
-  state: 'New York',
-  phone: '123-456-7890'
+  first_name: null,
+  last_name: null,
+  google_id: null,
+  email: null,
+  password: null,
+  address: null,
+  city: null,
+  state: null,
+  latitude: null,
+  longitude: null,
+  phone: null,
+  birthdate: null,
+  registered: null
 });
 
 export default function profile(state = profileInit, action) {
@@ -18,16 +23,21 @@ export default function profile(state = profileInit, action) {
     return state.map((v, k) => !!action.payload[k] ? action.payload[k] : v);
    	case 'RESET_USER': 
    		return Map({
-  		  name: '',
-  		  photo: '',
-  		  gender: '',
-  		  id: null,
-  		  birthday: null,
-  		  address: '',
-  		  city: '',
-  		  state: '',
-  		  phone: ''
-  		});
+        id: null,
+        first_name: null,
+        last_name: null,
+        google_id: null,
+        email: null,
+        password: null,
+        address: null,
+        city: null,
+        state: null,
+        latitude: null,
+        longitude: null,
+        phone: null,
+        birthdate: null,
+        registered: null
+      });
       default:
        	return state
   }

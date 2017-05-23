@@ -44,14 +44,16 @@ export default class FindPageComponent extends React.Component {
       .then(res => {
         //console.log('Received data from eventbrite api', res);
         pickupEvents(res.events);
-        //console.log(randomNumbers)
         //console.log("pickup 10 events: ", eventsArray);
         var eventsbrite = eventsArray.map(event => {
           return {
             img: event.logo.original.url,
-            title: event.name.text
+            title: event.name.text,
+            description: event.description.text,
+            date_time: event.start.local
           }
         })
+        console.log("eventsbrite: ", eventsbrite);
         eventsbriteData = eventsbrite;
         //this.props.addEvents(eventsbrite);
       })

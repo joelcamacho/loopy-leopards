@@ -38,9 +38,13 @@ const eventsInit = fromJS([
     activeState: null
   }
 ]);
-
+//[35].logo.original.url
 export default function events(state = eventsInit, action) {
   switch (action.type) {
+    case 'ADD_BULK_TO_EVENTS':
+      state = state.concat(action.payload);
+      console.log("Now the state looks like: ", state);
+      return state.slice();
     case 'ADD_TO_EVENTS':
       return state.push(action.payload);
     case 'REMOVE_FROM_EVENT':

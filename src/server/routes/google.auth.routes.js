@@ -25,7 +25,7 @@ routes.get('/auth/google/callback',
   function(req, res) {
     // Successful authentication, redirect home.
     console.log('Successful authentication google', req.user);
-    res.redirect('/');
+    res.redirect('/');  
   });
 
 module.exports = routes;

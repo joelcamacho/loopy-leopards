@@ -1,0 +1,39 @@
+$primaryColor: lightblue;
+$fontSize: (100px - 50px);
+
+.group {
+  background-color: $primaryColor;
+  font-size: $fontSize;
+  min-height: 98vh;
+  width: 100%;
+  min-width: 300px; 
+  padding-bottom: 30pt;
+  padding-top: 1pt;
+
+  .container {
+    margin: 5% !important;
+
+    h3 {
+      font-weight: 400;
+      padding: 20pt 0 0 16px !important
+    }
+
+    .add {
+      width: 38%;
+      margin: 0 5% 5% 5%;
+      padding-left: 16px;
+    }
+
+    .addBtn {
+      margin: 0 5% 5% 5%  !important;
+    }
+
+    .phone {
+      height: 100% !important;
+      min-width: 100pt !important;
+      top: 5pt !important;
+      right: -10pt !important;
+    }
+  }
+
+}

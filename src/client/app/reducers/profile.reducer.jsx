@@ -5,7 +5,7 @@ const profileInit = Map({
   photo: 'http://www.sheffield.com/wp-content/uploads/2013/06/placeholder.png',
   gender: 'Male',
   id: null,
-  birthday: Date.now(),
+  birthday: 'February 31, 2020',
   address: '369 Lexington Ave',
   city: 'New York City',
   state: 'New York',

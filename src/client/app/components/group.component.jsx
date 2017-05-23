@@ -9,9 +9,69 @@ import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
 import FlatButton from 'material-ui/FlatButton';
 
+const fakeGroupData = {
+  name: 'Loopy Leopards',
+  list: [
+    {
+      name: 'Eric Hoffman',
+      photo: null,
+      phone: '123-123-1234'
+    },
+    {
+      name: 'Kimmy J',
+      photo: 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg',
+      phone: '123-123-KimJ'
+    },
+    {
+      name: 'Brendan Lim',
+      photo: null,
+      phone: '123-123-1243'
+    },
+    {
+      name: 'Grace Ng',
+      photo: null,
+      phone: '578-123-1234'
+    },
+    {
+      name: 'Raquel Parrado',
+      photo: null,
+      phone: '123-234-1234'
+    }
+  ],
+  recent: [
+    {
+      name: 'Kimmy J J',
+      photo: null,
+      phone: '412-123-1234'
+    },
+    {
+      name: 'Ra',
+      photo: null,
+      phone: '123-123-4124'
+    }
+  ]
+}
+
+
 export default class GroupPageComponent extends React.Component {
   constructor(props) {
     super(props);
+
+    this.group = {};
+
+    this.getGroup = this.getGroup.bind(this);
+    this.getGroup();
+  }
+
+  getGroup() {
+    // switch this with group endpoint /api/groups
+    fetch('/auth', {credentials: 'include'})
+      .then(res => res.json())
+      .then(res => {
+        //this.group = res.result;
+        this.group = fakeGroupData;
+        this.forceUpdate();
+      })
   }
 
   render() {
@@ -24,45 +84,22 @@ export default class GroupPageComponent extends React.Component {
             <Divider/>
             <List>
               <Subheader> Loopy Leopards </Subheader>
-              <ListItem
-                primaryText="Brendan Lim"
-                leftAvatar={<Avatar src="images/ok-128.jpg" />}
-                rightIcon={<span className="phone">123-456-1234</span>}
-              />
-              <ListItem
-                primaryText="Eric Hoffman"
-                leftAvatar={<Avatar src="images/kolage-128.jpg" />}
-                rightIcon={<span className="phone">123-456-1234</span>}
-              />
-              <ListItem
-                primaryText="Grace Ng"
-                leftAvatar={<Avatar src="images/uxceo-128.jpg" />}
-                rightIcon={<span className="phone">123-456-1234</span>}
-              />
-              <ListItem
-                primaryText="Kerem Suer"
-                leftAvatar={<Avatar src="images/kerem-128.jpg" />}
-                rightIcon={<span className="phone">123-456-1234</span>}
-              />
-              <ListItem
-                primaryText="Raquel Parrado"
-                leftAvatar={<Avatar src="images/raquelromanp-128.jpg" />}
-                rightIcon={<span className="phone">123-456-1234</span>}
-              />
+              {this.group.list ? this.group.list.map(obj => (<ListItem
+                key={obj.phone}
+                primaryText={obj.name}
+                leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                rightIcon={<span className="phone">{obj.phone}</span>}
+              />)) : null}
             </List>
             <Divider />
             <List>
               <Subheader> Recent Guests </Subheader>
-              <ListItem
-                primaryText="Chelsea Otakan"
-                leftAvatar={<Avatar src="images/chexee-128.jpg" />}
-                rightIcon={<ContentAdd />}
-              />
-              <ListItem
-                primaryText="James Anderson"
-                leftAvatar={<Avatar src="images/jsa-128.jpg" />}
-                rightIcon={<ContentAdd />}
-              />
+              {this.group.list ? this.group.recent.map(obj => (<ListItem
+                key={obj.phone}
+                primaryText={obj.name}
+                leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                rightIcon={<span className="phone">{obj.phone}</span>}
+              />)) : null}
               </List>
             <Divider/>
             <List>

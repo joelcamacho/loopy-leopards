@@ -54,15 +54,16 @@ export default class FindPageComponent extends React.Component {
         eventsbriteData = eventsbrite;
         //this.props.addEvents(eventsbrite);
       })
-      .then(res => fetch('/api/yelp', {
-        method: "POST",
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }, 
-        body: JSON.stringify({
-          location: 'NYC'
-        })
+      .then(res => {
+        let params = {
+          location: "NYC",
+        };
+        let esc = encodeURIComponent
+        let query = Object.keys(params)
+                     .map(k => esc(k) + '=' + esc(params[k]))
+                     .join('&');
+        let url = '/api/yelp?' + query;
+        return fetch(url);
       })
       .then(res => res.json())
       .catch(error => {
@@ -81,7 +82,7 @@ export default class FindPageComponent extends React.Component {
           }
         })
         eventsYelpData = eventsYelp;
-      }))
+      })
       .then(res => {
         randomNumbers = [];
         let mixedEvents = eventsbriteData.concat(eventsYelpData);

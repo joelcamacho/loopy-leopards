@@ -19,11 +19,11 @@ const rp = require('request-promise');
 // For food, food,restaurants,pizza,italian, etc...
 // For places, active, parks, museums, bowling, etc...
 
-routes.post('/api/yelp', (req, res) => {
+routes.get('/api/yelp', (req, res) => {
 	if(!apiKeys.yelpAccessToken) res.send('yelp access token not set!');
-  console.log('Hello received req: ', req.body.location);
+  console.log('Hello received req: ', req.query.location);
 	const id = req.query.id || null;
-	const location = id ? null : req.body.location || null;
+	const location = id ? null : req.query.location || null;
 	const longitude = location ? null : req.query.longitude || null;
 	const latitude = location ? null : req.query.latitude || null;
 	const terms = req.query.terms || null;

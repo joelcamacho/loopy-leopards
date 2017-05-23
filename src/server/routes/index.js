@@ -4,8 +4,8 @@ const yelpRoutes = require('./yelp.routes.js')
 const googleAuthRoutes = require('./google.auth.routes.js')
 const authRoutes = require('./auth.routes.js')
 const eventbriteRoutes = require('./eventbrite.routes.js')
-const eventRouter = require('./routes/eventsRouter.js');
-const userRouter = require('./routes/usersRouter.js');
+const eventRouter = require('./eventsRouter.js');
+const userRouter = require('./usersRouter.js');
 
 // middleware to protect routes
 function ensureAuthenticated(req, res, next) {

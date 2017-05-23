@@ -21,7 +21,7 @@ const rp = require('request-promise');
 
 routes.get('/api/yelp', (req, res) => {
 	if(!apiKeys.yelpAccessToken) res.send('yelp access token not set!');
-
+  console.log('Hello received req: ', req.query.location);
 	const id = req.query.id || null;
 	const location = id ? null : req.query.location || null;
 	const longitude = location ? null : req.query.longitude || null;

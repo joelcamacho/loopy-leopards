@@ -6,6 +6,7 @@ const bodyParser = require('body-parser')
 // initialize express server
 const app = express();
 const eventRouter = require('./routes/eventsRouter.js');
+const userRouter = require('./routes/usersRouter.js');
 const config = require('./config/config.example.js');
 
 // Passport
@@ -30,7 +31,7 @@ app.use(morgan('short'));
 app.use(express.static(__dirname + '/../client'));
 
 //  Connect routes
-app.use('/api', eventRouter);
+app.use('/api', eventRouter, userRouter);
 
 
 app.listen(process.env.PORT || 3000, () => {

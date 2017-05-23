@@ -3,6 +3,7 @@ import React from 'react';
 export default class FindPageComponent extends React.Component {
   constructor(props) {
     super(props);
+    this.testEvents = this.testEvents.bind(this);
   }
 
   //For yelp, give NYC temply
@@ -102,6 +103,10 @@ export default class FindPageComponent extends React.Component {
       })
   }
 
+  testEvents (event) {
+    console.log("eventsGohere: ", event);
+  }
+
   render() {
     //console.log(this.props.events);
     const { events } = this.props;
@@ -123,7 +128,7 @@ export default class FindPageComponent extends React.Component {
                         <div className="name">{event.title}</div>
                     </div>
                   <div className="btn-div">
-                    <button>DETAL</button>
+                    <button onClick={() => this.testEvents(event)}>DETAIL</button>
                     <button>ADD</button>
                   </div>
                 </div>

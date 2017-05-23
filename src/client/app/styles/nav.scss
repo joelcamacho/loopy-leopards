@@ -15,7 +15,6 @@
 // }
 
 .nav {
-  padding-top: 21pt;
   .drawer {
     width: 100%;
   }
@@ -31,5 +30,8 @@
     color: white !important;
     margin-top: 5pt !important;
     margin-right: 30pt !important;
+  }
+  .navBody {
+    margin-top: 21pt !important;
   }
 }

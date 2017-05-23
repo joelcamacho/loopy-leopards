@@ -43,9 +43,9 @@ export default class NavComponent extends React.Component {
                 title={'Hangin\' Hubs'}
                 iconElementRight={<AuthComponent />}
               />
-            <div>
-            
-            </div>
+              <div style={{marginTop: '48pt'}}>
+                {this.props.children}
+              </div>
           </BodyContainer>
       </div>
 

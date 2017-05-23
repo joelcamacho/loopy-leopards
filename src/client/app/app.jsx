@@ -42,17 +42,18 @@ class App extends React.Component {
         <Provider store={store}>
       	  <div>  
             <RaisedButton label="Default" />
-        	  <NavComponent />
-        		<HashRouter>
-        			<Switch>
-                <Route exact path="/" component={HomePageContainer}/>
-                <Route exact path="/home" component={HomePageContainer}/>
-                <Route exact path="/profile" component={ProfilePageContainer}/>
-                <Route exact path="/group" component={GroupPageContainer}/>
-                <Route exact path="/find" component={FindPageContainer}/>
-                <Route exact path="/events" component={EventsPageContainer}/>
-        	    </Switch>
-            </HashRouter>
+        	  <NavComponent>
+          		<HashRouter>
+          			<Switch>
+                  <Route exact path="/" component={HomePageContainer}/>
+                  <Route exact path="/home" component={HomePageContainer}/>
+                  <Route exact path="/profile" component={ProfilePageContainer}/>
+                  <Route exact path="/group" component={GroupPageContainer}/>
+                  <Route exact path="/find" component={FindPageContainer}/>
+                  <Route exact path="/events" component={EventsPageContainer}/>
+          	    </Switch>
+              </HashRouter>
+            </NavComponent>
           </div>
         </Provider>
       </MuiThemeProvider>

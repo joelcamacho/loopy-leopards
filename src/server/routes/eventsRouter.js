@@ -69,7 +69,7 @@ router.route('/events')
 		updateAttributes[key] = req.body[key]
 	}
 
-	new Event({id:id}).save(updateAttributes, {patch: true})
+	new Event({id:eventId}).save(updateAttributes, {patch: true})
 	.then((event) => {
 		res.send(200).json({'Event updated: ': event})
 	})

@@ -7,6 +7,34 @@ const Tag = require('./tag.js');
 const User = bookshelf.Model.extend({
   tableName: 'users',
 
+  initialize: function() {
+    this.on("creating", (model, attrs, options) => {
+      if(attrs.email === null && attrs.google_id === null) {
+        this.set({'registered': false})
+      } else {
+        this.set({'registered' : true});
+      }
+    });
+    this.on("saving", (model, attrs, options) => {
+      if(this.hasChanged('email')) {
+        return this
+        .query({where: {email: this.get('email')}})
+        .fetch(_.pick(options, 'transacting'))
+        .then(function(exists) {
+          if (!exists) throw new Error('email already exists in system');
+        })
+      }
+      if(this.hasChanged('phone')) {
+        return this
+        .query({where: {email: this.get('phone')}})
+        .fetch(_.pick(options, 'transacting'))
+        .then(function(exists) {
+          if (!exists) throw new Error('phone number already exists in system');
+        })
+      }
+    })
+  },
+
   groups: function() {
   	return this.belongsToMany('Group');
   },

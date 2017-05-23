@@ -4,6 +4,8 @@ const yelpRoutes = require('./yelp.routes.js')
 const googleAuthRoutes = require('./google.auth.routes.js')
 const authRoutes = require('./auth.routes.js')
 const eventbriteRoutes = require('./eventbrite.routes.js')
+const eventRouter = require('./routes/eventsRouter.js');
+const userRouter = require('./routes/usersRouter.js');
 
 // middleware to protect routes
 function ensureAuthenticated(req, res, next) {
@@ -28,6 +30,8 @@ routes.use(authRoutes);
 // routes.get('/api/yelp', ensureAuthenticated);
 routes.use(yelpRoutes);
 routes.use(eventbriteRoutes);
+
+routes.use('/api', eventRouter, userRouter);
 
 
 module.exports = routes;

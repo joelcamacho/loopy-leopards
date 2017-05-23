@@ -15,17 +15,14 @@ function ensureAuthenticated(req, res, next) {
 	}
 }
 
-routes.use(yelpRoutes);
-
-// auth routes
-routes.use(googleAuthRoutes);
-routes.use(authRoutes);
-
 // test route
 routes.get('/', (req, res) => {
   res.status(200).json({ message: 'Connected!' });
 });
 
+// auth routes
+routes.use(googleAuthRoutes);
+routes.use(authRoutes);
 
 // TO PROTECT ROUTES, attach ensureAuthenticated function
 // routes.get('/api/yelp', ensureAuthenticated);

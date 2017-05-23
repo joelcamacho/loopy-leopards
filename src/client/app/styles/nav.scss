@@ -1,15 +1,37 @@
-$container-width: 100%;
+// $container-width: 100%;
+
+// .nav {
+//   width: ($container-width / 4);
+  
+//   div {
+//     background-color: red;
+//   }
+
+//   a {
+//     &:hover {
+//       background-color: white;
+//     }
+//   }
+// }
 
 .nav {
-  width: ($container-width / 4);
-  
-  div {
-    background-color: red;
+  .drawer {
+    width: 100%;
   }
-
-  a {
-    &:hover {
-      background-color: white;
-    }
+  .drawerItem {
+    width: 100%;
+    height: 50pt !important;
+  }
+  .auth {
+    margin-top: 5pt !important;
+    color: white !important;
+  }
+  .authIn {
+    color: white !important;
+    margin-top: 5pt !important;
+    margin-right: 30pt !important;
+  }
+  .navBody {
+    margin-top: 21pt !important;
   }
 }

@@ -12,10 +12,11 @@ export default class FindPageComponent extends React.Component {
     var eventsArray = [];
     var eventsbriteData;
     var eventsYelpData;
+
+    //pick up 10 events from api
     function pickupEvents(array) {
-      ////pick up 10 events from api
       let length = array.length;
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < 13; i++) {
           var randomNumber = Math.floor(Math.random()*length);
           if (randomNumbers.indexOf(randomNumber) == -1) {
             randomNumbers.push(randomNumber);
@@ -26,15 +27,24 @@ export default class FindPageComponent extends React.Component {
         }
     }
 
+    //filder the events
+    function getUnique(arr) {
+      var unique = {};
+        arr.forEach(function(a){ unique[ JSON.stringify(a) ] = 1 });
+        arr= Object.keys(unique).map(function(u){return JSON.parse(u) });
+        return arr
+    }
+
     fetch('/api/eventbrite', {credentials: 'include'})
       .then(res => res.json())
       .catch(error => {
         console.log("Can not received data from Eventbrite Api!!!");
       })
       .then(res => {
-        console.log('Received data from eventbrite api', res);
+        //console.log('Received data from eventbrite api', res);
         pickupEvents(res.events);
-        console.log("pickup 10 events: ", eventsArray);
+        //console.log(randomNumbers)
+        //console.log("pickup 10 events: ", eventsArray);
         var eventsbrite = eventsArray.map(event => {
           return {
             img: event.logo.original.url,
@@ -42,7 +52,7 @@ export default class FindPageComponent extends React.Component {
           }
         })
         eventsbriteData = eventsbrite;
-        //this.props.addEvents(eventsArray);
+        //this.props.addEvents(eventsbrite);
       })
       .then(res => fetch('/api/yelp', {
         method: "POST",
@@ -59,11 +69,11 @@ export default class FindPageComponent extends React.Component {
         console.log("Can not received data from Yelp Api!!!");
       })
       .then(res =>{
-        console.log('received data from Yelo api: ', res);
+        //console.log('received data from Yelo api: ', res);
         randomNumbers = [];
         eventsArray = [];
         pickupEvents(res.businesses);
-        console.log("pickup 10 events from yelp: ", eventsArray);
+        //console.log("pickup 10 events from yelp: ", eventsArray);
         var eventsYelp = eventsArray.map(event => {
           return {
             img: event.image_url,
@@ -74,17 +84,20 @@ export default class FindPageComponent extends React.Component {
       }))
       .then(res => {
         randomNumbers = [];
-        let mixedEvents = eventsbriteData.concat(eventsYelpData)
+        let mixedEvents = eventsbriteData.concat(eventsYelpData);
+        console.log("mixedEvents: ", mixedEvents);
+        //do random
         let result = []
-        for(let key of mixedEvents) {
-          var randomNumber = Math.floor(Math.random() * 20);
+        for(var i = 0; i < 26; i++) {
+          var randomNumber = Math.floor(Math.random() * 26);
           if (randomNumbers.indexOf(randomNumber) === -1) {
             result.push(mixedEvents[randomNumber]);
           } else {
-            key--;
+            i--;
           }
         }
-        this.props.addEvents(result);
+        //console.log("result: ", result)
+        this.props.addEvents(getUnique(result));
       })
   }
 
@@ -94,7 +107,7 @@ export default class FindPageComponent extends React.Component {
     console.log("state from state: ", events[0]);
     if(events[0].activeState === null && events[0].activeState === null && !events[2]) {
       return (
-        <p>displayFirstTime</p>        
+        <p></p>        
       );
     } else {
       console.log("Else events: ",events);

@@ -53,7 +53,6 @@ export default class FindPageComponent extends React.Component {
             date_time: event.start.local
           }
         })
-        console.log("eventsbrite: ", eventsbrite);
         eventsbriteData = eventsbrite;
         //this.props.addEvents(eventsbrite);
       })
@@ -77,13 +76,21 @@ export default class FindPageComponent extends React.Component {
         randomNumbers = [];
         eventsArray = [];
         pickupEvents(res.businesses);
-        //console.log("pickup 10 events from yelp: ", eventsArray);
+        console.log("pickup 10 events from yelp: ", eventsArray);
         var eventsYelp = eventsArray.map(event => {
           return {
             img: event.image_url,
-            title: event.name
+            title: event.name,
+            phone: event.display_phone,
+            address: event.location.address1,
+            city: event.location.city,
+            state: event.location.state,
+            latitude: event.coordinates.latitude,
+            longitude: event.coordinates.longitude,
+            description: event.categories.map(ele => ele.title).join(", ")
           }
         })
+        console.log(eventsYelp);
         eventsYelpData = eventsYelp;
       })
       .then(res => {

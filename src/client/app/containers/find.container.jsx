@@ -6,8 +6,8 @@ export default connect(
 	//App is listening to state
   function mapStateToProps(state) {
     return { 
-      events: state.events.toJS(),
-      event: state.event
+      events: state.events,
+      event: state.event,
     };
   },
 
@@ -18,6 +18,9 @@ export default connect(
     	},
       createEvent: function(event) {
         return dispatch(action.createEvent(event));
+      },
+      setStateBackToDefault: function(event) {
+        return dispatch(action.setStateBackToDefault(event));
       }
     }
   }

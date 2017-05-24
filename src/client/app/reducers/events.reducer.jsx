@@ -41,11 +41,11 @@ const eventsInit = fromJS([
   }
 ]);
 //[35].logo.original.url
-export default function events(state = eventsInit, action) {
+export default function events(state = [], action) {
   switch (action.type) {
     case 'ADD_BULK_TO_EVENTS':
-      state = state.splice(0,2).push('second').concat(action.payload);
-      console.log("Now the state looks like: ", state);
+      state = state.concat(action.payload);
+      console.log("New events state: ", state);
       return state;
     case 'ADD_TO_EVENTS':
       return state.push(action.payload);

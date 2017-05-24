@@ -28,6 +28,13 @@ let action = {
       type: "CREATE_EVENT",
       payload: event
     }
+  },
+
+  setStateBackToDefault: function(event) {
+    return {
+      type: "SET_STATE_BACK_TO_DEFAULT",
+      payload: event
+    }
   }
 };
 

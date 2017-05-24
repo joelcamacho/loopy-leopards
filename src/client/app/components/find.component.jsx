@@ -3,7 +3,8 @@ import React from 'react';
 export default class FindPageComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.testEvents = this.testEvents.bind(this);
+    this.getEvent = this.getEvent.bind(this);
+    this.backToEvents = this.backToEvents.bind(this);
   }
 
   //For yelp, give NYC temply
@@ -117,26 +118,31 @@ export default class FindPageComponent extends React.Component {
       })
   }
 
-  testEvents (event) {
-    console.log("eventsGohere: ", event);
+  getEvent (event) {
+    //console.log("eventsGohere: ", event);
     this.props.createEvent(event);
   }
 
+  backToEvents (events) {
+    this.props.addEvents(events);
+    this.props.setStateBackToDefault({status: 'first'});
+  }
+
   render() {
-    //console.log("datas: ", this.props.events);
-    console.log("datas: ", this.props.event);
+    console.log("datas: ", this.props.events);
+    console.log("data: ", this.props.event);
     const { events } = this.props;
     const { event } = this.props;
     //console.log("state from state: ", events);
     //console.log("state from state: ", event);
-    if(events[0].status === 'first' && events[1].status === 'first') {
-      console.log(33333)
+    if(events.length === 0 && event.status === 'first') {
+      console.log(111)
       return (
-        <p></p>        
+        <p></p>
       );
-    } else if (events[0] === 'second' && event.title === undefined) {
+    } else if (events.length > 0 && event.status === 'first') {
       //console.log("Else events: ",events);
-      console.log(22222);
+      console.log(222);
       return (
         <div>
           {
@@ -149,7 +155,7 @@ export default class FindPageComponent extends React.Component {
                     </div>
                   <div className="btn-div">
                     <button>DETAIL</button>
-                    <button onClick={() => this.testEvents(event)}>ADD</button>
+                    <button onClick={() => this.getEvent(event)}>ADD</button>
                   </div>
                 </div>
               )
@@ -158,9 +164,14 @@ export default class FindPageComponent extends React.Component {
         </div>
       ); 
     } else {
-      console.log(11111111)
+      console.log(333)
       console.log("event: ", event)
-      return (<p>Hello World!!!</p>)
+      return (
+        <div>
+          <p>Hello World!!!</p>
+          <button onClick={() => this.backToEvents([])}>Back</button>
+        </div>
+      );
     }
   }
 }

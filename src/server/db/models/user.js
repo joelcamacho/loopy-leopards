@@ -18,24 +18,24 @@ const User = bookshelf.Model.extend({
 
       this.set({'phone_validated' : false});
     });
-    this.on("saving", (model, attrs, options) => {
-      // if(this.hasChanged('email')) {
-      //   return this
-      //   .query({where: {email: this.get('email')}})
-      //   .fetch(_.pick(options, 'transacting'))
-      //   .then(function(exists) {
-      //     // if (!exists) throw new Error('email already exists in system');
-      //   })
-      // }
-      // if(this.hasChanged('phone')) {
-      //   return this
-      //   .query({where: {email: this.get('phone')}})
-      //   .fetch(_.pick(options, 'transacting'))
-      //   .then(function(exists) {
-      //     if (!exists) throw new Error('phone number already exists in system');
-      //   })
-      // }
-    })
+    // this.on("saving", (model, attrs, options) => {
+    //   // if(this.hasChanged('email')) {
+    //   //   return this
+    //   //   .query({where: {email: this.get('email')}})
+    //   //   .fetch(_.pick(options, 'transacting'))
+    //   //   .then(function(exists) {
+    //   //     // if (!exists) throw new Error('email already exists in system');
+    //   //   })
+    //   // }
+    //   // if(this.hasChanged('phone')) {
+    //   //   return this
+    //   //   .query({where: {email: this.get('phone')}})
+    //   //   .fetch(_.pick(options, 'transacting'))
+    //   //   .then(function(exists) {
+    //   //     if (!exists) throw new Error('phone number already exists in system');
+    //   //   })
+    //   // }
+    // })
   },
 
   groups: function() {

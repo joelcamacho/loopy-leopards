@@ -1,5 +1,6 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
+import { HashRouter, Router, Link } from 'react-router-dom'
 
 export default class FindPageComponent extends React.Component {
   constructor(props) {
@@ -130,20 +131,20 @@ export default class FindPageComponent extends React.Component {
   }
 
   render() {
-    console.log("datas: ", this.props.events);
-    console.log("data: ", this.props.event);
+    //console.log("datas: ", this.props.events);
+    //console.log("data: ", this.props.event);
     const { events } = this.props;
     const { event } = this.props;
     //console.log("state from state: ", events);
     //console.log("state from state: ", event);
     if(events.length === 0 && event.status === 'first') {
-      console.log(111)
+      //console.log(111)
       return (
         <p></p>
       );
     } else if (events.length > 0 && event.status === 'first') {
       //console.log("Else events: ",events);
-      console.log(222);
+      //console.log(222);
       return (
         <div>
           {
@@ -155,8 +156,8 @@ export default class FindPageComponent extends React.Component {
                         <div className="name">{event.title}</div>
                     </div>
                   <div className="btn-div">
-                    <button>DETAIL</button>
-                    <button onClick={() => this.getEvent(event)}>ADD</button>
+                    <FlatButton className="drawerItem" label="DETAIL" />
+                    <FlatButton className="drawerItem" label="Confirm" onClick={() => this.getEvent(event)}/>
                   </div>
                 </div>
               )
@@ -165,8 +166,8 @@ export default class FindPageComponent extends React.Component {
         </div>
       ); 
     } else {
-      console.log(333)
-      console.log("event: ", event)
+      //console.log(333)
+      //console.log("event: ", event)
       return (
         <div className="comfirm">
             <img src={event.img} alt="eventImg"/>
@@ -176,10 +177,44 @@ export default class FindPageComponent extends React.Component {
             {event.city !== '' ? (<div><h3>City:</h3><p>{event.city}</p></div>) : null}
             {event.state !== '' ? (<div><h3>State:</h3><p>{event.state}</p></div>) : null}
             {event.phone !== '' ? (<div><h3>Phone:</h3><p>{event.phone}</p></div>) : null}
-            {event.date_time !== undefined ? (<div><h3>Date & Time:</h3><p>{event.date_time}</p></div>) : null}
+            {event.date_time !== undefined ? (<div><h3>Event start:</h3><p>{event.date_time}</p></div>) : null}
+            <h3>Invite Group</h3>
+              <p>
+                <label><input name="Group" type="checkbox" value="" />Group 01 </label> 
+                <label><input name="Group" type="checkbox" value="" />Group 02 </label> 
+                <label><input name="Group" type="checkbox" value="" />Group 03 </label>  
+              </p>
+            <h3>invete Friend</h3>
+              <p>
+                <input className="drawFrame" name="chooseFriend" type="text" placeholder="Please enter a phone number"/><FlatButton className="drawerItem" label="Invent" />
+              </p>
+            <h3>Collection Time</h3>
+              <p>
+                <select>
+                  <option value="8">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+                <select>
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+                <select>
+                  <option value="00">am</option>
+                  <option value="15">pm</option>
+                </select>
+                <input type="date" data-date-inline-picker="true" />
+              </p>
         <div>
           <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
-          <FlatButton className="drawerItem" label="Comfirm" />
+          <Link to="/home">
+          <FlatButton className="drawerItem" label="Confirm" />
+          </Link>
         </div>
         <br/>
         <br/> 

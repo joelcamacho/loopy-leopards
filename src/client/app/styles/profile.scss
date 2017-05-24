@@ -1,0 +1,30 @@
+$primaryColor: lightblue;
+$fontSize: (100px - 50px);
+
+.profile {
+  background-color: $primaryColor;
+  font-size: $fontSize;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  min-height: 98vh;
+  min-width: 300px;
+  align-items: center center;
+  padding-bottom: 30pt;
+
+  .container {
+    width: 350px !important;
+    margin: auto;
+    min-height: 400px;
+    text-align: center;
+    padding-bottom: 30pt;
+
+    h3 {
+      font-size: 30px;
+    }
+
+    p {
+      font-size: 15px;
+    }
+  }
+}

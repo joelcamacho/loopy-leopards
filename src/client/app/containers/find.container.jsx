@@ -5,14 +5,20 @@ import action from '../actions/events.action.jsx';
 export default connect(
 	//App is listening to state
   function mapStateToProps(state) {
-    return { events: state.events.toJS() };
+    return { 
+      events: state.events.toJS(),
+      event: state.event
+    };
   },
 
   function mapDispatchToProps(dispatch) {
     return {
     	addEvents: function(events) {
     		return dispatch(action.addBulkEvents(events));
-    	}
+    	},
+      createEvent: function(event) {
+        return dispatch(action.createEvent(event));
+      }
     }
   }
 )(FindPageComponent);

@@ -2,6 +2,7 @@ const { fromJS, Map, List } = require('immutable')
 
 const eventsInit = fromJS([
   {
+    status: 'first',
     photo: '',
     title: '',
     date: Date.now(),
@@ -19,7 +20,8 @@ const eventsInit = fromJS([
     ],
     activeState: null
   },
-  {
+  { 
+    status: 'first',
     photo: '',
     title: '',
     date: Date.now(),
@@ -42,9 +44,9 @@ const eventsInit = fromJS([
 export default function events(state = eventsInit, action) {
   switch (action.type) {
     case 'ADD_BULK_TO_EVENTS':
-      state = state.concat(action.payload);
+      state = state.splice(0,2).push('second').concat(action.payload);
       console.log("Now the state looks like: ", state);
-      return state.slice();
+      return state;
     case 'ADD_TO_EVENTS':
       return state.push(action.payload);
     case 'REMOVE_FROM_EVENT':

@@ -44,10 +44,16 @@ export default class FindPageComponent extends React.Component {
       .then(res => {
         //console.log('Received data from eventbrite api', res);
         pickupEvents(res.events);
-        //console.log("pickup 10 events: ", eventsArray);
+        console.log("pickup 13 events: ", eventsArray);
         var eventsbrite = eventsArray.map(event => {
           return {
             img: event.logo.original.url,
+            phone: '',
+            address: '',
+            city: '',
+            state: '',
+            latitude: '',
+            longitude: '',
             title: event.name.text,
             description: event.description.text,
             date_time: event.start.local
@@ -76,7 +82,7 @@ export default class FindPageComponent extends React.Component {
         randomNumbers = [];
         eventsArray = [];
         pickupEvents(res.businesses);
-        console.log("pickup 10 events from yelp: ", eventsArray);
+        //console.log("pickup 13 events from yelp: ", eventsArray);
         var eventsYelp = eventsArray.map(event => {
           return {
             img: event.image_url,
@@ -90,7 +96,6 @@ export default class FindPageComponent extends React.Component {
             description: event.categories.map(ele => ele.title).join(", ")
           }
         })
-        console.log(eventsYelp);
         eventsYelpData = eventsYelp;
       })
       .then(res => {
@@ -114,18 +119,24 @@ export default class FindPageComponent extends React.Component {
 
   testEvents (event) {
     console.log("eventsGohere: ", event);
+    this.props.createEvent(event);
   }
 
   render() {
-    //console.log(this.props.events);
+    //console.log("datas: ", this.props.events);
+    console.log("datas: ", this.props.event);
     const { events } = this.props;
-    console.log("state from state: ", events[0]);
-    if(events[0].activeState === null && events[0].activeState === null && !events[2]) {
+    const { event } = this.props;
+    //console.log("state from state: ", events);
+    //console.log("state from state: ", event);
+    if(events[0].status === 'first' && events[1].status === 'first') {
+      console.log(33333)
       return (
         <p></p>        
       );
-    } else {
-      console.log("Else events: ",events);
+    } else if (events[0] === 'second' && event.title === undefined) {
+      //console.log("Else events: ",events);
+      console.log(22222);
       return (
         <div>
           {
@@ -137,8 +148,8 @@ export default class FindPageComponent extends React.Component {
                         <div className="name">{event.title}</div>
                     </div>
                   <div className="btn-div">
-                    <button onClick={() => this.testEvents(event)}>DETAIL</button>
-                    <button>ADD</button>
+                    <button>DETAIL</button>
+                    <button onClick={() => this.testEvents(event)}>ADD</button>
                   </div>
                 </div>
               )
@@ -146,6 +157,10 @@ export default class FindPageComponent extends React.Component {
           }
         </div>
       ); 
+    } else {
+      console.log(11111111)
+      console.log("event: ", event)
+      return (<p>Hello World!!!</p>)
     }
   }
 }

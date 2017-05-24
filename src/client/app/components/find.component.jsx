@@ -213,7 +213,7 @@ export default class FindPageComponent extends React.Component {
         <div>
           <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
           <Link to="/home">
-          <FlatButton className="drawerItem" label="Confirm" />
+          <FlatButton className="drawerItem" label="Confirm" onClick={() => this.backToEvents([])}/>
           </Link>
         </div>
         <br/>

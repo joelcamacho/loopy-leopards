@@ -19,9 +19,9 @@ const profileInit = Map({
 
 export default function profile(state = profileInit, action) {
   switch (action.type) {
-    case 'UPDATE_USER':
+    case 'UPDATE_PROFILE':
     return state.map((v, k) => !!action.payload[k] ? action.payload[k] : v);
-   	case 'RESET_USER': 
+   	case 'RESET_PROFILE': 
    		return Map({
         id: null,
         first_name: null,

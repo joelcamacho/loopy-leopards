@@ -42,7 +42,7 @@ router.route('/users/:id')
 .get((req, res) => {
 	let userId = req.params.id
 
-	User.forge({id: userId}).fetch()
+	User.forge({google_id: userId}).fetch()
 	.then((user) => {
 		res.status(200).send(user)
 	})

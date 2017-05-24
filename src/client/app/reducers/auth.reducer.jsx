@@ -7,10 +7,10 @@ const authInit = Map({
   photo : null
 });
 
-export default function profile(state = profileInit, action) {
+export default function auth(state = authInit, action) {
   switch (action.type) {
     case 'UPDATE_USER':
-    return state.map((v, k) => !!action.payload[k] ? action.payload[k] : v);
+      return state.map((v, k) => !!action.payload[k] ? action.payload[k] : v);
     case 'RESET_USER': 
       return Map({
         id: null,

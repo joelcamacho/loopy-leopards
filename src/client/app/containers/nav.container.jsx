@@ -1,12 +1,11 @@
 import { connect } from 'react-redux';
-import ProfilePageComponent from '../components/profile.component.jsx';
+import NavComponent from '../components/nav.component.jsx';
 import authActions from '../actions/auth.action.jsx';
 import profileActions from '../actions/profile.action.jsx';
 
 export default connect(
   function mapStateToProps(state) {
     return {
-      profile: state.profile.toJS(),
       auth: state.auth.toJS()
     };
   },
@@ -18,4 +17,4 @@ export default connect(
       resetProfile: () => dispatch(profileActions.resetProfile()),
     };
   }
-)(ProfilePageComponent);
+)(NavComponent);

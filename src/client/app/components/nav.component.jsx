@@ -7,14 +7,33 @@ import {
   ResponsiveAppBar
 } from 'material-ui-responsive-drawer'
 import FlatButton from 'material-ui/FlatButton';
-
+import { Image } from 'material-ui-image'
 
 export default class NavComponent extends React.Component {
   constructor(props) {
     super(props);
+    this.checkLoggedIn = this.checkLoggedIn.bind(this);
+    this.checkLoggedIn();
+  }
+
+  checkLoggedIn() {
+    fetch('/user', {credentials: 'include'})
+      .then(res => res.json())
+      .then(res => {
+        // might need to check res.result and update photo
+        if(typeof res.result === 'string') {
+          this.props.resetUser();
+          this.props.resetProfile();
+          return;
+        }
+        console.log(res.result);
+        res.result.photo = res.result.photos[0].value;
+        this.props.updateUser(res.result);
+      })
   }
 
   render() {
+    console.log(this.props.auth);
     return (
       <div className="nav">
           <ResponsiveDrawer>
@@ -41,7 +60,12 @@ export default class NavComponent extends React.Component {
           <BodyContainer>
             <ResponsiveAppBar
                 title={'Hangin\' Hubs'}
-                iconElementRight={<AuthComponent />}
+                iconElementRight={
+                  <a href={this.props.auth.id !== null ? "/logout" : "/auth/google"}> 
+                    {this.props.auth.id !== null ? (<Image imageStyle={{borderRadius: '50%'}} style={{backgroundColor: 'clear', marginTop: '3pt', right: '10pt', position: 'absolute', height: '30pt', width: '30pt'}} src={this.props.auth ? this.props.auth.photo : ''}/>) : null}
+                    <FlatButton className={this.props.auth.id !== null ? 'authIn' : 'auth' } label={ this.props.auth.id !== null ? "Log out" : "Log in"} />
+                  </a>
+                }
               />
               <div style={{marginTop: '48pt'}}>
                 {this.props.children}

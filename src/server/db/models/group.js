@@ -8,15 +8,15 @@ const Group = bookshelf.Model.extend({
 	tableName: 'groups',
 
 	members: function() {
-		return this.belongsToMany(User);
+		return this.belongsToMany('User');
 	},
 
 	events: function() {
-		return this.hasMany(Event);
+		return this.hasMany('Event');
 	},
 
 	tags: function() {
-		return this.belongsToMany(Tag);
+		return this.belongsToMany('Tag');
 	}
 })
 

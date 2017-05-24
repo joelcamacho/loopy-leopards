@@ -15,6 +15,7 @@ exports.up = function(knex, Promise) {
       table.string('phone',[11]).unique().notNullable();
       table.date('birthdate');
       table.boolean('registered')
+      table.boolean('phoneValidated').defaultTo(false)
     }),
     knex.schema.createTable('events', function(table) {
       table.increments('id').primary();

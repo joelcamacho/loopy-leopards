@@ -2,20 +2,21 @@ exports.up = function(knex, Promise) {
   return Promise.all([
     knex.schema.createTable('users', function(table) {
       table.increments('id').primary();
-      table.string('first_name',[15]).notNullable();
-      table.string('last_name',[15]);
-      table.string('google_id');
-      table.string('email',[25]).unique();
+      table.string('first_name');
+      table.string('last_name');
+      table.string('google_id').unique();
+      table.string('email');
       table.string('password')
-      table.string('address',[20]);
-      table.string('city',[20]);
-      table.string('state', [2]);
+      table.string('address');
+      table.string('city');
+      table.string('state');
       table.string('latitude');
       table.string('longitude');
-      table.string('phone',[11]).unique().notNullable();
+      table.string('phone');
       table.date('birthdate');
+
       table.boolean('registered')
-      table.boolean('phoneValidated').defaultTo(false)
+      table.boolean('phone_validated');
     }),
     knex.schema.createTable('events', function(table) {
       table.increments('id').primary();

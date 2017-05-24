@@ -1,8 +1,12 @@
 import React from 'react';
+import FlatButton from 'material-ui/FlatButton';
+import { HashRouter, Router, Link } from 'react-router-dom'
 
 export default class FindPageComponent extends React.Component {
   constructor(props) {
     super(props);
+    this.getEvent = this.getEvent.bind(this);
+    this.backToEvents = this.backToEvents.bind(this);
   }
 
   //For yelp, give NYC temply
@@ -43,12 +47,19 @@ export default class FindPageComponent extends React.Component {
       .then(res => {
         //console.log('Received data from eventbrite api', res);
         pickupEvents(res.events);
-        //console.log(randomNumbers)
-        //console.log("pickup 10 events: ", eventsArray);
+        console.log("pickup 13 events: ", eventsArray);
         var eventsbrite = eventsArray.map(event => {
           return {
             img: event.logo.original.url,
-            title: event.name.text
+            phone: '',
+            address: '',
+            city: '',
+            state: '',
+            latitude: '',
+            longitude: '',
+            title: event.name.text,
+            description: event.description.text,
+            date_time: event.start.local
           }
         })
         eventsbriteData = eventsbrite;
@@ -74,11 +85,18 @@ export default class FindPageComponent extends React.Component {
         randomNumbers = [];
         eventsArray = [];
         pickupEvents(res.businesses);
-        //console.log("pickup 10 events from yelp: ", eventsArray);
+        //console.log("pickup 13 events from yelp: ", eventsArray);
         var eventsYelp = eventsArray.map(event => {
           return {
             img: event.image_url,
-            title: event.name
+            title: event.name,
+            phone: event.display_phone,
+            address: event.location.address1,
+            city: event.location.city,
+            state: event.location.state,
+            latitude: event.coordinates.latitude,
+            longitude: event.coordinates.longitude,
+            description: event.categories.map(ele => ele.title).join(", ")
           }
         })
         eventsYelpData = eventsYelp;
@@ -102,16 +120,31 @@ export default class FindPageComponent extends React.Component {
       })
   }
 
+  getEvent (event) {
+    //console.log("eventsGohere: ", event);
+    this.props.createEvent(event);
+  }
+
+  backToEvents (events) {
+    this.props.addEvents(events);
+    this.props.setStateBackToDefault({status: 'first'});
+  }
+
   render() {
-    //console.log(this.props.events);
+    //console.log("datas: ", this.props.events);
+    //console.log("data: ", this.props.event);
     const { events } = this.props;
-    console.log("state from state: ", events[0]);
-    if(events[0].activeState === null && events[0].activeState === null && !events[2]) {
+    const { event } = this.props;
+    //console.log("state from state: ", events);
+    //console.log("state from state: ", event);
+    if(events.length === 0 && event.status === 'first') {
+      //console.log(111)
       return (
-        <p></p>        
+        <p></p>
       );
-    } else {
-      console.log("Else events: ",events);
+    } else if (events.length > 0 && event.status === 'first') {
+      //console.log("Else events: ",events);
+      //console.log(222);
       return (
         <div>
           {
@@ -123,8 +156,8 @@ export default class FindPageComponent extends React.Component {
                         <div className="name">{event.title}</div>
                     </div>
                   <div className="btn-div">
-                    <button>DETAL</button>
-                    <button>ADD</button>
+                    <FlatButton className="drawerItem" label="DETAIL" />
+                    <FlatButton className="drawerItem" label="Confirm" onClick={() => this.getEvent(event)}/>
                   </div>
                 </div>
               )
@@ -132,6 +165,63 @@ export default class FindPageComponent extends React.Component {
           }
         </div>
       ); 
+    } else {
+      //console.log(333)
+      //console.log("event: ", event)
+      return (
+        <div className="comfirm">
+            <img src={event.img} alt="eventImg"/>
+            {event.title !== '' ? (<div><h3>Event:</h3><p>{event.title}</p></div>) : null}
+            {event.description !== '' ? (<div><h3>Description:</h3><p>{event.description}</p></div>) : null}
+            {event.address !== '' ? (<div><h3>Address:</h3><p>{event.address}</p></div>) : null}
+            {event.city !== '' ? (<div><h3>City:</h3><p>{event.city}</p></div>) : null}
+            {event.state !== '' ? (<div><h3>State:</h3><p>{event.state}</p></div>) : null}
+            {event.phone !== '' ? (<div><h3>Phone:</h3><p>{event.phone}</p></div>) : null}
+            {event.date_time !== undefined ? (<div><h3>Event start:</h3><p>{event.date_time}</p></div>) : null}
+            <h3>Invite Group</h3>
+              <p>
+                <label><input name="Group" type="checkbox" value="" />Group 01 </label> 
+                <label><input name="Group" type="checkbox" value="" />Group 02 </label> 
+                <label><input name="Group" type="checkbox" value="" />Group 03 </label>  
+              </p>
+            <h3>invete Friend</h3>
+              <p>
+                <input className="drawFrame" name="chooseFriend" type="text" placeholder="Please enter a phone number"/><FlatButton className="drawerItem" label="Invent" />
+              </p>
+            <h3>Collection Time</h3>
+              <p>
+                <select>
+                  <option value="8">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                </select>
+                <select>
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+                <select>
+                  <option value="00">am</option>
+                  <option value="15">pm</option>
+                </select>
+                <input type="date" data-date-inline-picker="true" />
+              </p>
+        <div>
+          <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
+          <Link to="/home">
+          <FlatButton className="drawerItem" label="Confirm" onClick={() => this.backToEvents([])}/>
+          </Link>
+        </div>
+        <br/>
+        <br/> 
+        <br/> 
+        </div>
+
+      );
     }
   }
 }

@@ -22,7 +22,9 @@ passport.deserializeUser((user, done) => done(null, user));
 
 
 // add morgan middleware logger
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(bodyParser.json());
 app.use(morgan('short'));
 

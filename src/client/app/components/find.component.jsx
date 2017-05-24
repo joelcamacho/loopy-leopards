@@ -1,4 +1,5 @@
 import React from 'react';
+import FlatButton from 'material-ui/FlatButton';
 
 export default class FindPageComponent extends React.Component {
   constructor(props) {
@@ -167,24 +168,24 @@ export default class FindPageComponent extends React.Component {
       console.log(333)
       console.log("event: ", event)
       return (
-        <div className="confirm">
+        <div className="comfirm">
             <img src={event.img} alt="eventImg"/>
-            <h3>Events:</h3>
-            <p>&nbsp;&nbsp;&nbsp;{event.title}</p>
-            <h3>Description:</h3>
-            <p>&nbsp;&nbsp;&nbsp;{event.description}</p>
-            <h3>Address:</h3>
-            <p>&nbsp;&nbsp;&nbsp;{event.address}</p>
-            <h3>City:</h3>
-            <p>&nbsp;&nbsp;&nbsp;{event.city}</p>
-            <h3>State:</h3>
-            <p>&nbsp;&nbsp;&nbsp;{event.state}</p>
-            <h3>Phone:</h3>
-            <p>&nbsp;&nbsp;&nbsp;{event.phone}</p>
-            <h3>DT:</h3>
-            <p>{event.date_time}</p>
-          <button onClick={() => this.backToEvents([])}>Back</button>
+            {event.title !== '' ? (<div><h3>Event:</h3><p>{event.title}</p></div>) : null}
+            {event.description !== '' ? (<div><h3>Description:</h3><p>{event.description}</p></div>) : null}
+            {event.address !== '' ? (<div><h3>Address:</h3><p>{event.address}</p></div>) : null}
+            {event.city !== '' ? (<div><h3>City:</h3><p>{event.city}</p></div>) : null}
+            {event.state !== '' ? (<div><h3>State:</h3><p>{event.state}</p></div>) : null}
+            {event.phone !== '' ? (<div><h3>Phone:</h3><p>{event.phone}</p></div>) : null}
+            {event.date_time !== undefined ? (<div><h3>Date & Time:</h3><p>{event.date_time}</p></div>) : null}
+        <div>
+          <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
+          <FlatButton className="drawerItem" label="Comfirm" />
         </div>
+        <br/>
+        <br/> 
+        <br/> 
+        </div>
+
       );
     }
   }

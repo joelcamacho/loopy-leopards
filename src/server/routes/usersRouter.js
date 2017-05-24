@@ -17,6 +17,22 @@ router.route('/users')
 
 .post((req, res) => {
 
+	// {
+	// 	first_name:
+	// 	last_name:
+	// 	google_id:
+	// 	email:
+	// 	password:
+	// 	address:
+	// 	city:
+	// 	state:
+	// 	latitude:
+	// 	longitude:
+	// 	phone:
+	// 	birthdate:
+	// 	registered:
+	// }
+
 	let userData = {}
 	
 	for(var key in req.body) {
@@ -55,7 +71,8 @@ router.route('/users/google/:id')
 router.route('/users/:id')
 
 .get((req, res) => {
-	let userId = req.params.id
+
+	let userId = 1
 
 	User.forge({id: userId}).fetch()
 	.then((user) => {
@@ -63,13 +80,14 @@ router.route('/users/:id')
 	})
 	.catch((err) => {
 		console.log(err)
-		res.status(400).send('Error retrieving user')
+		res.status(400).send('Error retrieving profile')
 	})
 })
 
 .put((req, res) => {
 
-	let userId = req.params.id,
+	let userId = 1,
+
 	userData = {}
 
 	for(var key in req.body) {
@@ -84,6 +102,20 @@ router.route('/users/:id')
 	// 	console.log(err)
 	// 	return  res.status(400).send('Could not update event');
 	// })
+})
+
+.delete((req,res) => {
+
+	let userId = req.params.id
+
+	new User({id:id}).destroy()
+	.then((user) => {
+		res.send(200).send('Sorry to see you go, ' + user.get('name'))
+	})
+	.catch((err) => {
+		console.log(err)
+		res.status(400).send('Could not close account')
+	})
 })
 
 module.exports = router

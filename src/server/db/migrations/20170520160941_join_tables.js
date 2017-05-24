@@ -3,6 +3,10 @@ exports.up = function(knex, Promise) {
   return Promise.all([
   	knex.schema.createTable('events_users', function(table) {
       table.increments('id').primary();
+      table.boolean('voted').defaultTo(false)
+      table.string('status').defaultTo('unconfirmed')
+      //can be unconfirmed or confirmed
+      table.string('role')
       table.integer('user_id').unsigned().notNullable();
       table.foreign('user_id').references('users.id');
       table.integer('event_id').unsigned().notNullable();
@@ -10,6 +14,8 @@ exports.up = function(knex, Promise) {
     }),
     knex.schema.createTable('groups_users', function(table) {
       table.increments('id').primary();
+      table.string('user_status');
+      //can be one of the following: member, invited, requested
       table.integer('user_id').unsigned().notNullable()
       table.foreign('user_id').references('users.id');
       table.integer('group_id').unsigned().notNullable()

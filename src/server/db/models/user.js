@@ -38,16 +38,20 @@ const User = bookshelf.Model.extend({
     // })
   },
 
-  groups: function() {
+  groupsBelongingTo: function() {
   	return this.belongsToMany('Group');
   },
 
-  invitedTo: function() {
-  	return this.belongsToMany(Event);
+  groupsCreated: function() {
+    return this.belongsToMany('Group').query({where: {creator_id: this.get('id')}});
   },
 
-  created: function() {
-    return this.belongsToMany(Event).query({where: {creator_id: this.get('id')}});
+  eventsInvitedTo: function() {
+  	return this.belongsToMany('Event');
+  },
+
+  eventsCreated: function() {
+    return this.belongsToMany('Event').query({where: {creator_id: this.get('id')}});
   },
 
   tags: function() {

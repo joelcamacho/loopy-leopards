@@ -14,7 +14,8 @@ exports.up = function(knex, Promise) {
       table.string('longitude');
       table.string('phone');
       table.date('birthdate');
-      table.boolean('registered');
+
+      table.boolean('registered')
       table.boolean('phone_validated');
     }),
     knex.schema.createTable('events', function(table) {

@@ -6,6 +6,7 @@ const authRoutes = require('./auth.routes.js')
 const eventbriteRoutes = require('./eventbrite.routes.js')
 const eventRouter = require('./eventsRouter.js');
 const userRouter = require('./usersRouter.js');
+const groupRouter = require('./groupsRouter.js');
 
 // middleware to protect routes
 function ensureAuthenticated(req, res, next) {
@@ -31,7 +32,7 @@ routes.use(authRoutes);
 routes.use(yelpRoutes);
 routes.use(eventbriteRoutes);
 
-routes.use('/api', eventRouter, userRouter);
+routes.use('/api', eventRouter, userRouter, groupRouter);
 
 
 module.exports = routes;

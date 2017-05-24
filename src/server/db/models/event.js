@@ -10,10 +10,11 @@ const Event = bookshelf.Model.extend({
 	hasTimestamps: ['created_at', 'updated_at'],
 
 	invitees: function() {
-		return this.belongsToMany('User');
+		return this.belongsToMany('User')
+		// .withPivot(user_id)
 	},
 
-	groups: function() {
+	group: function() {
 		return this.belongsTo('Group');
 	},
 

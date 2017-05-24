@@ -14,9 +14,7 @@ router.route('/events')
 	User.where({id:id}).fetch({withRelated: ['eventsInvitedTo','eventsCreated']})
 	.then((events) => {
 		if(events) {
-			data.eventsInvitedTo = result.related('eventsInvitedTo')
-			data.eventsCreated = result.related('eventsCreated')
-			res.status(200).json(data);
+			res.status(200).json(events);
 		} else {
 			res.status(200).send('You have no active events')
 		}
@@ -29,7 +27,7 @@ router.route('/events')
 })
 
 .post((req,res) => {
-		// {
+	// {
 	// 	name:
 	// 	date_time:
 	// 	description:
@@ -47,7 +45,7 @@ router.route('/events')
 	let id = 1,
 	eventAttributes = {creator_id: id};
 
-	Oject.assign(eventAttributes, req.body);
+	Object.assign(eventAttributes, req.body);
 
 	new Event(eventAttributes).save()
 	.then((event) => {
@@ -116,14 +114,9 @@ router.post('/events/:id/invite',(req,res) => {
 	let eventId = req.params.id,
 	inviteeModelArray = []
 
-	req.body.invitees.forEach((invitee) => {
-		inviteeModelArray.push(new User({id:invitee}))
-	})
+	//convert each user into a User model instance
 	
-	
-	.catch((err) => {
-		console.log(err)
-	})
+
 })
 
 router.post('/events/:id/vote')

@@ -38,7 +38,7 @@ export default function event(state = {status: 'first'}, action) {
       // output.description = action.payload.description;
       // output.date_time = action.payload.date_time;
       // console.log(output)
-      var test =  Object.assign({}, state,
+      return Object.assign({}, state,
         {status: ''}, 
         {img: action.payload.img},
         {title: action.payload.title},
@@ -51,8 +51,6 @@ export default function event(state = {status: 'first'}, action) {
         {description: action.payload.description},
         {date_time: action.payload.date_time}
       );
-      console.log("test: ", test);
-      return test;
     case "SET_STATE_BACK_TO_DEFAULT":
       return Object.assign({}, state, {status: 'first'});
     case 'MODIFY_EVENT':

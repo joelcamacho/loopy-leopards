@@ -3,7 +3,8 @@
 
 @import 'nav.scss';
 @import 'home.scss';
-
+@import 'find.scss';
+@import 'confirm.scss';
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500');
 
 body {
@@ -12,5 +13,5 @@ body {
   padding: 0px;
 }
 
-@import 'find.scss';
+
 

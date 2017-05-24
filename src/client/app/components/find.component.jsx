@@ -167,8 +167,22 @@ export default class FindPageComponent extends React.Component {
       console.log(333)
       console.log("event: ", event)
       return (
-        <div>
-          <p>Hello World!!!</p>
+        <div className="confirm">
+            <img src={event.img} alt="eventImg"/>
+            <h3>Events:</h3>
+            <p>&nbsp;&nbsp;&nbsp;{event.title}</p>
+            <h3>Description:</h3>
+            <p>&nbsp;&nbsp;&nbsp;{event.description}</p>
+            <h3>Address:</h3>
+            <p>&nbsp;&nbsp;&nbsp;{event.address}</p>
+            <h3>City:</h3>
+            <p>&nbsp;&nbsp;&nbsp;{event.city}</p>
+            <h3>State:</h3>
+            <p>&nbsp;&nbsp;&nbsp;{event.state}</p>
+            <h3>Phone:</h3>
+            <p>&nbsp;&nbsp;&nbsp;{event.phone}</p>
+            <h3>DT:</h3>
+            <p>{event.date_time}</p>
           <button onClick={() => this.backToEvents([])}>Back</button>
         </div>
       );

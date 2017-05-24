@@ -37,6 +37,21 @@ router.route('/users')
 	})
 })
 
+router.route('/users/google/:id')
+
+.get((req, res) => {
+	let userId = req.params.id
+
+	User.forge({google_id: userId}).fetch()
+	.then((user) => {
+		res.status(200).send(user)
+	})
+	.catch((err) => {
+		console.log(err)
+		res.status(400).send('Error retrieving user')
+	})
+})
+
 router.route('/users/:id')
 
 .get((req, res) => {
@@ -61,14 +76,14 @@ router.route('/users/:id')
 		userData[key] = req.body[key]
 	}
 
-	new User({id:userId}).save(updateAttributes, {patch: true})
-	.then((event) => {
-		res.send(200).json({'Event updated: ': event})
-	})
-	.catch((err) => {
-		console.log(err)
-		res.status(400).send('Could not update event')
-	})
+	new User({id:userId}).save(userData, {patch: true})
+	// .then((event) => {
+	// 	return res.send(200).json({'Event updated: ': event});
+	// })
+	// .catch((err) => {
+	// 	console.log(err)
+	// 	return  res.status(400).send('Could not update event');
+	// })
 })
 
 module.exports = router

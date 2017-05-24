@@ -15,10 +15,8 @@ import {responsiveStoreEnhancer} from 'redux-responsive';
 // import reducers
 import reducer from './reducers/index.jsx';
 
-// import components
-import NavComponent from './components/nav.component.jsx';
-
 // import containers
+import NavContainer from './containers/nav.container.jsx';
 import HomePageContainer from './containers/home.container.jsx';
 import ProfilePageContainer from './containers/profile.container.jsx';
 import GroupPageContainer from './containers/group.container.jsx';
@@ -42,7 +40,7 @@ class App extends React.Component {
         <Provider store={store}>
       	  <div>  
             <RaisedButton label="Default" />
-        	  <NavComponent>
+        	  <NavContainer>
           		<HashRouter>
           			<Switch>
                   <Route exact path="/" component={HomePageContainer}/>
@@ -53,7 +51,7 @@ class App extends React.Component {
                   <Route exact path="/events" component={EventsPageContainer}/>
           	    </Switch>
               </HashRouter>
-            </NavComponent>
+            </NavContainer>
           </div>
         </Provider>
       </MuiThemeProvider>

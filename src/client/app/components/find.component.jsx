@@ -7,6 +7,67 @@ import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import TimePicker from 'material-ui/TimePicker';
 import DatePicker from 'material-ui/DatePicker';
+import TextField from 'material-ui/TextField';
+import Checkbox from 'material-ui/Checkbox';
+import RaisedButton from 'material-ui/RaisedButton';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import Dialog from 'material-ui/Dialog';
+
+const fakeGroupData = {
+  name: 'Loopy Leopards',
+  list: [
+    {
+      name: 'Eric Hoffman',
+      photo: null,
+      phone: '123-123-1234'
+    },
+    {
+      name: 'Kimmy J',
+      photo: 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg',
+      phone: '123-123-KimJ'
+    },
+    {
+      name: 'Brendan Lim',
+      photo: null,
+      phone: '123-123-1243'
+    },
+    {
+      name: 'Grace Ng',
+      photo: null,
+      phone: '578-123-1234'
+    },
+    {
+      name: 'Raquel Parrado',
+      photo: null,
+      phone: '123-234-1234'
+    }
+  ],
+  guests: [
+    {
+      name: 'Kimmy J J',
+      photo: null,
+      phone: '412-123-1234'
+    },
+    {
+      name: 'Ra',
+      photo: null,
+      phone: '123-123-4124'
+    }
+  ],
+  requests: [
+    {
+      name: 'Kimmy J Jd',
+      photo: null,
+      phone: '412-123-1234'
+    },
+    {
+      name: 'Rae',
+      photo: null,
+      phone: '123-123-4124'
+    }
+  ]
+}
+
 
 export default class FindPageComponent extends React.Component {
   constructor(props) {
@@ -16,10 +77,12 @@ export default class FindPageComponent extends React.Component {
 
     this.state = {
       controlledDate: null,
-      value12: null
+      value12: null,
+      testValue: 'Anything you want to say?',
+      open: false,
     };
 
-    this.handleChange = (event, date) => {
+    this.handleChangeDate = (event, date) => {
       this.setState({
         controlledDate: date,
       });
@@ -27,6 +90,20 @@ export default class FindPageComponent extends React.Component {
 
     this.handleChangeTimePicker12 = (event, date) => {
       this.setState({value12: date});
+    };
+
+    this.handleChangeTestValue = (event) => {
+      this.setState({
+        testValue: event.target.value,
+      });
+    };
+
+    this.handleOpen = () => {
+    this.setState({open: true});
+  };
+
+    this.handleClose = () => {
+      this.setState({open: false});
     };
   }
 
@@ -159,6 +236,33 @@ export default class FindPageComponent extends React.Component {
     const { event } = this.props;
     //console.log("state from state: ", events);
     //console.log("state from state: ", event);
+    ///////////////////////////Dialog/////////////////////////
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={true}
+        onTouchTap={this.handleClose}
+      />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        keyboardFocused={true}
+        onTouchTap={this.handleClose}
+      />,
+    ];
+    const radios = [];
+    for (let i = 0; i < 30; i++) {
+      radios.push(
+        <RadioButton
+          key={i}
+          value={`value${i + 1}`}
+          label={`Option ${i + 1}`}
+          style='marginTop: 16'
+        />
+      );
+    }
+    /////////////////////////////////////////////////////////
+
     if(events.length === 0 && event.status === 'first') {
       //console.log(111)
       return (
@@ -202,23 +306,34 @@ export default class FindPageComponent extends React.Component {
             {event.date_time !== undefined ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.date_time}</p></div><Divider/></List>) : null}
             <List>
             <div>
-            <Subheader>invite Group</Subheader>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;
-                <label><input name="Group" type="checkbox" value="" />Group 01 </label> 
-                <label><input name="Group" type="checkbox" value="" />Group 02 </label> 
-                <label><input name="Group" type="checkbox" value="" />Group 03 </label>  
-              </p>
+            <Subheader>Invite Friends</Subheader>
+              <RaisedButton label="Invite" onTouchTap={this.handleOpen} />
+              <Dialog
+                title="Invite your friends"
+                actions={actions}
+                modal={false}
+                open={this.state.open}
+                onRequestClose={this.handleClose}
+                autoScrollBodyContent={true}
+              >
+                <RadioButtonGroup name="shipSpeed" defaultSelected="not_light">
+                  {radios}
+                </RadioButtonGroup>
+              </Dialog>
             </div>
+            <br/>
             <Divider/>
             </List>
             <List>
             <div>
-            <Subheader>invite Friend</Subheader>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;
-                <input className="drawFrame" name="chooseFriend" type="text" placeholder="Please enter a phone number"/><FlatButton className="drawerItem" label="Invent" />
-              </p>
+            <Subheader>Comment</Subheader>
+              <TextField
+                id="text-field-controlled"
+                value={this.state.testValue}
+                onChange={this.handleChangeTestValue}
+                multiLine={true}
+              />
             </div>
-            <Divider/>
             </List>
             <List>
             <div>
@@ -232,7 +347,7 @@ export default class FindPageComponent extends React.Component {
               <DatePicker
                 hintText="Controlled Date Input"
                 value={this.state.controlledDate}
-                onChange={this.handleChange}
+                onChange={this.handleChangeDate}
               />
             </div>
             </List>

@@ -12,6 +12,9 @@ import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Dialog from 'material-ui/Dialog';
+import Avatar from 'material-ui/Avatar';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentRemove from 'material-ui/svg-icons/content/remove';
 
 const fakeGroupData = {
   name: 'Loopy Leopards',
@@ -105,6 +108,8 @@ export default class FindPageComponent extends React.Component {
     this.handleClose = () => {
       this.setState({open: false});
     };
+
+    this.group = fakeGroupData;
   }
 
   //For yelp, give NYC temply
@@ -308,6 +313,7 @@ export default class FindPageComponent extends React.Component {
             <div>
             <Subheader>Invite Friends</Subheader>
               <RaisedButton label="Invite" onTouchTap={this.handleOpen} />
+              //////////////////////////Dialog///////////////////////////
               <Dialog
                 title="Invite your friends"
                 actions={actions}
@@ -316,10 +322,17 @@ export default class FindPageComponent extends React.Component {
                 onRequestClose={this.handleClose}
                 autoScrollBodyContent={true}
               >
-                <RadioButtonGroup name="shipSpeed" defaultSelected="not_light">
-                  {radios}
-                </RadioButtonGroup>
+                <List>
+                  
+                  {this.group.list.map(obj => (<ListItem
+                    key={obj.phone}
+                    primaryText={obj.name}
+                    leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                    rightIcon={(<ContentRemove />)}
+                  />))}
+                </List>
               </Dialog>
+              //////////////////////////////////////////////////////////////
             </div>
             <br/>
             <Divider/>

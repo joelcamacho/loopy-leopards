@@ -1,6 +1,10 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
-import { HashRouter, Router, Link } from 'react-router-dom'
+import { HashRouter, Router, Link } from 'react-router-dom';
+import Paper from 'material-ui/Paper';
+import Subheader from 'material-ui/Subheader';
+import {List, ListItem} from 'material-ui/List';
+import Divider from 'material-ui/Divider';
 
 export default class FindPageComponent extends React.Component {
   constructor(props) {
@@ -167,29 +171,42 @@ export default class FindPageComponent extends React.Component {
       ); 
     } else {
       //console.log(333)
-      //console.log("event: ", event)
+      console.log("event: ", event)
       return (
         <div className="comfirm">
+          <Paper className="container">
             <img src={event.img} alt="eventImg"/>
-            {event.title !== '' ? (<div><h3>Event:</h3><p>{event.title}</p></div>) : null}
-            {event.description !== '' ? (<div><h3>Description:</h3><p>{event.description}</p></div>) : null}
-            {event.address !== '' ? (<div><h3>Address:</h3><p>{event.address}</p></div>) : null}
-            {event.city !== '' ? (<div><h3>City:</h3><p>{event.city}</p></div>) : null}
-            {event.state !== '' ? (<div><h3>State:</h3><p>{event.state}</p></div>) : null}
-            {event.phone !== '' ? (<div><h3>Phone:</h3><p>{event.phone}</p></div>) : null}
-            {event.date_time !== undefined ? (<div><h3>Event start:</h3><p>{event.date_time}</p></div>) : null}
-            <h3>Invite Group</h3>
-              <p>
+            {event.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.title}</p></div><Divider/></List>) : null}
+            {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description}</p></div><Divider/></List>) : null}
+            {event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.address}</p></div><Divider/></List>) : null}
+            {event.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.city}</p></div><Divider/></List>) : null}
+            {event.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.state}</p></div><Divider/></List>) : null}
+            {event.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.phone}</p></div><Divider/></List>) : null}
+            {event.date_time !== undefined ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.date_time}</p></div><Divider/></List>) : null}
+            <List>
+            <div>
+            <Subheader>invite Group</Subheader>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;
                 <label><input name="Group" type="checkbox" value="" />Group 01 </label> 
                 <label><input name="Group" type="checkbox" value="" />Group 02 </label> 
                 <label><input name="Group" type="checkbox" value="" />Group 03 </label>  
               </p>
-            <h3>invete Friend</h3>
-              <p>
+            </div>
+            <Divider/>
+            </List>
+            <List>
+            <div>
+            <Subheader>invite Friend</Subheader>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;
                 <input className="drawFrame" name="chooseFriend" type="text" placeholder="Please enter a phone number"/><FlatButton className="drawerItem" label="Invent" />
               </p>
-            <h3>Collection Time</h3>
-              <p>
+            </div>
+            <Divider/>
+            </List>
+            <List>
+            <div>
+            <Subheader>Collection Time</Subheader>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;
                 <select>
                   <option value="8">7</option>
                   <option value="8">8</option>
@@ -210,19 +227,21 @@ export default class FindPageComponent extends React.Component {
                 </select>
                 <input type="date" data-date-inline-picker="true" />
               </p>
-        <div>
-          <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
-          <Link to="/home">
-          <FlatButton className="drawerItem" label="Confirm" onClick={() => this.backToEvents([])}/>
-          </Link>
-        </div>
-        <br/>
-        <br/> 
-        <br/> 
+            </div>
+            <Divider/>
+            </List>
+            <br/>
+            <div>
+              <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
+              <Link to="/home">
+              <FlatButton className="drawerItem" label="Confirm" onClick={() => this.backToEvents([])}/>
+              </Link>
+            </div>
+            <br/>
+          </Paper>
         </div>
 
       );
     }
   }
 }
-

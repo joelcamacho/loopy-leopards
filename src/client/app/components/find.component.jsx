@@ -96,6 +96,7 @@ export default class FindPageComponent extends React.Component {
     };
 
     this.handleChangeTestValue = (event) => {
+      console.log("11111", event.target.value)
       this.setState({
         testValue: event.target.value,
       });
@@ -110,6 +111,11 @@ export default class FindPageComponent extends React.Component {
     };
 
     this.group = fakeGroupData;
+
+    this.handleSearchbar = (event, userInput) => {
+      let result = this.group.list.filter(user => user.name === userInput);
+      console.log(result);
+    }
   }
 
   //For yelp, give NYC temply
@@ -322,8 +328,14 @@ export default class FindPageComponent extends React.Component {
                 onRequestClose={this.handleClose}
                 autoScrollBodyContent={true}
               >
+                <TextField
+                  hintText="Hint Text"
+                  floatingLabelText="Search"
+                  onChange={this.handleSearchbar}
+                />
+
                 <List>
-                  
+                  <Subheader> Current Members </Subheader>
                   {this.group.list.map(obj => (<ListItem
                     key={obj.phone}
                     primaryText={obj.name}

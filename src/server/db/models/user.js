@@ -60,6 +60,13 @@ const User = bookshelf.Model.extend({
 
   byPhone: function(phone) {
     return this.forge().query({where:{phone:phone}}).fetch();
+  },
+
+  getEvents: function() {
+    return this.fetch({withRelated: ['eventsInvitedTo', 'eventsCreated']})
+    .then((results) => {
+      return {invitedTo: results.related('eventsInvitedTo'), created: results.related('eventsCreated')}
+    })
   }
 });
 

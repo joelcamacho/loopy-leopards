@@ -11,19 +11,31 @@ router.route('/events')
 	data = {}
 
 	//retrieve all events that the user either created or was invited to
-	User.where({id:id}).fetch({withRelated: ['eventsInvitedTo','eventsCreated']})
-	.then((events) => {
-		if(events) {
-			res.status(200).json(events);
-		} else {
-			res.status(200).send('You have no active events')
-		}
+	User.where({id:id}).getEvents()
+	.then((results) => {
+		Promise.all(results.invitedTo.map((event) => {
+			return event.where({id:event.id}).getInfo()
+		}))
+		.then((result) => {
+			data.invitedTo = result
+		})
+		.catch((err) => {
+			res.status(400).send('Something went wrong')
+		})
+		Promise.all(results.created.map((event) => {
+			return event.where({id:event.id}).getInfo()
+		}))
+		.then((result) => {
+			data.created = result
+			res.send(data)
+		})
+		.catch((err) => {
+			res.status(400).send('Something went wrong')
+		})
 	})
 	.catch((err) => {
 		res.status(400).send('Something went wrong in fetching your events')
 	})
-
-	// knex.raw('select user.id, user.name from "events_users" where class_id IN (select)')
 })
 
 .post((req,res) => {
@@ -66,8 +78,7 @@ router.route('/events/:id')
 	Event.where({id:eventId}).fetch({withRelated: ['group', 'invitees']})
 	.then((event) => {
 		if(event) {
-			data.event = event
-			res.status(200).json(data)
+			res.status(200).json(event)
 		} else {
 			res.status(400).send('Uh-oh, looks like this event doesn\'t exist')
 		}

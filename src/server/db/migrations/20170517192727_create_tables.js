@@ -29,6 +29,7 @@ exports.up = function(knex, Promise) {
       table.string('state', [2]);
       table.string('phone',[11]);
       table.string('latitude');
+      table.string('comments');
       //.notNullable()
       table.string('longitude');
       // .notNullable();

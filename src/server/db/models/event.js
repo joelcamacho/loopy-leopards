@@ -22,9 +22,9 @@ const Event = bookshelf.Model.extend({
 		return this.belongsToMany('Tag');
 	},
 
-	// createOrUpdate: function(data, options) {
-	// 	return this.forge(data).save(null, options)
-	// }
+	getInfo: function() {
+		return this.fetch({withRelated: ['invitees']})
+	}
 })
 
 module.exports = bookshelf.model('Event', Event);

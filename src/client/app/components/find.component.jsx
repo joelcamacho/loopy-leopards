@@ -5,12 +5,29 @@ import Paper from 'material-ui/Paper';
 import Subheader from 'material-ui/Subheader';
 import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
+import TimePicker from 'material-ui/TimePicker';
+import DatePicker from 'material-ui/DatePicker';
 
 export default class FindPageComponent extends React.Component {
   constructor(props) {
     super(props);
     this.getEvent = this.getEvent.bind(this);
     this.backToEvents = this.backToEvents.bind(this);
+
+    this.state = {
+      controlledDate: null,
+      value12: null
+    };
+
+    this.handleChange = (event, date) => {
+      this.setState({
+        controlledDate: date,
+      });
+    };
+
+    this.handleChangeTimePicker12 = (event, date) => {
+      this.setState({value12: date});
+    };
   }
 
   //For yelp, give NYC temply
@@ -137,6 +154,7 @@ export default class FindPageComponent extends React.Component {
   render() {
     //console.log("datas: ", this.props.events);
     //console.log("data: ", this.props.event);
+    console.log("action", this.props);
     const { events } = this.props;
     const { event } = this.props;
     //console.log("state from state: ", events);
@@ -171,7 +189,6 @@ export default class FindPageComponent extends React.Component {
       ); 
     } else {
       //console.log(333)
-      console.log("event: ", event)
       return (
         <div className="comfirm">
           <Paper className="container">
@@ -206,29 +223,18 @@ export default class FindPageComponent extends React.Component {
             <List>
             <div>
             <Subheader>Collection Time</Subheader>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;
-                <select>
-                  <option value="8">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                  <option value="11">11</option>
-                  <option value="12">12</option>
-                </select>
-                <select>
-                  <option value="00">00</option>
-                  <option value="15">15</option>
-                  <option value="30">30</option>
-                  <option value="45">45</option>
-                </select>
-                <select>
-                  <option value="00">am</option>
-                  <option value="15">pm</option>
-                </select>
-                <input type="date" data-date-inline-picker="true" />
-              </p>
+              <TimePicker
+                format="ampm"
+                hintText="12hr Format"
+                value={this.state.value12}
+                onChange={this.handleChangeTimePicker12}
+              />
+              <DatePicker
+                hintText="Controlled Date Input"
+                value={this.state.controlledDate}
+                onChange={this.handleChange}
+              />
             </div>
-            <Divider/>
             </List>
             <br/>
             <div>

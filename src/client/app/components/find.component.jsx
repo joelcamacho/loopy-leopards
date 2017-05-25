@@ -113,8 +113,14 @@ export default class FindPageComponent extends React.Component {
     this.group = fakeGroupData;
 
     this.handleSearchbar = (event, userInput) => {
-      let result = this.group.list.filter(user => user.name === userInput);
-      console.log(result);
+      console.log(userInput);
+      var user
+      !!userInput ? this.group.list.forEach(userInfo => {
+        if(userInfo.name.indexOf(userInput) > -1 || userInfo.phone.indexOf(userInput) > -1) {
+          user = userInfo
+        }
+      }) : user = null;
+      console.log(user);
     }
   }
 

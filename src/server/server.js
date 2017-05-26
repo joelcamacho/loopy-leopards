@@ -35,6 +35,13 @@ app.use(express.static(__dirname + '/../client'));
 //  Connect routes
 app.use(routes);
 
+// PUSH TESTING
+
+app.post('/api/push/register', function(req, res) {
+  console.log(req.body);
+  console.log(JSON.stringify(req.body));
+});
+
 app.listen(process.env.PORT || 3000, () => {
   console.log('App listening on port', (process.env.PORT || 3000));
 });

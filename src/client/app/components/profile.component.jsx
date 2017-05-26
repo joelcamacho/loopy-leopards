@@ -44,6 +44,7 @@ export default class ProfilePageComponent extends React.Component {
   }
 
   fetchProfileData(id) {
+    //this.sendAuthPhone();
     return fetch('/api/users/google/' + id, {credentials: 'include'})
       .then(res => res.json())
       .then(res => {
@@ -51,6 +52,18 @@ export default class ProfilePageComponent extends React.Component {
         console.log(res);
         this.props.updateProfile(res);
       })
+  }
+
+  sendAuthPhone() {
+    var phone = '+16466411017';
+
+    fetch('/api/twilio/phone', { method: 'POST', 
+      body: JSON.stringify({phone:phone}),
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },});
   }
 
   render() {

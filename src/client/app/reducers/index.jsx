@@ -6,7 +6,7 @@ import event from './event.reducer.jsx';
 import auth from './auth.reducer.jsx';
 import {responsiveStateReducer} from 'redux-responsive';
 import {responsiveDrawer} from 'material-ui-responsive-drawer';
-
+import searchUsers from './searchUsers.reducer.jsx';
 
 export default combineReducers({
 	profile,
@@ -15,5 +15,6 @@ export default combineReducers({
 	event,
   auth,
   browser: responsiveStateReducer,
-  responsiveDrawer: responsiveDrawer
+  responsiveDrawer: responsiveDrawer,
+  searchUsers,
 })

@@ -96,7 +96,6 @@ export default class FindPageComponent extends React.Component {
     };
 
     this.handleChangeTestValue = (event) => {
-      console.log("11111", event.target.value)
       this.setState({
         testValue: event.target.value,
       });
@@ -113,14 +112,14 @@ export default class FindPageComponent extends React.Component {
     this.group = fakeGroupData;
 
     this.handleSearchbar = (event, userInput) => {
-      console.log(userInput);
-      var user
+      var users = [];
       !!userInput ? this.group.list.forEach(userInfo => {
         if(userInfo.name.indexOf(userInput) > -1 || userInfo.phone.indexOf(userInput) > -1) {
-          user = userInfo
+          users.push(userInfo)
         }
-      }) : user = null;
-      console.log(user);
+      }) : users = this.group.list;
+      console.log("user or users: ", users);
+      this.props.searchUsers(users);
     }
   }
 
@@ -219,7 +218,7 @@ export default class FindPageComponent extends React.Component {
       .then(res => {
         randomNumbers = [];
         let mixedEvents = eventsbriteData.concat(eventsYelpData);
-        console.log("mixedEvents: ", mixedEvents);
+        //console.log("mixedEvents: ", mixedEvents);
         //do random
         let result = []
         for(var i = 0; i < 26; i++) {
@@ -248,36 +247,15 @@ export default class FindPageComponent extends React.Component {
   render() {
     //console.log("datas: ", this.props.events);
     //console.log("data: ", this.props.event);
-    console.log("action", this.props);
+    //console.log("action", this.props);
     const { events } = this.props;
     const { event } = this.props;
+    const { users } = this.props;
+    console.log("@@@@@@", this.props)
     //console.log("state from state: ", events);
     //console.log("state from state: ", event);
     ///////////////////////////Dialog/////////////////////////
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this.handleClose}
-      />,
-    ];
-    const radios = [];
-    for (let i = 0; i < 30; i++) {
-      radios.push(
-        <RadioButton
-          key={i}
-          value={`value${i + 1}`}
-          label={`Option ${i + 1}`}
-          style='marginTop: 16'
-        />
-      );
-    }
+
     /////////////////////////////////////////////////////////
 
     if(events.length === 0 && event.status === 'first') {
@@ -328,7 +306,6 @@ export default class FindPageComponent extends React.Component {
               //////////////////////////Dialog///////////////////////////
               <Dialog
                 title="Invite your friends"
-                actions={actions}
                 modal={false}
                 open={this.state.open}
                 onRequestClose={this.handleClose}
@@ -342,9 +319,9 @@ export default class FindPageComponent extends React.Component {
 
                 <List>
                   <Subheader> Current Members </Subheader>
-                  {this.group.list.map(obj => (<ListItem
-                    key={obj.phone}
-                    primaryText={obj.name}
+                  {users.map(obj => (<ListItem
+                    key={!!obj.phone ? obj.phone : this.group.list.phone }
+                    primaryText={!!obj.name ? obj.name : this.group.list.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
                     rightIcon={(<ContentRemove />)}
                   />))}

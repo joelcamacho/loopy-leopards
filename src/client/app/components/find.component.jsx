@@ -104,7 +104,7 @@ export default class FindPageComponent extends React.Component {
     };
 
     this.handleOpen = () => {
-      console.log("11111111: ",this.group.list.length);
+      //console.log("11111111: ",this.group.list.length);
       let rightIconArray = []
       rightIconArray.length = this.group.list.length;
       rightIconArray = this.group.list.map((ele,ind) => rightIconArray[ind] = (<ContentAdd />));
@@ -126,6 +126,10 @@ export default class FindPageComponent extends React.Component {
         }
       }) : users = this.group.list;
       console.log("user or users: ", users);
+      let rightIconArray = []
+      rightIconArray.length = users.length;
+      rightIconArray = users.map((ele,ind) => rightIconArray[ind] = (<ContentAdd />));
+      this.setState({rightIcon: rightIconArray});
       this.props.searchUsers(users);
     }
 
@@ -377,11 +381,12 @@ export default class FindPageComponent extends React.Component {
                     rightIcon={this.state.rightIcon[ind]}
                     onClick={() => this.handleClickUser(obj, ind, length)}
                   />)) :
-                    users.map(obj => (<ListItem
+                    users.map((obj, ind) => (<ListItem
                     key={!!obj.phone ? obj.phone : this.group.list.phone }
                     primaryText={!!obj.name ? obj.name : this.group.list.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={this.state.rightIcon}
+                    rightIcon={this.state.rightIcon[ind]}
+                    onClick={() => this.handleClickUser(obj, ind, length)}
                   />))}
                 </List>
               </Dialog>

@@ -83,8 +83,7 @@ export default class FindPageComponent extends React.Component {
       value12: null,
       testValue: 'Anything you want to say?',
       open: false,
-      rightIcon: (<ContentAdd />),
-      rightIconBoolen: true,
+      rightIcon: [],
     };
 
     this.handleChangeDate = (event, date) => {
@@ -104,8 +103,13 @@ export default class FindPageComponent extends React.Component {
     };
 
     this.handleOpen = () => {
-    this.setState({open: true});
-  };
+      console.log("11111111: ",this.group.list.length);
+      let rightIconArray = []
+      rightIconArray.length = this.group.list.length;
+      rightIconArray = this.group.list.map((ele,ind) => rightIconArray[ind] = (<ContentAdd />));
+      this.setState({open: true});
+      this.setState({rightIcon: rightIconArray});
+    };
 
     this.handleClose = () => {
       this.setState({open: false});
@@ -248,18 +252,24 @@ export default class FindPageComponent extends React.Component {
     this.props.setStateBackToDefault({status: 'first'});
   }
 
-  handleClickUser (user,num) {
-    console.log(user)
-    console.log("Number: ",num)
-    if(this.state.rightIconBoolen === true ) {
-      console.log(1)
-      this.setState({rightIcon: (<ContentRemove />)});
-      this.setState({rightIconBoolen: false});
-    } else {
-      console.log(2)
-      this.setState({rightIcon: (<ContentAdd />)});
-      this.setState({rightIconBoolen: true});
+  handleClickUser (user, positon, length) {
+    console.log("searchUsers: ", user)
+    console.log("Number: ", positon)
+    console.log("Length: ", length)
+    let rightIconArray = [];
+    rightIconArray.length = 5;
+    // rightIconArray = rightIconArray.map((ele, ind) => {
+    //   ind === position ? rightIconArray[ind] = (<ContentRemove />) : rightIconArray[ind] =(<ContentAdd />)
+    // })
+    for (var i = 0; i < rightIconArray.length; i++) {
+      if(positon === i) {
+        rightIconArray[i] = (<ContentRemove />);
+      } else {
+        rightIconArray[i] =(<ContentAdd />);
+      }
     }
+    console.log("rightIconArray", rightIconArray)
+    this.setState({rightIcon: rightIconArray});
   }
 
   render() {
@@ -317,7 +327,8 @@ export default class FindPageComponent extends React.Component {
       ); 
     } else {
       //console.log(333)
-      var i = 0;
+      let i = 0;
+      let length = this.group.list.length
       return (
         <div className="comfirm">
           <Paper className="container">
@@ -356,8 +367,8 @@ export default class FindPageComponent extends React.Component {
                     key={obj.phone }
                     primaryText={obj.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={this.state.rightIcon}
-                    onClick={() => this.handleClickUser(obj, ind)}
+                    rightIcon={this.state.rightIcon[ind]}
+                    onClick={() => this.handleClickUser(obj, ind, length)}
                   />)) :
                     users.map(obj => (<ListItem
                     key={!!obj.phone ? obj.phone : this.group.list.phone }

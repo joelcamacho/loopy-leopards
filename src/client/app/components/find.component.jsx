@@ -83,7 +83,27 @@ export default class FindPageComponent extends React.Component {
       value12: null,
       testValue: 'Anything you want to say?',
       open: false,
-      rightIcon: [],
+      userStatus: [{
+        name: 'Eric Hoffman',
+        rightIconDisplay: (<ContentAdd />),
+      },
+      {
+        name: 'Kimmy J',
+        rightIconDisplay: (<ContentAdd />),
+      },
+      {
+        name: 'Brendan Lim',
+        rightIconDisplay: (<ContentAdd />),
+      },
+      {
+        name: 'Grace Ng',
+        rightIconDisplay: (<ContentAdd />),
+      },
+      {
+        name: 'Raquel Parrado',
+        rightIconDisplay: (<ContentAdd />),
+      }
+      ],
       clickUserStatus: false,
     };
 
@@ -104,12 +124,14 @@ export default class FindPageComponent extends React.Component {
     };
 
     this.handleOpen = () => {
-      //console.log("11111111: ",this.group.list.length);
-      let rightIconArray = []
-      rightIconArray.length = this.group.list.length;
-      rightIconArray = this.group.list.map((ele,ind) => rightIconArray[ind] = (<ContentAdd />));
+      //create userStatus when enter dialog at first time
+      // if (this.state.userStatus.length === 0) {
+      //   let rightIconArray = [];
+      //   rightIconArray.length = this.group.list.length;
+      //   rightIconArray = this.group.list.map((ele,ind) => rightIconArray[ind] = (<ContentAdd />));
+      //   this.setState({userStatus: rightIconArray});
+      // }
       this.setState({open: true});
-      this.setState({rightIcon: rightIconArray});
     };
 
     this.handleClose = () => {
@@ -126,10 +148,10 @@ export default class FindPageComponent extends React.Component {
         }
       }) : users = this.group.list;
       console.log("user or users: ", users);
-      let rightIconArray = []
-      rightIconArray.length = users.length;
-      rightIconArray = users.map((ele,ind) => rightIconArray[ind] = (<ContentAdd />));
-      this.setState({rightIcon: rightIconArray});
+      // let rightIconArray = []
+      // rightIconArray.length = users.length;
+      // rightIconArray = users.map((ele,ind) => rightIconArray[ind] = (<ContentAdd />));
+      // this.setState({userStatus: rightIconArray});
       this.props.searchUsers(users);
     }
 
@@ -273,14 +295,36 @@ export default class FindPageComponent extends React.Component {
     //     rightIconArray[i] =(<ContentAdd />);
     //   }
     // }
-    if (this.state.rightIcon[position].type.displayName === "ContentAdd") {
-      rightIconArray = this.state.rightIcon;
-      rightIconArray[position] = (<ContentRemove />);
+    if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
+      // rightIconArray = this.state.userStatus;
+      // rightIconArray[position] = (<ContentRemove />);
+        rightIconArray = this.state.userStatus.map((ele, ind) => {
+          var rObj = {};
+          if (ind === position) {
+            rObj.name = ele.name;
+            rObj.rightIconDisplay = (<ContentRemove />);
+          } else {
+            rObj.name = ele.name;
+            rObj.rightIconDisplay = ele.rightIconDisplay;
+          }
+          return rObj;
+        })
     } else {
-      rightIconArray = this.state.rightIcon;
-      rightIconArray[position] = (<ContentAdd />);
+      // rightIconArray = this.state.userStatus;
+      // rightIconArray[position] = (<ContentAdd />);
+        rightIconArray = this.state.userStatus.map((ele, ind) => {
+          var rObj = {};
+          if (ind === position) {
+            rObj.name = ele.name;
+            rObj.rightIconDisplay = (<ContentAdd />);
+          } else {
+            rObj.name = ele.name;
+            rObj.rightIconDisplay = ele.rightIconDisplay;
+          }
+          return rObj;
+        })
     }
-    this.setState({rightIcon: rightIconArray});
+    this.setState({userStatus: rightIconArray});
   }
 
   render() {
@@ -372,22 +416,22 @@ export default class FindPageComponent extends React.Component {
                 <List>
                   <Subheader> Current Members </Subheader>
                   {
-                    
                     !!users.size ? 
                     this.group.list.map((obj, ind) => (<ListItem
                     key={obj.phone }
                     primaryText={obj.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={this.state.rightIcon[ind]}
+                    rightIcon={this.state.userStatus[ind].rightIconDisplay}
                     onClick={() => this.handleClickUser(obj, ind, length)}
                   />)) :
                     users.map((obj, ind) => (<ListItem
                     key={!!obj.phone ? obj.phone : this.group.list.phone }
                     primaryText={!!obj.name ? obj.name : this.group.list.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={this.state.rightIcon[ind]}
+                    rightIcon={this.state.userStatus[ind].rightIconDisplay}
                     onClick={() => this.handleClickUser(obj, ind, length)}
-                  />))}
+                  />))
+                  }
                 </List>
               </Dialog>
             </div>

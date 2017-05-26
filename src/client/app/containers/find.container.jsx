@@ -6,7 +6,6 @@ import searchUserAction from '../actions/searchUsers.action.jsx';
 export default connect(
 	//App is listening to state
   function mapStateToProps(state) {
-    console.log("***************", state)
     return { 
       events: state.events,
       event: state.event,

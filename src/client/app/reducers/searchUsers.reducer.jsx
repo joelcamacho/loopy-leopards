@@ -19,7 +19,6 @@ export default function profile(state = userSimpleData, action) {
     case 'SEARCH_USERS':
     return action.payload;
     default:
-      console.log("^^^^^^^^: ", state.toJS())
      	return state;
   }
 }

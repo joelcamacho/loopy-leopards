@@ -251,8 +251,7 @@ export default class FindPageComponent extends React.Component {
     const { events } = this.props;
     const { event } = this.props;
     const { users } = this.props;
-    console.log("@@@@@@", this.props)
-    //console.log("state from state: ", events);
+    console.log("state from state: ", users.size);
     //console.log("state from state: ", event);
     ///////////////////////////Dialog/////////////////////////
 
@@ -303,7 +302,6 @@ export default class FindPageComponent extends React.Component {
             <div>
             <Subheader>Invite Friends</Subheader>
               <RaisedButton label="Invite" onTouchTap={this.handleOpen} />
-              //////////////////////////Dialog///////////////////////////
               <Dialog
                 title="Invite your friends"
                 modal={false}
@@ -319,7 +317,15 @@ export default class FindPageComponent extends React.Component {
 
                 <List>
                   <Subheader> Current Members </Subheader>
-                  {users.map(obj => (<ListItem
+                  {
+                    !!users.size ? 
+                    this.group.list.map(obj => (<ListItem
+                    key={obj.phone }
+                    primaryText={obj.name }
+                    leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                    rightIcon={(<ContentRemove />)}
+                  />)) :
+                    users.map(obj => (<ListItem
                     key={!!obj.phone ? obj.phone : this.group.list.phone }
                     primaryText={!!obj.name ? obj.name : this.group.list.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
@@ -327,7 +333,6 @@ export default class FindPageComponent extends React.Component {
                   />))}
                 </List>
               </Dialog>
-              //////////////////////////////////////////////////////////////
             </div>
             <br/>
             <Divider/>

@@ -124,13 +124,6 @@ export default class FindPageComponent extends React.Component {
     };
 
     this.handleOpen = () => {
-      //create userStatus when enter dialog at first time
-      // if (this.state.userStatus.length === 0) {
-      //   let rightIconArray = [];
-      //   rightIconArray.length = this.group.list.length;
-      //   rightIconArray = this.group.list.map((ele,ind) => rightIconArray[ind] = (<ContentAdd />));
-      //   this.setState({userStatus: rightIconArray});
-      // }
       this.setState({open: true});
     };
 
@@ -148,10 +141,6 @@ export default class FindPageComponent extends React.Component {
         }
       }) : users = this.group.list;
       console.log("user or users: ", users);
-      // let rightIconArray = []
-      // rightIconArray.length = users.length;
-      // rightIconArray = users.map((ele,ind) => rightIconArray[ind] = (<ContentAdd />));
-      // this.setState({userStatus: rightIconArray});
       this.props.searchUsers(users);
     }
 
@@ -281,20 +270,7 @@ export default class FindPageComponent extends React.Component {
 
   handleClickUser (user, position, length) {
     console.log("searchUsers: ", user)
-    console.log("Number: ", position)
-    console.log("Length: ", length)
     let rightIconArray;
-    //rightIconArray.length = 5;
-    // rightIconArray = rightIconArray.map((ele, ind) => {
-    //   ind === position ? rightIconArray[ind] = (<ContentRemove />) : rightIconArray[ind] =(<ContentAdd />)
-    // })
-    // for (var i = 0; i < rightIconArray.length; i++) {
-    //   if(position === i) {
-    //     rightIconArray[i] = (<ContentRemove />);
-    //   } else {
-    //     rightIconArray[i] =(<ContentAdd />);
-    //   }
-    // }
     if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
       // rightIconArray = this.state.userStatus;
       // rightIconArray[position] = (<ContentRemove />);

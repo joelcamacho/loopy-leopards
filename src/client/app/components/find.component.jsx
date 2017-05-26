@@ -84,6 +84,7 @@ export default class FindPageComponent extends React.Component {
       testValue: 'Anything you want to say?',
       open: false,
       rightIcon: [],
+      clickUserStatus: false,
     };
 
     this.handleChangeDate = (event, date) => {
@@ -268,9 +269,13 @@ export default class FindPageComponent extends React.Component {
     //     rightIconArray[i] =(<ContentAdd />);
     //   }
     // }
-    rightIconArray = this.state.rightIcon;
-    rightIconArray[position] = (<ContentRemove />);
-    console.log("rightIconArray", rightIconArray)
+    if (this.state.rightIcon[position].type.displayName === "ContentAdd") {
+      rightIconArray = this.state.rightIcon;
+      rightIconArray[position] = (<ContentRemove />);
+    } else {
+      rightIconArray = this.state.rightIcon;
+      rightIconArray[position] = (<ContentAdd />);
+    }
     this.setState({rightIcon: rightIconArray});
   }
 

@@ -252,22 +252,24 @@ export default class FindPageComponent extends React.Component {
     this.props.setStateBackToDefault({status: 'first'});
   }
 
-  handleClickUser (user, positon, length) {
+  handleClickUser (user, position, length) {
     console.log("searchUsers: ", user)
-    console.log("Number: ", positon)
+    console.log("Number: ", position)
     console.log("Length: ", length)
-    let rightIconArray = [];
-    rightIconArray.length = 5;
+    let rightIconArray;
+    //rightIconArray.length = 5;
     // rightIconArray = rightIconArray.map((ele, ind) => {
     //   ind === position ? rightIconArray[ind] = (<ContentRemove />) : rightIconArray[ind] =(<ContentAdd />)
     // })
-    for (var i = 0; i < rightIconArray.length; i++) {
-      if(positon === i) {
-        rightIconArray[i] = (<ContentRemove />);
-      } else {
-        rightIconArray[i] =(<ContentAdd />);
-      }
-    }
+    // for (var i = 0; i < rightIconArray.length; i++) {
+    //   if(position === i) {
+    //     rightIconArray[i] = (<ContentRemove />);
+    //   } else {
+    //     rightIconArray[i] =(<ContentAdd />);
+    //   }
+    // }
+    rightIconArray = this.state.rightIcon;
+    rightIconArray[position] = (<ContentRemove />);
     console.log("rightIconArray", rightIconArray)
     this.setState({rightIcon: rightIconArray});
   }

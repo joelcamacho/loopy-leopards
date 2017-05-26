@@ -83,6 +83,8 @@ export default class FindPageComponent extends React.Component {
       value12: null,
       testValue: 'Anything you want to say?',
       open: false,
+      rightIcon: (<ContentAdd />),
+      rightIconBoolen: true,
     };
 
     this.handleChangeDate = (event, date) => {
@@ -121,6 +123,8 @@ export default class FindPageComponent extends React.Component {
       console.log("user or users: ", users);
       this.props.searchUsers(users);
     }
+
+    this.handleClickUser = this.handleClickUser.bind(this);
   }
 
   //For yelp, give NYC temply
@@ -244,6 +248,20 @@ export default class FindPageComponent extends React.Component {
     this.props.setStateBackToDefault({status: 'first'});
   }
 
+  handleClickUser (user,num) {
+    console.log(user)
+    console.log("Number: ",num)
+    if(this.state.rightIconBoolen === true ) {
+      console.log(1)
+      this.setState({rightIcon: (<ContentRemove />)});
+      this.setState({rightIconBoolen: false});
+    } else {
+      console.log(2)
+      this.setState({rightIcon: (<ContentAdd />)});
+      this.setState({rightIconBoolen: true});
+    }
+  }
+
   render() {
     //console.log("datas: ", this.props.events);
     //console.log("data: ", this.props.event);
@@ -254,7 +272,19 @@ export default class FindPageComponent extends React.Component {
     console.log("state from state: ", users.size);
     //console.log("state from state: ", event);
     ///////////////////////////Dialog/////////////////////////
-
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={true}
+        onTouchTap={this.handleClose}
+      />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        keyboardFocused={true}
+        onTouchTap={this.handleClose}
+      />,
+    ];
     /////////////////////////////////////////////////////////
 
     if(events.length === 0 && event.status === 'first') {
@@ -287,6 +317,7 @@ export default class FindPageComponent extends React.Component {
       ); 
     } else {
       //console.log(333)
+      var i = 0;
       return (
         <div className="comfirm">
           <Paper className="container">
@@ -304,6 +335,7 @@ export default class FindPageComponent extends React.Component {
               <RaisedButton label="Invite" onTouchTap={this.handleOpen} />
               <Dialog
                 title="Invite your friends"
+                actions={actions}
                 modal={false}
                 open={this.state.open}
                 onRequestClose={this.handleClose}
@@ -318,18 +350,20 @@ export default class FindPageComponent extends React.Component {
                 <List>
                   <Subheader> Current Members </Subheader>
                   {
+                    
                     !!users.size ? 
-                    this.group.list.map(obj => (<ListItem
+                    this.group.list.map((obj, ind) => (<ListItem
                     key={obj.phone }
                     primaryText={obj.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={(<ContentRemove />)}
+                    rightIcon={this.state.rightIcon}
+                    onClick={() => this.handleClickUser(obj, ind)}
                   />)) :
                     users.map(obj => (<ListItem
                     key={!!obj.phone ? obj.phone : this.group.list.phone }
                     primaryText={!!obj.name ? obj.name : this.group.list.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={(<ContentRemove />)}
+                    rightIcon={this.state.rightIcon}
                   />))}
                 </List>
               </Dialog>

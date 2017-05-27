@@ -6,8 +6,6 @@ exports.up = function(knex, Promise) {
       table.boolean('voted').defaultTo(false)
       table.string('status').defaultTo('unconfirmed')
       //can be unconfirmed or confirmed
-      table.string('role')
-      //registered member, guest, or creator
       table.integer('user_id').unsigned().notNullable();
       table.foreign('user_id').references('users.id');
       table.integer('event_id').unsigned().notNullable();

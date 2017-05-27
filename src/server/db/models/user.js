@@ -1,6 +1,4 @@
 const bookshelf = require('./db.js');
-const _ = require('underscore');
-
 const Event = require('./event.js');
 const Group = require('./group.js');
 const Tag = require('./tag.js');
@@ -15,27 +13,26 @@ const User = bookshelf.Model.extend({
       } else {
         this.set({'registered' : true});
       };
+    })
 
-      this.set({'phone_validated' : false});
-    });
-    // this.on("saving", (model, attrs, options) => {
-    //   // if(this.hasChanged('email')) {
-    //   //   return this
-    //   //   .query({where: {email: this.get('email')}})
-    //   //   .fetch(_.pick(options, 'transacting'))
-    //   //   .then(function(exists) {
-    //   //     // if (!exists) throw new Error('email already exists in system');
-    //   //   })
-    //   // }
-    //   // if(this.hasChanged('phone')) {
-    //   //   return this
-    //   //   .query({where: {email: this.get('phone')}})
-    //   //   .fetch(_.pick(options, 'transacting'))
-    //   //   .then(function(exists) {
-    //   //     if (!exists) throw new Error('phone number already exists in system');
-    //   //   })
-    //   // }
-    // })
+    //   this.set({'phone_validated' : false});
+    // });
+    this.on("updating", (model, attrs, options) => {
+      if(this.hasChanged('email')) {
+        return this
+        .query({where: {email: this.get('email')}}).fetch()
+        .then(function(exists) {
+          if (!exists) throw new Error('email already exists in system');
+        })
+      }
+      if(this.hasChanged('phone')) {
+        return this
+        .query({where: {email: this.get('phone')}}).fetch()
+        .then(function(exists) {
+          if (!exists) throw new Error('phone number already exists in system');
+        })
+      }
+    })
   },
 
   groupsBelongingTo: function() {
@@ -56,10 +53,6 @@ const User = bookshelf.Model.extend({
 
   tags: function() {
   	return this.belongsToMany('Tag');
-  },
-
-  byPhone: function(phone) {
-    return this.forge().query({where:{phone:phone}}).fetch();
   },
 
   getEvents: function() {

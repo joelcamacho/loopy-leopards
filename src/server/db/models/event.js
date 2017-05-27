@@ -10,7 +10,7 @@ const Event = bookshelf.Model.extend({
 	hasTimestamps: ['created_at', 'updated_at'],
 
 	invitees: function() {
-		return this.belongsToMany('User')
+		return this.belongsToMany('User').withPivot('voted')
 		// .withPivot(user_id)
 	},
 
@@ -24,6 +24,21 @@ const Event = bookshelf.Model.extend({
 
 	getInfo: function() {
 		return this.fetch({withRelated: ['invitees']})
+	},
+
+	addInvitees: function(invitees) {
+
+		return this.getInfo()
+		.then((event) => {
+			return event.related('invitees').attach(invitees)
+		})
+	},
+
+	vote: function(userId) {
+		return this.getInfo()
+		.then((event) => {
+			return event.related('invitees').updatePivot({voted:true},{query: {where: {user_id: userId}}})
+		})
 	}
 })
 

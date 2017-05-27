@@ -58,4 +58,36 @@ router.route('/groups/:id')
 	})
 })
 
+router.post('/groups/:id/invite',(req,res) => {
+
+	let Members = bookshelf.Collection.extend({model: User});
+	let groupId = req.params.id,
+	// responseData = {alreadyInvited:[]},
+	incomingMembers = [{first_name: 'Joel', phone: '11111111'},{first_name: 'jon', phone: '6534734'}],
+
+
+	//make incoming Member list into a collection
+	incomingMemberColl = Members.forge(incomingMembers)
+	//Save models in collection into database. This will only save models that aren't duplicates
+	incomingMemberColl.invokeThen('save')
+	.catch((err) => {
+		console.log(err)
+	})
+
+	//fetch any Members' models from db
+	Promise.all(incomingMembers.map((member) => {
+		return User.where({phone:member.phone}).fetch()
+	}))
+	.then((newMembers) => {
+		Group.where({id: groupId}).addMembers(newMembers)
+		.then((result) => {
+			res.status(200).send(result)
+		})
+		.catch((err) => {
+			res.status(400).send('Something went wrong with your invitations')
+		})
+	})
+});
+
+
 module.exports = router

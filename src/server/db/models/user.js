@@ -7,11 +7,11 @@ const User = bookshelf.Model.extend({
   tableName: 'users',
 
   initialize: function() {
-    this.on("creating", (model, attrs, options) => {
+    this.on("saving", (model, attrs, options) => {
       if(attrs.google_id === null) {
-        this.set({'registered': false})
+        this.set({'registered': false}).save()
       } else {
-        this.set({'registered' : true});
+        this.set({'registered' : true}).save()
       };
     })
 

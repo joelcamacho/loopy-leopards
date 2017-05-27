@@ -124,7 +124,7 @@ router.post('/events/:id/invite',(req,res) => {
 	let Invitees = bookshelf.Collection.extend({model: User});
 	let eventId = req.params.id,
 	responseData = {alreadyInvited:[]},
-	incomingInvitees = [{first_name: 'Joel', phone: '11111111'},{first_name: 'jon', phone: '6534734'}],
+	incomingInvitees = req.body.invitees,
 	inviteeModelsToAdd;
 
 	//make incoming invitee list into a collection
@@ -155,10 +155,9 @@ router.post('/events/:id/upvote', (req,res) => {
 	let userId = 1
 	let eventId = req.params.id
 
-
 	Event.where({id: eventId}).vote(userId, true)
 	.then((result) => {
-		res.status(200).send(result)
+		res.status(200).send('You voted for:' + result.get('name'))
 	})
 	.catch((err) => {
 		console.log(err)

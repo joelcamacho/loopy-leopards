@@ -35,9 +35,7 @@ router.route('/users')
 
 	let userData = {}
 	
-	for(var key in req.body) {
-		userData[key] = req.body[key];
-	}
+	Object.assign(userData, req.body)
 
 	User.forge(userData).save()
 	.then((user) => {

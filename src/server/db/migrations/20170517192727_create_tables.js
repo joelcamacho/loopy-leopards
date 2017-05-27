@@ -14,7 +14,7 @@ exports.up = function(knex, Promise) {
       table.string('longitude');
       table.string('phone').unique().notNullable()
       table.date('birthdate');
-      table.boolean('registered')
+      table.boolean('registered').defaultTo(false);
       table.boolean('phone_validated');
       table.string('token');
     }),

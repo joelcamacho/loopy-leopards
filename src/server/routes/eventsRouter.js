@@ -1,5 +1,5 @@
 const router = require('express').Router();
-
+const bookshelf = require('../db/models/db.js');
 const User = require('../db/models/user.js');
 const Event = require('../db/models/event.js');
 
@@ -51,7 +51,6 @@ router.route('/events')
 	// 	longitude:
 	// 	cost:
 	// 	voting_deadline:
-	// 	creator_id:
 	// }
 
 	let id = 1,
@@ -61,7 +60,7 @@ router.route('/events')
 
 	new Event(eventAttributes).save()
 	.then((event) => {
-		res.status(200).json({'Event saved: ': event});
+		res.status(200).json('Event saved: ' + event.get('name'));
 	})
 	.catch((err) => {
 		console.log(err)
@@ -115,21 +114,56 @@ router.route('/events/:id')
 		res.send(200).json({'Event deleted: ': event});
 	})
 	.catch((err) => {
-		console.log(err)
+		console.log(err);
 		res.status(400).send('Could not delete event');
-	})
-})
+	});
+});
 
 router.post('/events/:id/invite',(req,res) => {
 
+	let Invitees = bookshelf.Collection.extend({model: User});
 	let eventId = req.params.id,
-	inviteeModelArray = []
+	responseData = {alreadyInvited:[]},
+	incomingInvitees = [{first_name: 'Joel', phone: '11111111'},{first_name: 'jon', phone: '6534734'}],
+	inviteeModelsToAdd;
 
-	//convert each user into a User model instance
-	
+	//make incoming invitee list into a collection
+	let incomingInviteeColl = Invitees.forge(incomingInvitees)
+	//Save models in collection into database. This will only save models that aren't duplicates
+	incomingInviteeColl.invokeThen('save')
+	.catch((err) => {
+		console.log(err)
+	})
 
+	//fetch any invitees' models from db
+	Promise.all(incomingInvitees.map((invitee) => {
+		return User.where({phone:invitee.phone}).fetch()
+	}))
+	.then((newInvitees) => {
+		Event.where({id: eventId}).addInvitees(newInvitees)
+		.then((result) => {
+			res.status(200).send(result)
+		})
+		.catch((err) => {
+			res.status(400).send('Something went wrong with your invitations')
+		})
+	})
+});
+
+router.post('/events/:id/vote', (req,res) => {
+
+	let userId = 1
+	let eventId = req.params.id
+
+
+	Event.where({id: eventId}).vote(userId)
+	.then((result) => {
+		res.status(200).send(result)
+	})
+	.catch((err) => {
+		console.log(err)
+		res.status(400).send('Something went wrong with your vote')
+	})
 })
-
-router.post('/events/:id/vote')
 
 module.exports = router;

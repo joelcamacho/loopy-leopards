@@ -105,6 +105,7 @@ export default class FindPageComponent extends React.Component {
       }
       ],
       clickUserStatus: false,
+      invitedUsers: [],
     };
 
     this.handleChangeDate = (event, date) => {
@@ -270,10 +271,10 @@ export default class FindPageComponent extends React.Component {
 
   handleClickUser (user, position, length) {
     console.log("searchUsers: ", user)
+
     let rightIconArray;
     if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
-      // rightIconArray = this.state.userStatus;
-      // rightIconArray[position] = (<ContentRemove />);
+        this.state.invitedUsers.push(user.name);
         rightIconArray = this.state.userStatus.map((ele, ind) => {
           var rObj = {};
           if (ind === position) {
@@ -286,9 +287,11 @@ export default class FindPageComponent extends React.Component {
           return rObj;
         })
     } else {
-      // rightIconArray = this.state.userStatus;
-      // rightIconArray[position] = (<ContentAdd />);
+        let i = this.state.invitedUsers.indexOf(user.name);
+        console.log(i)
+        this.state.invitedUsers.splice(i, 1);
         rightIconArray = this.state.userStatus.map((ele, ind) => {
+
           var rObj = {};
           if (ind === position) {
             rObj.name = ele.name;
@@ -301,6 +304,7 @@ export default class FindPageComponent extends React.Component {
         })
     }
     this.setState({userStatus: rightIconArray});
+    console.log("!!!!!!!!!!!", this.state.invitedUsers)
   }
 
   render() {

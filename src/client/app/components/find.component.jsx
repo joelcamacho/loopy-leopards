@@ -22,8 +22,8 @@ const fakeGroupData = {
   name: 'Loopy Leopards',
   list: [
     {
-      name: 'Eric Hoffman',
-      photo: null,
+      name: 'Mao Ze Dong',
+      photo: 'http://www.dssk.net/uploads/allimg/201626/0800/00/49/00491536026.jpg',
       phone: '123-123-1234'
     },
     {
@@ -32,18 +32,18 @@ const fakeGroupData = {
       phone: '123-123-KimJ'
     },
     {
-      name: 'Brendan Lim',
-      photo: null,
+      name: 'Pu King',
+      photo: 'http://s7.sinaimg.cn/mw690/002Yaqefzy6IpUEtioC16&690',
       phone: '123-123-1243'
     },
     {
-      name: 'Grace Ng',
-      photo: null,
+      name: 'An Bei',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Shinz%C5%8D_Abe_April_2015.jpg',
       phone: '578-123-1234'
     },
     {
-      name: 'Raquel Parrado',
-      photo: null,
+      name: 'Donald John Trump',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Donald_Trump_Arizona_2016.jpg/434px-Donald_Trump_Arizona_2016.jpg',
       phone: '123-234-1234'
     }
   ],
@@ -86,7 +86,7 @@ export default class FindPageComponent extends React.Component {
       testValue: 'Anything you want to say?',
       open: false,
       userStatus: [{
-        name: 'Eric Hoffman',
+        name: 'Mao Ze Dong',
         rightIconDisplay: (<ContentAdd />),
       },
       {
@@ -94,15 +94,15 @@ export default class FindPageComponent extends React.Component {
         rightIconDisplay: (<ContentAdd />),
       },
       {
-        name: 'Brendan Lim',
+        name: 'Pu King',
         rightIconDisplay: (<ContentAdd />),
       },
       {
-        name: 'Grace Ng',
+        name: 'An Bei',
         rightIconDisplay: (<ContentAdd />),
       },
       {
-        name: 'Raquel Parrado',
+        name: 'Donald John Trump',
         rightIconDisplay: (<ContentAdd />),
       }
       ],
@@ -325,17 +325,22 @@ export default class FindPageComponent extends React.Component {
       return rObj;
     })
     if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
-        this.state.invitedUsers.push(user.name);
+        this.state.invitedUsers.push({name: user.name, photo: user.photo});
     } else {
-        let i = this.state.invitedUsers.indexOf(user.name);
-        this.state.invitedUsers.splice(i, 1);
+        // let i = this.state.invitedUsers.indexOf(user.name);
+        // this.state.invitedUsers.splice(i, 1);
+        const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(user.name);
+        this.state.invitedUsers.splice(chipToDelete, 1);
     }
+    //console.log("!!!!!!!!!!: ", this.state.invitedUsers)
     this.setState({userStatus: rightIconArray});
   }
 
 handleRequestDelete (name) {
-  let i = this.state.invitedUsers.indexOf(name);
-  this.state.invitedUsers.splice(i, 1);
+  // let i = this.state.invitedUsers.indexOf(name);
+  // this.state.invitedUsers.splice(i, 1);
+  const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
+  this.state.invitedUsers.splice(chipToDelete, 1);
   console.log("invitedUser state: ", this.state.invitedUsers)
   let rightIconArray = this.state.userStatus.map((ele, ind) => {
     var rObj = {};
@@ -348,11 +353,12 @@ handleRequestDelete (name) {
     }
     return rObj;
   })
+  //console.log("!!!!!!!!!!: ", this.state.invitedUsers)
   this.setState({userStatus: rightIconArray});
 }
 
 getIndex (name) {
-  console.log("!!!!!!!!",name)
+  //console.log("!!!!!!!!",name)
   console.log(this.state);
   let RIC; 
   this.state.userStatus.forEach((ele,ind) => {
@@ -443,14 +449,14 @@ getIndex (name) {
             <Subheader>Invite Friends</Subheader>
             <div style={styles.wrapper}>
             {
-                this.state.invitedUsers.map(userName => (
+                this.state.invitedUsers.map(user => (
                   <Chip
-                    key={userName} 
+                    key={user.name} 
                     style={styles.chip}
-                    onRequestDelete={() => this.handleRequestDelete(userName)}
+                    onRequestDelete={() => this.handleRequestDelete(user.name)}
                   >
-                    <Avatar color="#444" icon={<SvgIconFace />} />
-                    {userName}
+                    <Avatar src={user.photo} />
+                    {user.name}
                   </Chip>
                 ))
               }

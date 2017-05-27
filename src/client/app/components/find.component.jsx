@@ -142,10 +142,9 @@ export default class FindPageComponent extends React.Component {
       this.setState({open: false});
     };
 
-    // this.handleSubmit = () => {
-    //   this.state.invitedUsers = [];
-    //   this.setState({open: false});
-    // };
+    this.handleSubmit = () => {
+      this.setState({open: false});
+    };
 
     this.group = fakeGroupData;
 
@@ -394,7 +393,7 @@ getIndex (name) {
         label="Submit"
         primary={true}
         keyboardFocused={true}
-        onTouchTap={this.handleClose}
+        onTouchTap={this.handleSubmit}
       />,
     ];
     /////////////////////////////////////////////////////////

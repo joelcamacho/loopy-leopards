@@ -53,7 +53,7 @@ export default class ProfilePageComponent extends React.Component {
       .then(res => res.json())
       .then(res => {
         // might need to check res.result and update photo
-        console.log(res);
+        console.log('got back profile', res);
         this.props.updateProfile(res);
       })
   }

@@ -1,5 +1,14 @@
 $container-width: 100%;
+$fontSize: (100px - 50px);
+$primaryColor: lightblue;
 .comfirm {
+  background-color: $primaryColor;
+  font-size: 15px;
+  min-height: 98vh;
+  width: 100%;
+  min-width: 300px; 
+  padding-bottom: 30pt;
+  padding-top: 1pt;
 	img {
 		width: 400px;
 		height: 300px;		
@@ -12,5 +21,33 @@ $container-width: 100%;
   .drawFrame {
   	width: 130pt;
   	height: 30pt;
+  }
+  .p {
+    padding: 0 0 0 180pt;
+  }
+  .container {
+    margin: 5% !important;
+
+    h3 {
+      font-weight: 300;
+      padding: 20pt 0 0 16px !important
+    }
+
+    .add {
+      width: 38%;
+      margin: 0 5% 5% 5%;
+      padding-left: 16px;
+    }
+
+    .addBtn {
+      margin: 0 5% 5% 5%  !important;
+    }
+
+    .phone {
+      height: 100% !important;
+      min-width: 100pt !important;
+      top: 5pt !important;
+      right: -10pt !important;
+    }
   }
 }

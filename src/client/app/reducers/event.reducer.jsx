@@ -26,18 +26,6 @@ const eventInit = fromJS({
 export default function event(state = {status: 'first'}, action) {
   switch (action.type) {
     case "CREATE_EVENT":
-      // let output = {};
-      // output.img = action.payload.img;
-      // output.title = action.payload.title;
-      // output.phone = action.payload.phone;
-      // output.address = action.payload.address;
-      // output.city = action.payload.city;
-      // output.state = action.payload.state;
-      // output.latitude = action.payload.latitude;
-      // output.longitude = action.payload.longitude;
-      // output.description = action.payload.description;
-      // output.date_time = action.payload.date_time;
-      // console.log(output)
       return Object.assign({}, state,
         {status: ''}, 
         {img: action.payload.img},

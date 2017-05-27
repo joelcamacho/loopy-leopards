@@ -1,14 +1,142 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
-import { HashRouter, Router, Link } from 'react-router-dom'
+import { HashRouter, Router, Link } from 'react-router-dom';
+import Paper from 'material-ui/Paper';
+import Subheader from 'material-ui/Subheader';
+import {List, ListItem} from 'material-ui/List';
+import Divider from 'material-ui/Divider';
+import TimePicker from 'material-ui/TimePicker';
+import DatePicker from 'material-ui/DatePicker';
+import TextField from 'material-ui/TextField';
+import Checkbox from 'material-ui/Checkbox';
+import RaisedButton from 'material-ui/RaisedButton';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
+import Dialog from 'material-ui/Dialog';
+import Avatar from 'material-ui/Avatar';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentRemove from 'material-ui/svg-icons/content/remove';
+import Chip from 'material-ui/Chip';
+
+const fakeGroupData = {
+  name: 'Loopy Leopards',
+  list: [
+    {
+      name: 'Mao Ze Dong',
+      photo: 'http://www.dssk.net/uploads/allimg/201626/0800/00/49/00491536026.jpg',
+      phone: '123-123-1234'
+    },
+    {
+      name: 'Kimmy J',
+      photo: 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg',
+      phone: '123-123-KimJ'
+    },
+    {
+      name: 'Pu King',
+      photo: 'http://s7.sinaimg.cn/mw690/002Yaqefzy6IpUEtioC16&690',
+      phone: '123-123-1243'
+    },
+    {
+      name: 'An Bei',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Shinz%C5%8D_Abe_April_2015.jpg',
+      phone: '578-123-1234'
+    },
+    {
+      name: 'Donald John Trump',
+      photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Donald_Trump_Arizona_2016.jpg/434px-Donald_Trump_Arizona_2016.jpg',
+      phone: '123-234-1234'
+    }
+  ],
+}
+
 
 export default class FindPageComponent extends React.Component {
   constructor(props) {
     super(props);
     this.getEvent = this.getEvent.bind(this);
     this.backToEvents = this.backToEvents.bind(this);
-  }
 
+    this.state = {
+      controlledDate: null,
+      value12: null,
+      testValue: 'Anything you want to say?',
+      open: false,
+      userStatus: [{
+        name: 'Mao Ze Dong',
+        rightIconDisplay: (<ContentAdd />),
+      },
+      {
+        name: 'Kimmy J',
+        rightIconDisplay: (<ContentAdd />),
+      },
+      {
+        name: 'Pu King',
+        rightIconDisplay: (<ContentAdd />),
+      },
+      {
+        name: 'An Bei',
+        rightIconDisplay: (<ContentAdd />),
+      },
+      {
+        name: 'Donald John Trump',
+        rightIconDisplay: (<ContentAdd />),
+      }
+      ],
+      clickUserStatus: false,
+      invitedUsers: [],
+    };
+
+    this.handleChangeDate = (event, date) => {
+      this.setState({
+        controlledDate: date,
+      });
+    };
+
+    this.handleChangeTimePicker12 = (event, date) => {
+      this.setState({value12: date});
+    };
+
+    this.handleChangeTestValue = (event) => {
+      this.setState({
+        testValue: event.target.value,
+      });
+    };
+
+    this.handleOpen = () => {
+      this.setState({open: true});
+    };
+
+    this.handleClose = () => {
+      this.state.invitedUsers = [];
+      var rightIconArray = this.state.userStatus.map((ele, ind) => {
+        var rObj = {};
+        rObj.name = ele.name;
+        rObj.rightIconDisplay = (<ContentAdd />);
+        return rObj;
+      })
+      this.setState({userStatus: rightIconArray});
+      this.setState({open: false});
+    };
+
+    this.handleSubmit = () => {
+      this.setState({open: false});
+    };
+
+    this.group = fakeGroupData;
+
+    this.handleSearchbar = (event, userInput) => {
+      var users = [];
+      !!userInput ? this.group.list.forEach(userInfo => {
+        if(userInfo.name.indexOf(userInput) > -1 || userInfo.phone.indexOf(userInput) > -1) {
+          users.push(userInfo)
+        }
+      }) : users = this.group.list;
+      console.log("user or users: ", users);
+      this.props.searchUsers(users);
+    }
+
+    this.handleClickUser = this.handleClickUser.bind(this);
+    this.getIndex = this.getIndex.bind(this);
+  }
   //For yelp, give NYC temply
   componentDidMount() {
 
@@ -16,7 +144,6 @@ export default class FindPageComponent extends React.Component {
     var eventsArray = [];
     var eventsbriteData;
     var eventsYelpData;
-
     //pick up 10 events from api
     function pickupEvents(array) {
       let length = array.length;
@@ -30,7 +157,6 @@ export default class FindPageComponent extends React.Component {
           }
         }
     }
-
     //filder the events
     function getUnique(arr) {
       var unique = {};
@@ -104,7 +230,6 @@ export default class FindPageComponent extends React.Component {
       .then(res => {
         randomNumbers = [];
         let mixedEvents = eventsbriteData.concat(eventsYelpData);
-        console.log("mixedEvents: ", mixedEvents);
         //do random
         let result = []
         for(var i = 0; i < 26; i++) {
@@ -121,7 +246,6 @@ export default class FindPageComponent extends React.Component {
   }
 
   getEvent (event) {
-    //console.log("eventsGohere: ", event);
     this.props.createEvent(event);
   }
 
@@ -130,20 +254,93 @@ export default class FindPageComponent extends React.Component {
     this.props.setStateBackToDefault({status: 'first'});
   }
 
+  handleClickUser (user) {
+    console.log("searchUsers: ", user)
+    let rightIconArray;
+    let position
+    rightIconArray = this.state.userStatus.map((ele, ind) => {
+
+      var rObj = {};
+      if(ele.name === user.name && ele.rightIconDisplay.type.displayName === "ContentAdd") {
+        rObj.name = user.name;
+        rObj.rightIconDisplay = (<ContentRemove />);
+        position = ind;
+      } else if (ele.name === user.name && ele.rightIconDisplay.type.displayName === "ContentRemove") {
+        rObj.name = user.name;
+        rObj.rightIconDisplay = (<ContentAdd />);
+        position = ind;
+      } else {
+        rObj.name = ele.name;
+        rObj.rightIconDisplay = ele.rightIconDisplay;
+      }
+      return rObj;
+    })
+    if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
+        this.state.invitedUsers.push({name: user.name, photo: user.photo});
+    } else {
+        const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(user.name);
+        this.state.invitedUsers.splice(chipToDelete, 1);
+    }
+    //console.log("!!!!!!!!!!: ", this.state.invitedUsers)
+    this.setState({userStatus: rightIconArray});
+  }
+
+handleRequestDelete (name) {
+  const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
+  this.state.invitedUsers.splice(chipToDelete, 1);
+  console.log("invitedUser state: ", this.state.invitedUsers)
+  let rightIconArray = this.state.userStatus.map((ele, ind) => {
+    var rObj = {};
+    if (ele.name === name) {
+      rObj.name = name;
+      rObj.rightIconDisplay = (<ContentAdd />);
+    } else {
+      rObj.name = ele.name;
+      rObj.rightIconDisplay = ele.rightIconDisplay;
+    }
+    return rObj;
+  })
+  this.setState({userStatus: rightIconArray});
+}
+
+getIndex (name) {
+  console.log(this.state);
+  let RIC; 
+  this.state.userStatus.forEach((ele,ind) => {
+    if(ele.name === name) {
+      RIC = ele.rightIconDisplay
+    }
+  })
+  return RIC;
+}
+
   render() {
-    //console.log("datas: ", this.props.events);
-    //console.log("data: ", this.props.event);
     const { events } = this.props;
     const { event } = this.props;
-    //console.log("state from state: ", events);
-    //console.log("state from state: ", event);
+    const { users } = this.props;
+    console.log("state from state: ", users.size);
+    ///////////////////////////Dialog/////////////////////////
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={true}
+        onTouchTap={this.handleClose}
+      />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        keyboardFocused={true}
+        onTouchTap={this.handleSubmit}
+      />,
+    ];
+    /////////////////////////////////////////////////////////
+
     if(events.length === 0 && event.status === 'first') {
       //console.log(111)
       return (
         <p></p>
       );
     } else if (events.length > 0 && event.status === 'first') {
-      //console.log("Else events: ",events);
       //console.log(222);
       return (
         <div>
@@ -167,62 +364,123 @@ export default class FindPageComponent extends React.Component {
       ); 
     } else {
       //console.log(333)
-      //console.log("event: ", event)
+      const styles = {
+        chip: {
+          margin: 5,
+        },
+        wrapper: {
+          display: 'flex',
+          flexWrap: 'wrap',
+        },
+      };
       return (
         <div className="comfirm">
+          <Paper className="container">
             <img src={event.img} alt="eventImg"/>
-            {event.title !== '' ? (<div><h3>Event:</h3><p>{event.title}</p></div>) : null}
-            {event.description !== '' ? (<div><h3>Description:</h3><p>{event.description}</p></div>) : null}
-            {event.address !== '' ? (<div><h3>Address:</h3><p>{event.address}</p></div>) : null}
-            {event.city !== '' ? (<div><h3>City:</h3><p>{event.city}</p></div>) : null}
-            {event.state !== '' ? (<div><h3>State:</h3><p>{event.state}</p></div>) : null}
-            {event.phone !== '' ? (<div><h3>Phone:</h3><p>{event.phone}</p></div>) : null}
-            {event.date_time !== undefined ? (<div><h3>Event start:</h3><p>{event.date_time}</p></div>) : null}
-            <h3>Invite Group</h3>
-              <p>
-                <label><input name="Group" type="checkbox" value="" />Group 01 </label> 
-                <label><input name="Group" type="checkbox" value="" />Group 02 </label> 
-                <label><input name="Group" type="checkbox" value="" />Group 03 </label>  
-              </p>
-            <h3>invete Friend</h3>
-              <p>
-                <input className="drawFrame" name="chooseFriend" type="text" placeholder="Please enter a phone number"/><FlatButton className="drawerItem" label="Invent" />
-              </p>
-            <h3>Collection Time</h3>
-              <p>
-                <select>
-                  <option value="8">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                  <option value="11">11</option>
-                  <option value="12">12</option>
-                </select>
-                <select>
-                  <option value="00">00</option>
-                  <option value="15">15</option>
-                  <option value="30">30</option>
-                  <option value="45">45</option>
-                </select>
-                <select>
-                  <option value="00">am</option>
-                  <option value="15">pm</option>
-                </select>
-                <input type="date" data-date-inline-picker="true" />
-              </p>
-        <div>
-          <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
-          <Link to="/home">
-          <FlatButton className="drawerItem" label="Confirm" onClick={() => this.backToEvents([])}/>
-          </Link>
-        </div>
-        <br/>
-        <br/> 
-        <br/> 
+            {event.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.title}</p></div><Divider/></List>) : null}
+            {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description}</p></div><Divider/></List>) : null}
+            {event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.address}</p></div><Divider/></List>) : null}
+            {event.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.city}</p></div><Divider/></List>) : null}
+            {event.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.state}</p></div><Divider/></List>) : null}
+            {event.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.phone}</p></div><Divider/></List>) : null}
+            {event.date_time !== undefined ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.date_time}</p></div><Divider/></List>) : null}
+            <List>
+            <div>
+            <Subheader>Invite Friends</Subheader>
+            <div style={styles.wrapper}>
+            {
+                this.state.invitedUsers.map(user => (
+                  <Chip
+                    key={user.name} 
+                    style={styles.chip}
+                    onRequestDelete={() => this.handleRequestDelete(user.name)}
+                  >
+                    <Avatar src={user.photo} />
+                    {user.name}
+                  </Chip>
+                ))
+              }
+              </div>
+              <RaisedButton label="Invite" onTouchTap={this.handleOpen} />
+              
+              <Dialog
+                title="Invite your friends"
+                actions={actions}
+                modal={false}
+                open={this.state.open}
+                onRequestClose={this.handleClose}
+                autoScrollBodyContent={true}
+              >
+                <TextField
+                  hintText="Hint Text"
+                  floatingLabelText="Search"
+                  onChange={this.handleSearchbar}
+                />
+
+                <List>
+                  <Subheader> Current Members </Subheader>
+                  {
+                    !!users.size ? 
+                    this.group.list.map((obj, ind) => (<ListItem
+                    key={obj.phone }
+                    primaryText={obj.name }
+                    leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                    rightIcon={this.state.userStatus[ind].rightIconDisplay}
+                    onClick={() => this.handleClickUser(obj)}
+                  />)) :
+                    users.map((obj, ind) => (<ListItem
+                    key={!!obj.phone ? obj.phone : this.group.list.phone }
+                    primaryText={!!obj.name ? obj.name : this.group.list.name }
+                    leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                    rightIcon={this.getIndex(obj.name)}
+                    onClick={() => this.handleClickUser(obj)}
+                  />))
+                  }
+                </List>
+              </Dialog>
+            </div>
+            <br/>
+            <Divider/>
+            </List>
+            <List>
+            <div>
+            <Subheader>Comment</Subheader>
+              <TextField
+                id="text-field-controlled"
+                value={this.state.testValue}
+                onChange={this.handleChangeTestValue}
+                multiLine={true}
+              />
+            </div>
+            </List>
+            <List>
+            <div>
+            <Subheader>Collection Time</Subheader>
+              <TimePicker
+                format="ampm"
+                hintText="12hr Format"
+                value={this.state.value12}
+                onChange={this.handleChangeTimePicker12}
+              />
+              <DatePicker
+                hintText="Controlled Date Input"
+                value={this.state.controlledDate}
+                onChange={this.handleChangeDate}
+              />
+            </div>
+            </List>
+            <br/>
+            <div>
+              <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
+              <Link to="/home">
+              <FlatButton className="drawerItem" label="Confirm" onClick={() => this.backToEvents([])}/>
+              </Link>
+            </div>
+            <br/>
+          </Paper>
         </div>
 
       );
     }
   }
 }
-

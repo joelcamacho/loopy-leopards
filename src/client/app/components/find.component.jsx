@@ -81,7 +81,6 @@ export default class FindPageComponent extends React.Component {
           users.push(userInfo)
         }
       }) : users = this.state.userGroupData;
-      //console.log("user or users: ", users);
       this.props.searchUsers(users);
     }
 
@@ -202,7 +201,6 @@ export default class FindPageComponent extends React.Component {
           console.log("Can not received users data from database!!!");
         })
         .then(res => {
-          //console.log("user response from databases: ", res);
           let userStatusArray = res.map(user => {
             var rObj = {};
             rObj.name = user.first_name + ' ' + user.last_name;
@@ -223,8 +221,6 @@ export default class FindPageComponent extends React.Component {
   }
 
   getEvent (event) {
-    //console.log('userStatus!!!!!!!!: ',this.state.userStatus);
-    //console.log('group!!!!!!!: ', this.state.userGroupData);
     this.props.createEvent(event);
   }
 

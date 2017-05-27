@@ -131,8 +131,21 @@ export default class FindPageComponent extends React.Component {
     };
 
     this.handleClose = () => {
+      this.state.invitedUsers = [];
+      var rightIconArray = this.state.userStatus.map((ele, ind) => {
+        var rObj = {};
+        rObj.name = ele.name;
+        rObj.rightIconDisplay = (<ContentAdd />);
+        return rObj;
+      })
+      this.setState({userStatus: rightIconArray});
       this.setState({open: false});
     };
+
+    // this.handleSubmit = () => {
+    //   this.state.invitedUsers = [];
+    //   this.setState({open: false});
+    // };
 
     this.group = fakeGroupData;
 
@@ -149,8 +162,6 @@ export default class FindPageComponent extends React.Component {
 
     this.handleClickUser = this.handleClickUser.bind(this);
     this.getIndex = this.getIndex.bind(this);
-    // this.handleRequestDelete = this.handleRequestDelete.bind(this);
-    // this.handleTouchTap = this.handleTouchTap.bind(this);
   }
 
   //For yelp, give NYC temply
@@ -327,8 +338,6 @@ export default class FindPageComponent extends React.Component {
     if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
         this.state.invitedUsers.push({name: user.name, photo: user.photo});
     } else {
-        // let i = this.state.invitedUsers.indexOf(user.name);
-        // this.state.invitedUsers.splice(i, 1);
         const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(user.name);
         this.state.invitedUsers.splice(chipToDelete, 1);
     }
@@ -337,8 +346,6 @@ export default class FindPageComponent extends React.Component {
   }
 
 handleRequestDelete (name) {
-  // let i = this.state.invitedUsers.indexOf(name);
-  // this.state.invitedUsers.splice(i, 1);
   const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
   this.state.invitedUsers.splice(chipToDelete, 1);
   console.log("invitedUser state: ", this.state.invitedUsers)
@@ -353,12 +360,10 @@ handleRequestDelete (name) {
     }
     return rObj;
   })
-  //console.log("!!!!!!!!!!: ", this.state.invitedUsers)
   this.setState({userStatus: rightIconArray});
 }
 
 getIndex (name) {
-  //console.log("!!!!!!!!",name)
   console.log(this.state);
   let RIC; 
   this.state.userStatus.forEach((ele,ind) => {
@@ -400,7 +405,6 @@ getIndex (name) {
         <p></p>
       );
     } else if (events.length > 0 && event.status === 'first') {
-      //console.log("Else events: ",events);
       //console.log(222);
       return (
         <div>

@@ -6,6 +6,10 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 
+// import helpers
+import firebaseHelpers from '../helpers/firebase.helper.jsx';
+
+
 export default class ProfilePageComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -44,6 +48,7 @@ export default class ProfilePageComponent extends React.Component {
   }
 
   fetchProfileData(id) {
+    //this.sendAuthPhone();
     return fetch('/api/users/google/' + id, {credentials: 'include'})
       .then(res => res.json())
       .then(res => {
@@ -51,6 +56,18 @@ export default class ProfilePageComponent extends React.Component {
         console.log(res);
         this.props.updateProfile(res);
       })
+  }
+
+  sendAuthPhone() {
+    var phone = '+16466411017';
+
+    return fetch('/api/twilio/phone', { method: 'POST', 
+      body: JSON.stringify({phone:phone}),
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },});
   }
 
   render() {
@@ -97,6 +114,21 @@ export default class ProfilePageComponent extends React.Component {
         <p> {this.props.profile.phone ? this.props.profile.phone : 'No Phone Number'} </p>
         <p> {this.props.profile.address ? this.props.profile.address + ' ' + this.props.profile.city + ' ' + this.props.profile.state : 'No Address'}</p>
         <p> {this.props.profile.birthdate ? this.props.profile.birthdate : 'No Birthday'} </p>
+        <FlatButton
+          label="Get Notifications"
+          primary={true}
+          onTouchTap={firebaseHelpers.requestPushNotificationPermissions}
+        />
+        <FlatButton
+          label="Stop Notifications"
+          primary={true}
+          onTouchTap={firebaseHelpers.sendUnregisterToServer}
+        />
+        <FlatButton
+          label="Send Test Notifications (check console)"
+          primary={true}
+          onTouchTap={firebaseHelpers.sendTestPushNotification}
+        />
       </div>
     ) : (<div> 
       <p> Please log in </p>

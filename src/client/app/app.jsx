@@ -23,6 +23,9 @@ import GroupPageContainer from './containers/group.container.jsx';
 import FindPageContainer from './containers/find.container.jsx';
 import EventsPageContainer from './containers/events.container.jsx';
 
+// import helpers
+import firebaseHelpers from './helpers/firebase.helper.jsx';
+
 // import styles
 import style from './styles/main.scss';
 
@@ -32,6 +35,7 @@ const store = createStore(reducer, responsiveStoreEnhancer);
 class App extends React.Component {
   constructor(props) {
     super(props);
+    // firebaseHelpers.requestPushNotificationPermissions();
   }
 
   render() {
@@ -58,8 +62,5 @@ class App extends React.Component {
     )
   }
 }
-
-
-
 
 render( <App /> , document.getElementById('app'));

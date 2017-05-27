@@ -16,7 +16,6 @@ import Avatar from 'material-ui/Avatar';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Chip from 'material-ui/Chip';
-import SvgIconFace from 'material-ui/svg-icons/action/face';
 
 const fakeGroupData = {
   name: 'Loopy Leopards',
@@ -47,30 +46,6 @@ const fakeGroupData = {
       phone: '123-234-1234'
     }
   ],
-  guests: [
-    {
-      name: 'Kimmy J J',
-      photo: null,
-      phone: '412-123-1234'
-    },
-    {
-      name: 'Ra',
-      photo: null,
-      phone: '123-123-4124'
-    }
-  ],
-  requests: [
-    {
-      name: 'Kimmy J Jd',
-      photo: null,
-      phone: '412-123-1234'
-    },
-    {
-      name: 'Rae',
-      photo: null,
-      phone: '123-123-4124'
-    }
-  ]
 }
 
 
@@ -162,7 +137,6 @@ export default class FindPageComponent extends React.Component {
     this.handleClickUser = this.handleClickUser.bind(this);
     this.getIndex = this.getIndex.bind(this);
   }
-
   //For yelp, give NYC temply
   componentDidMount() {
 
@@ -170,7 +144,6 @@ export default class FindPageComponent extends React.Component {
     var eventsArray = [];
     var eventsbriteData;
     var eventsYelpData;
-
     //pick up 10 events from api
     function pickupEvents(array) {
       let length = array.length;
@@ -184,7 +157,6 @@ export default class FindPageComponent extends React.Component {
           }
         }
     }
-
     //filder the events
     function getUnique(arr) {
       var unique = {};
@@ -258,7 +230,6 @@ export default class FindPageComponent extends React.Component {
       .then(res => {
         randomNumbers = [];
         let mixedEvents = eventsbriteData.concat(eventsYelpData);
-        //console.log("mixedEvents: ", mixedEvents);
         //do random
         let result = []
         for(var i = 0; i < 26; i++) {
@@ -275,7 +246,6 @@ export default class FindPageComponent extends React.Component {
   }
 
   getEvent (event) {
-    //console.log("eventsGohere: ", event);
     this.props.createEvent(event);
   }
 
@@ -287,35 +257,6 @@ export default class FindPageComponent extends React.Component {
   handleClickUser (user) {
     console.log("searchUsers: ", user)
     let rightIconArray;
-    // if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
-    //     this.state.invitedUsers.push(user.name);
-    //     rightIconArray = this.state.userStatus.map((ele, ind) => {
-    //       var rObj = {};
-    //       if (ind === position) {
-    //         rObj.name = ele.name;
-    //         rObj.rightIconDisplay = (<ContentRemove />);
-    //       } else {
-    //         rObj.name = ele.name;
-    //         rObj.rightIconDisplay = ele.rightIconDisplay;
-    //       }
-    //       return rObj;
-    //     })
-    // } else {
-    //     let i = this.state.invitedUsers.indexOf(user.name);
-    //     this.state.invitedUsers.splice(i, 1);
-    //     rightIconArray = this.state.userStatus.map((ele, ind) => {
-
-    //       var rObj = {};
-    //       if (ind === position) {
-    //         rObj.name = ele.name;
-    //         rObj.rightIconDisplay = (<ContentAdd />);
-    //       } else {
-    //         rObj.name = ele.name;
-    //         rObj.rightIconDisplay = ele.rightIconDisplay;
-    //       }
-    //       return rObj;
-    //     })
-    // }
     let position
     rightIconArray = this.state.userStatus.map((ele, ind) => {
 
@@ -374,14 +315,10 @@ getIndex (name) {
 }
 
   render() {
-    //console.log("datas: ", this.props.events);
-    //console.log("data: ", this.props.event);
-    //console.log("action", this.props);
     const { events } = this.props;
     const { event } = this.props;
     const { users } = this.props;
     console.log("state from state: ", users.size);
-    //console.log("state from state: ", event);
     ///////////////////////////Dialog/////////////////////////
     const actions = [
       <FlatButton

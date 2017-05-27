@@ -19,23 +19,23 @@ let action = {
   addBulkEvents: function(events) {
     return {
         type: 'ADD_BULK_TO_EVENTS',
-        payload: events
+        payload: events,
     }
   },
 
   createEvent: function(event) {
     return {
       type: "CREATE_EVENT",
-      payload: event
+      payload: event,
     }
   },
 
   setStateBackToDefault: function(event) {
     return {
       type: "SET_STATE_BACK_TO_DEFAULT",
-      payload: event
+      payload: event,
     }
-  }
+  },
 };
 
 export default action;

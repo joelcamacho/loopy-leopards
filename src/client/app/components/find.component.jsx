@@ -309,15 +309,23 @@ export default class FindPageComponent extends React.Component {
     this.setState({userStatus: rightIconArray});
   }
 
-// handleRequestDelete (key) {
-//   console.log(key)
-//   let i = this.state.invitedUsers.indexOf(key);
-//   console.log(i)
-//   this.state.invitedUsers.splice(i, 1);
-//   console.log(this.state.invitedUsers)
-//   alert('You clicked the delete button.');
-
-// }
+handleRequestDelete (name) {
+  let i = this.state.invitedUsers.indexOf(name);
+  this.state.invitedUsers.splice(i, 1);
+  console.log("invitedUser state: ", this.state.invitedUsers)
+  let rightIconArray = this.state.userStatus.map((ele, ind) => {
+    var rObj = {};
+    if (ele.name === name) {
+      rObj.name = name;
+      rObj.rightIconDisplay = (<ContentAdd />);
+    } else {
+      rObj.name = ele.name;
+      rObj.rightIconDisplay = ele.rightIconDisplay;
+    }
+    return rObj;
+  })
+  this.setState({userStatus: rightIconArray});
+}
 
 // handleTouchTap () {
 //   alert('You clicked the Chip.');
@@ -381,7 +389,7 @@ export default class FindPageComponent extends React.Component {
       //console.log(333)
       const styles = {
         chip: {
-          margin: 4,
+          margin: 5,
         },
         wrapper: {
           display: 'flex',
@@ -402,20 +410,22 @@ export default class FindPageComponent extends React.Component {
             <List>
             <div>
             <Subheader>Invite Friends</Subheader>
-              {
+            <div style={styles.wrapper}>
+            {
                 this.state.invitedUsers.map(userName => (
                   <Chip
                     key={userName} 
                     style={styles.chip}
+                    onRequestDelete={() => this.handleRequestDelete(userName)}
                   >
                     <Avatar color="#444" icon={<SvgIconFace />} />
                     {userName}
                   </Chip>
                 ))
               }
-
-
+              </div>
               <RaisedButton label="Invite" onTouchTap={this.handleOpen} />
+              
               <Dialog
                 title="Invite your friends"
                 actions={actions}

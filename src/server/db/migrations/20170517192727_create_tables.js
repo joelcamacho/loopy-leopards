@@ -12,16 +12,16 @@ exports.up = function(knex, Promise) {
       table.string('state');
       table.string('latitude');
       table.string('longitude');
-      table.string('phone');
+      table.string('phone').unique().notNullable()
       table.date('birthdate');
-
-      table.boolean('registered')
+      table.boolean('registered').defaultTo(false);
       table.boolean('phone_validated');
+      table.string('token');
     }),
     knex.schema.createTable('events', function(table) {
       table.increments('id').primary();
       table.string('name').notNullable();
-      table.dateTime('date_time').notNullable();
+      table.dateTime('date_time')
       table.string('description');
       // .notNullable();
       table.string('address',[20]);

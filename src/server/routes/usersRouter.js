@@ -35,21 +35,22 @@ router.route('/users')
 
 	let userData = {}
 	
-	for(var key in req.body) {
-		userData[key] = req.body[key];
-	}
+	Object.assign(userData, req.body)
 
 	User.forge(userData).save()
 	.then((user) => {
 		if(user.get('email') === null && user.get('google_id') === null) {
 			res.status(200).send('added ' + user.get('name'))
 		} else {
-			res.status(200).send('Welcome, ' + user.get('name'));
+			res.status(200).send('Welcome, ' + user.get('first_name'));
 		}
 	})
 	.catch((err) => {
-		console.log(err.clientError)
-		res.status(400).send(err.clientError)
+		if(err.code = "ER_DUP_ENTRY") {
+			res.status(400).send('Uh-oh. It looks like that phone number is already in our system!')
+		} else {
+			res.status(400).send('Something went wrong, please try again')
+		}
 	})
 })
 
@@ -72,7 +73,7 @@ router.route('/users/:id')
 
 .get((req, res) => {
 
-	let userId = 1
+	let userId = req.params.id
 
 	User.forge({id: userId}).fetch()
 	.then((user) => {
@@ -86,22 +87,13 @@ router.route('/users/:id')
 
 .put((req, res) => {
 
-	let userId = 1,
-
+	let userId = req.params.id,
 	userData = {}
 
-	for(var key in req.body) {
-		userData[key] = req.body[key]
-	}
+	Object.assign(userData, req.body)
 
 	new User({id:userId}).save(userData, {patch: true})
-	// .then((event) => {
-	// 	return res.send(200).json({'Event updated: ': event});
-	// })
-	// .catch((err) => {
-	// 	console.log(err)
-	// 	return  res.status(400).send('Could not update event');
-	// })
+
 })
 
 .delete((req,res) => {

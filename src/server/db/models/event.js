@@ -34,10 +34,10 @@ const Event = bookshelf.Model.extend({
 		})
 	},
 
-	vote: function(userId) {
+	vote: function(userId, vote) {
 		return this.getInfo()
 		.then((event) => {
-			return event.related('invitees').updatePivot({voted:true},{query: {where: {user_id: userId}}})
+			return event.related('invitees').updatePivot({voted:vote},{query: {where: {user_id: userId}}})
 		})
 	}
 })

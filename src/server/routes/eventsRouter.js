@@ -150,13 +150,13 @@ router.post('/events/:id/invite',(req,res) => {
 	})
 });
 
-router.post('/events/:id/vote', (req,res) => {
+router.post('/events/:id/upvote', (req,res) => {
 
 	let userId = 1
 	let eventId = req.params.id
 
 
-	Event.where({id: eventId}).vote(userId)
+	Event.where({id: eventId}).vote(userId, true)
 	.then((result) => {
 		res.status(200).send(result)
 	})
@@ -164,6 +164,22 @@ router.post('/events/:id/vote', (req,res) => {
 		console.log(err)
 		res.status(400).send('Something went wrong with your vote')
 	})
-})
+});
+
+router.post('/events/:id/downvote', (req,res) => {
+
+	let userId = 1
+	let eventId = req.params.id
+
+
+	Event.where({id: eventId}).vote(userId, false)
+	.then((result) => {
+		res.status(200).send(result)
+	})
+	.catch((err) => {
+		console.log(err)
+		res.status(400).send('Something went wrong with your vote')
+	})
+});
 
 module.exports = router;

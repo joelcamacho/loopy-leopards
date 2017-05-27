@@ -148,6 +148,7 @@ export default class FindPageComponent extends React.Component {
     }
 
     this.handleClickUser = this.handleClickUser.bind(this);
+    this.getIndex = this.getIndex.bind(this);
     // this.handleRequestDelete = this.handleRequestDelete.bind(this);
     // this.handleTouchTap = this.handleTouchTap.bind(this);
   }
@@ -273,38 +274,61 @@ export default class FindPageComponent extends React.Component {
     this.props.setStateBackToDefault({status: 'first'});
   }
 
-  handleClickUser (user, position) {
+  handleClickUser (user) {
     console.log("searchUsers: ", user)
-
     let rightIconArray;
+    // if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
+    //     this.state.invitedUsers.push(user.name);
+    //     rightIconArray = this.state.userStatus.map((ele, ind) => {
+    //       var rObj = {};
+    //       if (ind === position) {
+    //         rObj.name = ele.name;
+    //         rObj.rightIconDisplay = (<ContentRemove />);
+    //       } else {
+    //         rObj.name = ele.name;
+    //         rObj.rightIconDisplay = ele.rightIconDisplay;
+    //       }
+    //       return rObj;
+    //     })
+    // } else {
+    //     let i = this.state.invitedUsers.indexOf(user.name);
+    //     this.state.invitedUsers.splice(i, 1);
+    //     rightIconArray = this.state.userStatus.map((ele, ind) => {
+
+    //       var rObj = {};
+    //       if (ind === position) {
+    //         rObj.name = ele.name;
+    //         rObj.rightIconDisplay = (<ContentAdd />);
+    //       } else {
+    //         rObj.name = ele.name;
+    //         rObj.rightIconDisplay = ele.rightIconDisplay;
+    //       }
+    //       return rObj;
+    //     })
+    // }
+    let position
+    rightIconArray = this.state.userStatus.map((ele, ind) => {
+
+      var rObj = {};
+      if(ele.name === user.name && ele.rightIconDisplay.type.displayName === "ContentAdd") {
+        rObj.name = user.name;
+        rObj.rightIconDisplay = (<ContentRemove />);
+        position = ind;
+      } else if (ele.name === user.name && ele.rightIconDisplay.type.displayName === "ContentRemove") {
+        rObj.name = user.name;
+        rObj.rightIconDisplay = (<ContentAdd />);
+        position = ind;
+      } else {
+        rObj.name = ele.name;
+        rObj.rightIconDisplay = ele.rightIconDisplay;
+      }
+      return rObj;
+    })
     if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
         this.state.invitedUsers.push(user.name);
-        rightIconArray = this.state.userStatus.map((ele, ind) => {
-          var rObj = {};
-          if (ind === position) {
-            rObj.name = ele.name;
-            rObj.rightIconDisplay = (<ContentRemove />);
-          } else {
-            rObj.name = ele.name;
-            rObj.rightIconDisplay = ele.rightIconDisplay;
-          }
-          return rObj;
-        })
     } else {
         let i = this.state.invitedUsers.indexOf(user.name);
         this.state.invitedUsers.splice(i, 1);
-        rightIconArray = this.state.userStatus.map((ele, ind) => {
-
-          var rObj = {};
-          if (ind === position) {
-            rObj.name = ele.name;
-            rObj.rightIconDisplay = (<ContentAdd />);
-          } else {
-            rObj.name = ele.name;
-            rObj.rightIconDisplay = ele.rightIconDisplay;
-          }
-          return rObj;
-        })
     }
     this.setState({userStatus: rightIconArray});
   }
@@ -327,10 +351,17 @@ handleRequestDelete (name) {
   this.setState({userStatus: rightIconArray});
 }
 
-// handleTouchTap () {
-//   alert('You clicked the Chip.');
-// }
-
+getIndex (name) {
+  console.log("!!!!!!!!",name)
+  console.log(this.state);
+  let RIC; 
+  this.state.userStatus.forEach((ele,ind) => {
+    if(ele.name === name) {
+      RIC = ele.rightIconDisplay
+    }
+  })
+  return RIC;
+}
 
   render() {
     //console.log("datas: ", this.props.events);
@@ -449,14 +480,14 @@ handleRequestDelete (name) {
                     primaryText={obj.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
                     rightIcon={this.state.userStatus[ind].rightIconDisplay}
-                    onClick={() => this.handleClickUser(obj, ind)}
+                    onClick={() => this.handleClickUser(obj)}
                   />)) :
                     users.map((obj, ind) => (<ListItem
                     key={!!obj.phone ? obj.phone : this.group.list.phone }
                     primaryText={!!obj.name ? obj.name : this.group.list.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={this.state.userStatus[ind].rightIconDisplay}
-                    onClick={() => this.handleClickUser(obj, ind)}
+                    rightIcon={this.getIndex(obj.name)}
+                    onClick={() => this.handleClickUser(obj)}
                   />))
                   }
                 </List>

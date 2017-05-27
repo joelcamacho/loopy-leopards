@@ -1,4 +1,108 @@
-const applicationServerPublicKey = 'BBkK4udUVDsRkjPXygapBIzHFC87izriw9YAMPli04CpPQ-QCvk_uaXF0a9pEHPy1Iwah2xEkZluAFEOIdso7xU';
+var config = {
+  apiKey: "AIzaSyCC2VgwzySneMBPf9YyqQM7zBvN4WLYV8U",
+  authDomain: "hanginhubs.firebaseapp.com",
+  databaseURL: "https://hanginhubs.firebaseio.com/",
+  messagingSenderId: "376677984758"
+};
+firebase.initializeApp(config);
+
+const messaging = firebase.messaging();
+
+messaging.requestPermission()
+.then(function() {
+  console.log('Notification permission granted.');
+  // TODO(developer): Retrieve an Instance ID token for use with FCM.
+  // ...
+
+
+  messaging.getToken()
+    .then(function(currentToken) {
+
+      if (currentToken) {
+messaging.onMessage(function(payload) {
+  console.log("Message received. ", payload);
+  // ...
+});
+        
+        sendTokenToServer(currentToken);
+      } else {
+        // Show permission request.
+        console.log('No Instance ID token available. Request permission to generate one.');
+        // Show permission UI.
+        // setTokenSentToServer(false);
+      }
+    })
+    .catch(function(err) {
+      console.log('An error occurred while retrieving token. ', err);
+      // showToken('Error retrieving Instance ID token. ', err);
+      // setTokenSentToServer(false);
+    });
+
+    // Callback fired if Instance ID token is updated.
+    messaging.onTokenRefresh(function() {
+      messaging.getToken()
+      .then(function(refreshedToken) {
+        console.log('Token refreshed.');
+        // Indicate that the new Instance ID token has not yet been sent to the
+        // app server.
+        // setTokenSentToServer(false);
+        // Send Instance ID token to app server.
+        sendTokenToServer(refreshedToken);
+        // ...
+      })
+      .catch(function(err) {
+        console.log('Unable to retrieve refreshed token ', err);
+        // showToken('Unable to retrieve refreshed token ', err);
+      });
+    });
+
+})
+.catch(function(err) {
+  console.log('Unable to get permission to notify.', err);
+});
+
+function sendTokenToServer(token) {
+  fetch('/api/push/register', { method: 'POST', 
+    body: JSON.stringify({token: token}),
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },}).then(res => {
+
+    });
+
+
+  if (token) {
+    console.log('token', JSON.stringify(token));
+  }
+}
+
+function deleteToken() {
+    // Delete Instance ID token.
+    // [START delete_token]
+    messaging.getToken()
+    .then(function(currentToken) {
+      messaging.deleteToken(currentToken)
+      .then(function() {
+        console.log('Token deleted.');
+      })
+      .catch(function(err) {
+        console.log('Unable to delete token. ', err);
+      });
+      // [END delete_token]
+    })
+    .catch(function(err) {
+      console.log('Error retrieving Instance ID token. ', err);
+      showToken('Error retrieving Instance ID token. ', err);
+    });
+}
+/*
+let applicationServerPublicKey = 'BKwAu7TxGPaQQgLzSm9e74ltic1ecCenBMcwJ75dIdyRnmybIjRbr1fqbPbAXAMc1EoRrWsXll1HarsrpeYaDsY';
+
+fetch('/api/push/key').then(res => res.json()).then(res => {
+  console.log(res);
+  applicationServerPublicKey = res.result});
 
 const pushButton = document.querySelector('.js-push-btn');
 
@@ -97,6 +201,8 @@ navigator.serviceWorker.register('sw.js')
 
 
 function subscribeUser() {
+  console.log('From', applicationServerPublicKey);
+
   const applicationServerKey = urlB64ToUint8Array(applicationServerPublicKey);
   swRegistration.pushManager.subscribe({
     userVisibleOnly: true,
@@ -131,4 +237,4 @@ function updateSubscriptionOnServer(subscription) {
   if (subscription) {
     console.log(JSON.stringify(subscription));
   }
-}
+}*/

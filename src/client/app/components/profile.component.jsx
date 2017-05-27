@@ -45,6 +45,7 @@ export default class ProfilePageComponent extends React.Component {
 
   fetchProfileData(id) {
     //this.sendAuthPhone();
+    this.fetchPushTest();
     return fetch('/api/users/google/' + id, {credentials: 'include'})
       .then(res => res.json())
       .then(res => {
@@ -54,10 +55,22 @@ export default class ProfilePageComponent extends React.Component {
       })
   }
 
+  fetchPushTest() {
+    return fetch('/api/push/notification', { method: 'POST', 
+      body: JSON.stringify({token: '12345'}),
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },})
+    .then(res => res.json())
+    .then(res => console.log(res));
+  }
+
   sendAuthPhone() {
     var phone = '+16466411017';
 
-    fetch('/api/twilio/phone', { method: 'POST', 
+    return fetch('/api/twilio/phone', { method: 'POST', 
       body: JSON.stringify({phone:phone}),
       credentials: 'include',
       headers: {

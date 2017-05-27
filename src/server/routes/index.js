@@ -8,6 +8,7 @@ const eventRouter = require('./eventsRouter.js');
 const userRouter = require('./usersRouter.js');
 const groupRouter = require('./groupsRouter.js');
 const twilioRoutes = require('./twilio.routes.js');
+const pushRoutes = require('./push.routes.js');
 
 // middleware to protect routes
 function ensureAuthenticated(req, res, next) {
@@ -33,6 +34,7 @@ routes.use(authRoutes);
 routes.use(yelpRoutes);
 routes.use(eventbriteRoutes);
 routes.use(twilioRoutes);
+routes.use(pushRoutes);
 
 routes.use('/api', eventRouter, userRouter, groupRouter);
 

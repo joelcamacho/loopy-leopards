@@ -1,10 +1,5 @@
-// Firebase config stuff
-const config = {
-  apiKey: "AIzaSyCC2VgwzySneMBPf9YyqQM7zBvN4WLYV8U",
-  authDomain: "hanginhubs.firebaseapp.com",
-  databaseURL: "https://hanginhubs.firebaseio.com/",
-  messagingSenderId: "376677984758"
-};
+// import config
+import config from '../config/config.jsx';
 
 // Initalize App and messaging
 firebase.initializeApp(config);

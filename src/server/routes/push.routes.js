@@ -30,7 +30,7 @@ const getUserToken = (id) => {
     new User({id: id}).fetch()
       .then((user) => {
         if(!!user) {
-          console.log('user', user, user.get('id'));
+          console.log('user', user, user.get('token'));
           resolve(user.get('token'));
         } else {
           console.log('invalid id');
@@ -42,7 +42,6 @@ const getUserToken = (id) => {
 
 const pushToUser = (id, title = 'Kimmy J Master', body = 'I will take over the world! Tomorrow...', icon = 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg', click_action = 'http://localhost:3000') => {
   const key = apiKeys.fcmServerKey;
-  const to = getUserToken(id);
 
   const notification = {
     'title': title,
@@ -52,22 +51,24 @@ const pushToUser = (id, title = 'Kimmy J Master', body = 'I will take over the w
   };
 
   return new Promise(function (resolve, reject) {
-    fetch('https://fcm.googleapis.com/fcm/send', {
-      'method': 'POST',
-      'headers': {
-        'Authorization': 'key=' + key,
-        'Content-Type': 'application/json'
-      },
-      'body': JSON.stringify({
-        'notification': notification,
-        'to': to
-      })
-    }).then(function(response) {
-      resolve(response);
-    }).catch(function(error) {
-      reject(error);
+    getUserToken(id).then(to => {
+      fetch('https://fcm.googleapis.com/fcm/send', {
+          'method': 'POST',
+          'headers': {
+            'Authorization': 'key=' + key,
+            'Content-Type': 'application/json'
+          },
+          'body': JSON.stringify({
+            'notification': notification,
+            'to': to
+          })
+        }).then(function(response) {
+          resolve(response);
+        }).catch(function(error) {
+          reject(error);
+        })
+      }).catch(err => resolve(error));
     })
-  });
 }
 
 
@@ -130,9 +131,17 @@ routes.post('/api/push/unregister', function(req, res) {
 routes.post('/api/push/notification', function(req, res) {
   // TO DO: get user id from current session
   // this end point is for testing purposes
-  pushToUser(1)
-  .then(result => res.send({result: result}))
-  .catch(err => res.send({result: err}));
+  if(!!req.user) {
+    getUserIdFromGoogleId(req.user.id)
+    .catch(err => res.send({result: err}))
+    .then(result => pushToUser(result))
+    .catch(err => res.send({result: err}))
+    .then(result => res.send({result:result}));
+  } else {
+    pushToUser(1)
+    .catch(err => res.send({result: err}))
+    .then(result => res.send({result:result}));
+  }
 })
 
 module.exports = routes;

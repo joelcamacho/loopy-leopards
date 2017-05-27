@@ -93,7 +93,6 @@ router.route('/users/:id')
 	Object.assign(userData, req.body)
 
 	new User({id:userId}).save(userData, {patch: true})
-
 })
 
 .delete((req,res) => {

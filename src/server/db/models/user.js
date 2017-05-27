@@ -7,32 +7,32 @@ const User = bookshelf.Model.extend({
   tableName: 'users',
 
   initialize: function() {
-    this.on("saving", (model, attrs, options) => {
-      if(attrs.google_id === null) {
-        this.set({'registered': false}).save()
-      } else {
-        this.set({'registered' : true}).save()
-      };
-    })
+    // this.on("saving", (model, attrs, options) => {
+    //   if(attrs.google_id === null) {
+    //     this.set({'registered': false}).save()
+    //   } else {
+    //     this.set({'registered' : true}).save()
+    //   };
+    // })
 
     //   this.set({'phone_validated' : false});
     // });
-    this.on("updating", (model, attrs, options) => {
-      if(this.hasChanged('email')) {
-        return this
-        .query({where: {email: this.get('email')}}).fetch()
-        .then(function(exists) {
-          if (!exists) throw new Error('email already exists in system');
-        })
-      }
-      if(this.hasChanged('phone')) {
-        return this
-        .query({where: {email: this.get('phone')}}).fetch()
-        .then(function(exists) {
-          if (!exists) throw new Error('phone number already exists in system');
-        })
-      }
-    })
+    // this.on("updating", (model, attrs, options) => {
+    //   if(this.hasChanged('email')) {
+    //     return this
+    //     .query({where: {email: this.get('email')}}).fetch()
+    //     .then(function(exists) {
+    //       if (!exists) throw new Error('email already exists in system');
+    //     })
+    //   }
+    //   if(this.hasChanged('phone')) {
+    //     return this
+    //     .query({where: {email: this.get('phone')}}).fetch()
+    //     .then(function(exists) {
+    //       if (!exists) throw new Error('phone number already exists in system');
+    //     })
+    //   }
+    // })
   },
 
   groupsBelongingTo: function() {

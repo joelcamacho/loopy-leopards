@@ -39,6 +39,8 @@ routes.get('/auth/google/callback',
     userData.phone = null;;
     userData.birthdate = null;
     userData.registered = null;
+    userData.phone_validated = null;
+    userData.token = null;
 
     console.log(userData);
 

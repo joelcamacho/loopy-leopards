@@ -15,6 +15,8 @@ import Dialog from 'material-ui/Dialog';
 import Avatar from 'material-ui/Avatar';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
+import Chip from 'material-ui/Chip';
+import SvgIconFace from 'material-ui/svg-icons/action/face';
 
 const fakeGroupData = {
   name: 'Loopy Leopards',
@@ -146,6 +148,8 @@ export default class FindPageComponent extends React.Component {
     }
 
     this.handleClickUser = this.handleClickUser.bind(this);
+    // this.handleRequestDelete = this.handleRequestDelete.bind(this);
+    // this.handleTouchTap = this.handleTouchTap.bind(this);
   }
 
   //For yelp, give NYC temply
@@ -269,7 +273,7 @@ export default class FindPageComponent extends React.Component {
     this.props.setStateBackToDefault({status: 'first'});
   }
 
-  handleClickUser (user, position, length) {
+  handleClickUser (user, position) {
     console.log("searchUsers: ", user)
 
     let rightIconArray;
@@ -288,7 +292,6 @@ export default class FindPageComponent extends React.Component {
         })
     } else {
         let i = this.state.invitedUsers.indexOf(user.name);
-        console.log(i)
         this.state.invitedUsers.splice(i, 1);
         rightIconArray = this.state.userStatus.map((ele, ind) => {
 
@@ -304,8 +307,22 @@ export default class FindPageComponent extends React.Component {
         })
     }
     this.setState({userStatus: rightIconArray});
-    console.log("!!!!!!!!!!!", this.state.invitedUsers)
   }
+
+// handleRequestDelete (key) {
+//   console.log(key)
+//   let i = this.state.invitedUsers.indexOf(key);
+//   console.log(i)
+//   this.state.invitedUsers.splice(i, 1);
+//   console.log(this.state.invitedUsers)
+//   alert('You clicked the delete button.');
+
+// }
+
+// handleTouchTap () {
+//   alert('You clicked the Chip.');
+// }
+
 
   render() {
     //console.log("datas: ", this.props.events);
@@ -362,8 +379,15 @@ export default class FindPageComponent extends React.Component {
       ); 
     } else {
       //console.log(333)
-      let i = 0;
-      let length = this.group.list.length
+      const styles = {
+        chip: {
+          margin: 4,
+        },
+        wrapper: {
+          display: 'flex',
+          flexWrap: 'wrap',
+        },
+      };
       return (
         <div className="comfirm">
           <Paper className="container">
@@ -378,6 +402,19 @@ export default class FindPageComponent extends React.Component {
             <List>
             <div>
             <Subheader>Invite Friends</Subheader>
+              {
+                this.state.invitedUsers.map(userName => (
+                  <Chip
+                    key={userName} 
+                    style={styles.chip}
+                  >
+                    <Avatar color="#444" icon={<SvgIconFace />} />
+                    {userName}
+                  </Chip>
+                ))
+              }
+
+
               <RaisedButton label="Invite" onTouchTap={this.handleOpen} />
               <Dialog
                 title="Invite your friends"
@@ -402,14 +439,14 @@ export default class FindPageComponent extends React.Component {
                     primaryText={obj.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
                     rightIcon={this.state.userStatus[ind].rightIconDisplay}
-                    onClick={() => this.handleClickUser(obj, ind, length)}
+                    onClick={() => this.handleClickUser(obj, ind)}
                   />)) :
                     users.map((obj, ind) => (<ListItem
                     key={!!obj.phone ? obj.phone : this.group.list.phone }
                     primaryText={!!obj.name ? obj.name : this.group.list.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
                     rightIcon={this.state.userStatus[ind].rightIconDisplay}
-                    onClick={() => this.handleClickUser(obj, ind, length)}
+                    onClick={() => this.handleClickUser(obj, ind)}
                   />))
                   }
                 </List>

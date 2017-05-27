@@ -17,36 +17,6 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Chip from 'material-ui/Chip';
 
-const fakeGroupData = {
-  name: 'Loopy Leopards',
-  list: [
-    {
-      name: 'Mao Ze Dong',
-      photo: 'http://www.dssk.net/uploads/allimg/201626/0800/00/49/00491536026.jpg',
-      phone: '123-123-1234'
-    },
-    {
-      name: 'Kimmy J',
-      photo: 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg',
-      phone: '123-123-KimJ'
-    },
-    {
-      name: 'Pu King',
-      photo: 'http://s7.sinaimg.cn/mw690/002Yaqefzy6IpUEtioC16&690',
-      phone: '123-123-1243'
-    },
-    {
-      name: 'An Bei',
-      photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Shinz%C5%8D_Abe_April_2015.jpg',
-      phone: '578-123-1234'
-    },
-    {
-      name: 'Donald John Trump',
-      photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Donald_Trump_Arizona_2016.jpg/434px-Donald_Trump_Arizona_2016.jpg',
-      phone: '123-234-1234'
-    }
-  ],
-}
 
 
 export default class FindPageComponent extends React.Component {
@@ -60,29 +30,10 @@ export default class FindPageComponent extends React.Component {
       value12: null,
       testValue: 'Anything you want to say?',
       open: false,
-      userStatus: [{
-        name: 'Mao Ze Dong',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'Kimmy J',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'Pu King',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'An Bei',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'Donald John Trump',
-        rightIconDisplay: (<ContentAdd />),
-      }
-      ],
+      userStatus: [],
       clickUserStatus: false,
       invitedUsers: [],
+      userGroupData: [],
     };
 
     this.handleChangeDate = (event, date) => {
@@ -121,15 +72,15 @@ export default class FindPageComponent extends React.Component {
       this.setState({open: false});
     };
 
-    this.group = fakeGroupData;
+    //this.group = this.state.userGroupData;
 
     this.handleSearchbar = (event, userInput) => {
       var users = [];
-      !!userInput ? this.group.list.forEach(userInfo => {
+      !!userInput ? this.state.userGroupData.forEach(userInfo => {
         if(userInfo.name.indexOf(userInput) > -1 || userInfo.phone.indexOf(userInput) > -1) {
           users.push(userInfo)
         }
-      }) : users = this.group.list;
+      }) : users = this.state.userGroupData;
       console.log("user or users: ", users);
       this.props.searchUsers(users);
     }
@@ -243,9 +194,36 @@ export default class FindPageComponent extends React.Component {
         //console.log("result: ", result)
         this.props.addEvents(getUnique(result));
       })
+      .then(res => {
+        fetch('/api/users', {credentials: 'include'})
+        .then(res => res.json())
+        .catch(error => {
+          console.log("Can not received users data from database!!!");
+        })
+        .then(res => {
+          console.log("user response from databases: ", res);
+          let userStatusArray = res.map(user => {
+            var rObj = {};
+            rObj.name = user.first_name + ' ' + user.last_name;
+            rObj.rightIconDisplay = (<ContentAdd />);
+            return rObj;
+          })
+          this.setState({userStatus: userStatusArray});
+          let userGroup = res.map(user => {
+            var rObj = {};
+            rObj.name = user.first_name + ' ' + user.last_name;
+            rObj.photo = null;
+            rObj.phone = user.phone;
+            return rObj;
+          })
+          this.setState({userGroupData: userGroup});
+        })
+      })
   }
 
   getEvent (event) {
+    console.log('userStatus!!!!!!!!: ',this.state.userStatus);
+    console.log('group!!!!!!!: ', this.state.userGroupData);
     this.props.createEvent(event);
   }
 
@@ -421,7 +399,7 @@ getIndex (name) {
                   <Subheader> Current Members </Subheader>
                   {
                     !!users.size ? 
-                    this.group.list.map((obj, ind) => (<ListItem
+                    this.state.userGroupData.map((obj, ind) => (<ListItem
                     key={obj.phone }
                     primaryText={obj.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}

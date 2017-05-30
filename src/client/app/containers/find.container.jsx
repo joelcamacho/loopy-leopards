@@ -10,6 +10,7 @@ export default connect(
       events: state.events,
       event: state.event,
       users: state.searchUsers,
+      auth: state.auth.toJS()
     };
   },
 

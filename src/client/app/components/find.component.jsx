@@ -232,6 +232,51 @@ export default class FindPageComponent extends React.Component {
     this.props.setStateBackToDefault({status: 'first'});
   }
 
+  handleConfirm () {
+    console.log("Date: ", this.state.controlledDate);
+    console.log("testValue: ", this.state.testValue);
+    console.log("time: ", this.state.value12);
+    console.log("invitedUsers: ", this.state.invitedUsers.map(user => user.name));
+    console.log("Event info: ", this.props.event);
+    console.log("Check This: ", this.props.auth.displayName);
+
+    let init = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(
+        {
+          //need an img
+          // img: event.img,
+          name: this.props.event.title,
+          //2 date time! now is event time
+          date_Time: this.props.event.date_time,
+          // time: this.state.value12
+          // date: this.state.controlledDate
+          description: this.props.event.description,
+          address: this.props.event.address,
+          city: this.props.event.city,
+          state: this.props.event.state,
+          phone: this.props.event.phone,
+          latitude: this.props.event.latitude,
+          longitude: this.props.event.longitude,
+          comments: this.state.testValue,
+          //creator_id: this.state.auth.displayName,
+          //group_id:
+          //users: this.state.invitedUsers.map(user => user.name),
+        }
+      )
+    }
+
+    fetch('/api/events',init)
+    .then(res => console.log(res))
+    .catch(err => console.log("can not save event data!!!!!!"))
+    
+  }
+
   handleClickUser (user) {
     console.log("searchUsers: ", user)
     let rightIconArray;
@@ -424,8 +469,7 @@ getIndex (name) {
             <div>
             <Subheader>Comment</Subheader>
               <TextField
-                id="text-field-controlled"
-                value={this.state.testValue}
+                floatingLabelText="Anything you want to say?"
                 onChange={this.handleChangeTestValue}
                 multiLine={true}
               />
@@ -451,7 +495,7 @@ getIndex (name) {
             <div>
               <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
               <Link to="/home">
-              <FlatButton className="drawerItem" label="Confirm" onClick={() => this.backToEvents([])}/>
+              <FlatButton className="drawerItem" label="Confirm" onClick={() => this.handleConfirm()}/>
               </Link>
             </div>
             <br/>

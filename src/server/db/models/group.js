@@ -8,7 +8,7 @@ const Group = bookshelf.Model.extend({
 	tableName: 'groups',
 
 	members: function() {
-		return this.belongsToMany('User');
+		return this.belongsToMany('User').withPivot('status');
 	},
 
 	events: function() {
@@ -20,14 +20,17 @@ const Group = bookshelf.Model.extend({
 	},
 
 	getInfo: function() {
-		return this.fetch({withRelated: ['members']})
+		return this.fetch({withRelated: 'members'})
 	},
 
-	addMembers: function(newMembers) {
+	manageMembers: function(newMembers, status) {
 
 		return this.getInfo()
 		.then((group) => {
 			return group.related('members').attach(newMembers)
+		})
+		.then((members) => {
+			return members.updatePivot({status: status})
 		})
 	}
 })

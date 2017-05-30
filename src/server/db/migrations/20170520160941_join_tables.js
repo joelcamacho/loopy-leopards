@@ -13,7 +13,7 @@ exports.up = function(knex, Promise) {
     }),
     knex.schema.createTable('groups_users', function(table) {
       table.increments('id').primary();
-      table.string('user_status');
+      table.string('status');
       //can be one of the following: member, invited, requested
       table.integer('user_id').unsigned().notNullable()
       table.foreign('user_id').references('users.id');

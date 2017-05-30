@@ -17,36 +17,6 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Chip from 'material-ui/Chip';
 
-const fakeGroupData = {
-  name: 'Loopy Leopards',
-  list: [
-    {
-      name: 'Mao Ze Dong',
-      photo: 'http://www.dssk.net/uploads/allimg/201626/0800/00/49/00491536026.jpg',
-      phone: '123-123-1234'
-    },
-    {
-      name: 'Kimmy J',
-      photo: 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg',
-      phone: '123-123-KimJ'
-    },
-    {
-      name: 'Pu King',
-      photo: 'http://s7.sinaimg.cn/mw690/002Yaqefzy6IpUEtioC16&690',
-      phone: '123-123-1243'
-    },
-    {
-      name: 'An Bei',
-      photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Shinz%C5%8D_Abe_April_2015.jpg',
-      phone: '578-123-1234'
-    },
-    {
-      name: 'Donald John Trump',
-      photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Donald_Trump_Arizona_2016.jpg/434px-Donald_Trump_Arizona_2016.jpg',
-      phone: '123-234-1234'
-    }
-  ],
-}
 
 
 export default class FindPageComponent extends React.Component {
@@ -60,29 +30,10 @@ export default class FindPageComponent extends React.Component {
       value12: null,
       testValue: 'Anything you want to say?',
       open: false,
-      userStatus: [{
-        name: 'Mao Ze Dong',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'Kimmy J',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'Pu King',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'An Bei',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'Donald John Trump',
-        rightIconDisplay: (<ContentAdd />),
-      }
-      ],
+      userStatus: [],
       clickUserStatus: false,
       invitedUsers: [],
+      userGroupData: [],
     };
 
     this.handleChangeDate = (event, date) => {
@@ -121,15 +72,15 @@ export default class FindPageComponent extends React.Component {
       this.setState({open: false});
     };
 
-    this.group = fakeGroupData;
+    //this.group = this.state.userGroupData;
 
     this.handleSearchbar = (event, userInput) => {
       var users = [];
-      !!userInput ? this.group.list.forEach(userInfo => {
+      !!userInput ? this.state.userGroupData.forEach(userInfo => {
         if(userInfo.name.indexOf(userInput) > -1 || userInfo.phone.indexOf(userInput) > -1) {
           users.push(userInfo)
         }
-      }) : users = this.group.list;
+      }) : users = this.state.userGroupData;
       console.log("user or users: ", users);
       this.props.searchUsers(users);
     }
@@ -243,15 +194,87 @@ export default class FindPageComponent extends React.Component {
         //console.log("result: ", result)
         this.props.addEvents(getUnique(result));
       })
+      .then(res => {
+        fetch('/api/users', {credentials: 'include'})
+        .then(res => res.json())
+        .catch(error => {
+          console.log("Can not received users data from database!!!");
+        })
+        .then(res => {
+          console.log("user response from databases: ", res);
+          let userStatusArray = res.map(user => {
+            var rObj = {};
+            rObj.name = user.first_name + ' ' + user.last_name;
+            rObj.rightIconDisplay = (<ContentAdd />);
+            return rObj;
+          })
+          this.setState({userStatus: userStatusArray});
+          let userGroup = res.map(user => {
+            var rObj = {};
+            rObj.name = user.first_name + ' ' + user.last_name;
+            rObj.photo = null;
+            rObj.phone = user.phone;
+            return rObj;
+          })
+          this.setState({userGroupData: userGroup});
+        })
+      })
   }
 
   getEvent (event) {
+    console.log('userStatus!!!!!!!!: ',this.state.userStatus);
+    console.log('group!!!!!!!: ', this.state.userGroupData);
     this.props.createEvent(event);
   }
 
   backToEvents (events) {
     this.props.addEvents(events);
     this.props.setStateBackToDefault({status: 'first'});
+  }
+
+  handleConfirm () {
+    console.log("Date: ", this.state.controlledDate);
+    console.log("testValue: ", this.state.testValue);
+    console.log("time: ", this.state.value12);
+    console.log("invitedUsers: ", this.state.invitedUsers.map(user => user.name));
+    console.log("Event info: ", this.props.event);
+    console.log("Check This: ", this.props.auth.displayName);
+
+    let init = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(
+        {
+          //need an img
+          // img: event.img,
+          name: this.props.event.title,
+          //2 date time! now is event time
+          date_Time: this.props.event.date_time,
+          // time: this.state.value12
+          // date: this.state.controlledDate
+          description: this.props.event.description,
+          address: this.props.event.address,
+          city: this.props.event.city,
+          state: this.props.event.state,
+          phone: this.props.event.phone,
+          latitude: this.props.event.latitude,
+          longitude: this.props.event.longitude,
+          comments: this.state.testValue,
+          //creator_id: this.state.auth.displayName,
+          //group_id:
+          //users: this.state.invitedUsers.map(user => user.name),
+        }
+      )
+    }
+
+    fetch('/api/events',init)
+    .then(res => console.log(res))
+    .catch(err => console.log("can not save event data!!!!!!"))
+    
   }
 
   handleClickUser (user) {
@@ -421,7 +444,7 @@ getIndex (name) {
                   <Subheader> Current Members </Subheader>
                   {
                     !!users.size ? 
-                    this.group.list.map((obj, ind) => (<ListItem
+                    this.state.userGroupData.map((obj, ind) => (<ListItem
                     key={obj.phone }
                     primaryText={obj.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
@@ -446,8 +469,7 @@ getIndex (name) {
             <div>
             <Subheader>Comment</Subheader>
               <TextField
-                id="text-field-controlled"
-                value={this.state.testValue}
+                floatingLabelText="Anything you want to say?"
                 onChange={this.handleChangeTestValue}
                 multiLine={true}
               />
@@ -473,7 +495,7 @@ getIndex (name) {
             <div>
               <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
               <Link to="/home">
-              <FlatButton className="drawerItem" label="Confirm" onClick={() => this.backToEvents([])}/>
+              <FlatButton className="drawerItem" label="Confirm" onClick={() => this.handleConfirm()}/>
               </Link>
             </div>
             <br/>

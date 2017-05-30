@@ -49,6 +49,7 @@ export default class ProfilePageComponent extends React.Component {
 
   fetchProfileData(id) {
     //this.sendAuthPhone();
+    //this.test();
     return fetch('/api/users/google/' + id, {credentials: 'include'})
       .then(res => res.json())
       .then(res => {
@@ -63,6 +64,16 @@ export default class ProfilePageComponent extends React.Component {
 
     return fetch('/api/twilio/phone', { method: 'POST', 
       body: JSON.stringify({phone:phone}),
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },});
+  }
+
+  test() {
+    return fetch('/api/user', { method: 'PUT', 
+      body: JSON.stringify({first_name:'Billy'}),
       credentials: 'include',
       headers: {
         'Accept': 'application/json',

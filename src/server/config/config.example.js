@@ -1,21 +1,21 @@
-var request = require('request');
+const rp = require('request-promise');
 
 const apiKeys = {
-	yelpClientId : '',
-	yelpClientSecret: '',
-	yelpAccessToken: ''
+    yelpClientId : '',
+    yelpClientSecret: '',
+    yelpAccessToken: '',
+    googleClientId: '',
+    googleClientSecret: '',
+    eventbriteAccessToken: '',
+    twilioAccountSid: '',
+    twilioAuthToken: '',
+    twilioFromNumber: '',
+    fcmServerKey: ''
 }
 
-
-request.post(`https://api.yelp.com/oauth2/token?client_id=${apiKeys.yelpClientId}&client_secret=${apiKeys.yelpClientSecret}`,
-	function (error, response, body) {
-		if(error) {
-			console.log(error);
-		}
-		else {
-			apiKeys.yelpAccessToken = JSON.parse(body).access_token;
-			console.log('yelp access token', apiKeys.yelpAccessToken);
-		}
-	});
+// Get Yelp Access Token
+rp.post(`https://api.yelp.com/oauth2/token?client_id=${apiKeys.yelpClientId}&client_secret=${apiKeys.yelpClientSecret}`)
+    .then((body) => apiKeys.yelpAccessToken = JSON.parse(body).access_token) 
+    .catch((error) => console.log(error));
 
 module.exports = apiKeys;

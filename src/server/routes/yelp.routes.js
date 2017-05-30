@@ -21,6 +21,7 @@ const rp = require('request-promise');
 
 routes.get('/api/yelp', (req, res) => {
 	if(!apiKeys.yelpAccessToken) res.send('yelp access token not set!');
+  
 	const id = req.query.id || null;
 	const location = id ? null : req.query.location || null;
 	const longitude = location ? null : req.query.longitude || null;
@@ -34,10 +35,10 @@ routes.get('/api/yelp', (req, res) => {
 	        location: location,
 	        longitude: longitude,
 	        latitude: latitude,
-	        limit: 20,
+	        // limit: 20,
 	        term: terms,
 	        sort_by: 'distance',
-	        radius: 10000
+	        radius: 5000
 	    },
 	    headers: {
 	        'User-Agent': 'Request-Promise',

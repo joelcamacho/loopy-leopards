@@ -12,11 +12,10 @@ exports.up = function(knex, Promise) {
       table.string('state');
       table.string('latitude');
       table.string('longitude');
-      table.string('unconfirmed_phone').notNullable();
-      table.string('phone').unique()
+      table.string('phone');
       table.date('birthdate');
       table.boolean('registered').defaultTo(false);
-      table.boolean('phone_validated');
+      table.boolean('phone_validated').defaultTo(false);
       table.string('token');
     }),
     knex.schema.createTable('events', function(table) {

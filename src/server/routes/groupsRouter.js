@@ -7,7 +7,7 @@ const bookshelf = require('../db/models/db.js');
 
 router.route('/groups')
 	.get((req, res) => {
-		let id = 1,
+		let id = 6,
 		data = {}
 		User.where({id:id}).fetch({withRelated: ['groupsBelongingTo','groupsCreated']})
 		.then((groups) => {
@@ -25,7 +25,7 @@ router.route('/groups')
 	})
 	.post((req, res) => {
 		// { creator_id, name}
-		let creatorId = 1
+		let creatorId = 6
 		let groupData = {creator_id: creatorId}
 		
 		Object.assign(groupData, req.body)

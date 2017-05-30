@@ -127,19 +127,61 @@ exports.deleteCurrentUserFromId = (id, options) => {
   });
 }
 
-
 // ~~~~~~~~~~~~~~~~~ GROUP ~~~~~~~~~~~~~~~~~ 
 // Get all group information
 exports.getAllGroups = () => {}
 
 // Get Current User's Group Information
-exports.getCurrentUserGroup = (id) => {}
+exports.getCurrentUserGroup = (id) => {
+  return new Promise(function (resolve, reject) {
+    User.where({id:id}).fetch({withRelated: ['groupsBelongingTo','groupsCreated']})
+    .then((groups) => {
+      if(groups) {
+        const data = {};
+        data.groupsBelongingTo = groups.related('groupsBelongingTo');
+        data.groupsCreated = groups.related('groupsCreated');
+        resolve(data);
+      } else {
+        reject('Looks like you don\'t have any active groups');
+      }
+    })
+  });
+}
 
 // Create a new group and set owner and group options obj
-exports.createNewGroup = (id, options) => {}
+exports.createNewGroup = (id, options) => {
+  options.creator_id = id;
+  return new Promise(function (resolve, reject) {
+    new Group(options).save()
+    .then((group) => {
+      if(group) {
+        resolve('Group saved:' + group.get('name'));
+      } else {
+        reject('Could not save group');
+      }
+    })
+  });
+}
+
+// Get specific group information
+exports.getGroup = (group_id) => {
+  return new Promise(function (resolve, reject) {
+    Group.where({id:group_id}).fetch({withRelated: ['members', 'events']})
+    .then((group) => {
+      if(!!group) {
+        resolve(group);
+      } else {
+        reject('Could not get group', group_id)
+      }
+    })
+  });
+}
 
 // Leave current Group
 exports.leaveCurrentGroup = (id) => {}
+
+// Join Group
+exports.joinGroup = (id) => {}
 
 // Send Request to join group given group id
 exports.sendRequestToJoinGroup = (id, group_id) => {}
@@ -175,7 +217,7 @@ exports.sendInvitationToJoinEvent = (id, event_id, options) => {}
 exports.rejectInvitationToJoinEvent = (id, event_id) => {}
 
 // Accept Invitation to join event given event id and user id
-exports.rejectInvitationToJoinEvent = (id, event_id) => {}
+exports.acceptInvitationToJoinEvent = (id, event_id) => {}
 
 // Upvote an event
 exports.voteForEvent = (id, event_id) => {}

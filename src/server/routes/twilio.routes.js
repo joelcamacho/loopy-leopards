@@ -82,6 +82,11 @@ routes.post('/api/twilio/invitations', function(req, res) {
   // send invitation with list
 });
 
+
+routes.get('/api/twilio/test', function(req, res) {
+  util.sendMessageToPhone('+19734879888', 'Hello Willian!');
+});
+
 module.exports = routes;
 
 

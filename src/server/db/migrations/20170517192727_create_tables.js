@@ -12,7 +12,8 @@ exports.up = function(knex, Promise) {
       table.string('state');
       table.string('latitude');
       table.string('longitude');
-      table.string('phone').unique().notNullable()
+      table.string('unconfirmed_phone').notNullable();
+      table.string('phone').unique()
       table.date('birthdate');
       table.boolean('registered').defaultTo(false);
       table.boolean('phone_validated');

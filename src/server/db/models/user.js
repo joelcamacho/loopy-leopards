@@ -8,15 +8,13 @@ const User = bookshelf.Model.extend({
 
   initialize: function() {
     this.on("saving", (model, attrs, options) => {
-      if(attrs.google_id === null) {
-        this.set({'registered': false}).save()
+      if(this.google_id === undefined) {
+        this.set({'registered': false})
       } else {
-        this.set({'registered' : true}).save()
+        this.set({'registered' : true})
       };
     })
-
-    //   this.set({'phone_validated' : false});
-    // });
+      this.set({'phone_validated' : false});
     this.on("updating", (model, attrs, options) => {
       if(this.hasChanged('email')) {
         return this

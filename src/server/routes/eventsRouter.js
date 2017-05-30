@@ -52,7 +52,7 @@ router.route('/events')
 	// 	cost:
 	// 	voting_deadline:
 	// }
-
+	
 	let id = 1,
 	eventAttributes = {creator_id: id};
 
@@ -60,7 +60,7 @@ router.route('/events')
 
 	new Event(eventAttributes).save()
 	.then((event) => {
-		res.status(200).json('Event saved: ' + event.get('name'));
+		res.status(200).json(event);
 	})
 	.catch((err) => {
 		console.log(err)

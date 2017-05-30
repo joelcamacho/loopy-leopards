@@ -7,10 +7,14 @@ router.route('/users')
 .get((req, res) => {
 	User.fetchAll()
 	.then((users) => {
-		res.status(200).json(users)
+		if(users) {
+			res.status(200).json(users)
+		} else {
+			res.status(200).send('No users registered')
+		}
 	})
 	.catch((err) => {
-		consoe.log(err)
+		console.log(err)
 		res.status(400).send('Could not retrieve users')
 	})
 })

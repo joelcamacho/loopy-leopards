@@ -5,20 +5,18 @@ exports.up = function(knex, Promise) {
       table.string('first_name');
       table.string('last_name');
       table.string('google_id').unique();
-      table.string('email');
-      table.string('password')
-      table.string('address');
-      table.string('city');
-      table.string('state');
-      table.string('latitude');
-      table.string('longitude');
-      table.string('unconfirmed_phone')
-      // .notNullable();
-      table.string('phone').unique()
-      table.date('birthdate');
+      table.string('email').defaultTo(null);
+      table.string('password').defaultTo(null);
+      table.string('address').defaultTo(null);
+      table.string('city').defaultTo(null);
+      table.string('state').defaultTo(null);
+      table.string('latitude').defaultTo(null);
+      table.string('longitude').defaultTo(null);
+      table.string('phone').defaultTo(null);
+      table.date('birthdate').defaultTo(null);
       table.boolean('registered').defaultTo(false);
-      table.boolean('phone_validated');
-      table.string('token');
+      table.boolean('phone_validated').defaultTo(false);
+      table.string('token').defaultTo(null);
     }),
     knex.schema.createTable('events', function(table) {
       table.increments('id').primary();

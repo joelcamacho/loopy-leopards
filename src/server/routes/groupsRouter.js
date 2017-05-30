@@ -6,60 +6,53 @@ const Tag = require('../db/models/tag.js');
 const bookshelf = require('../db/models/db.js');
 
 router.route('/groups')
-
-.get((req, res) => {
-
-	let id = 1,
-	data = {}
-
-	User.where({id:id}).fetch({withRelated: ['groupsBelongingTo','groupsCreated']})
-	.then((groups) => {
-		if(groups) {
-			data.groupsBelongingTo = groups.related('groupsBelongingTo')
-			data.groupsCreated = groups.related('groupsCreated')
-			res.status(200).json(data);
-		} else {
-			res.status(200).send('Looks like you don\'t have any active groups')
-		}
-	})
-	.catch((err) => {
-		res.send(err)
-	})
-})
-
-.post((req, res) => {
-
-	let creatorId = 1,
-	groupData = {creator_id: creatorId},
-	data = {}
-	
-	Object.assign(groupData, req.body)
-
-	new Group(groupData).save(null, null, null, {require:true})
-	.then((group) => {
-		group.related('members').attach(id)
-		.catch((err) => {
-			data.error = 'Sorry, could not save you as a member of this group'
+	.get((req, res) => {
+		let id = 1,
+		data = {}
+		User.where({id:id}).fetch({withRelated: ['groupsBelongingTo','groupsCreated']})
+		.then((groups) => {
+			if(groups) {
+				data.groupsBelongingTo = groups.related('groupsBelongingTo')
+				data.groupsCreated = groups.related('groupsCreated')
+				res.status(200).json(data);
+			} else {
+				res.status(200).send('Looks like you don\'t have any active groups')
+			}
 		})
-		data.group = group
-		res.status(200).json(data);
+		.catch((err) => {
+			res.send(err)
+		})
 	})
-	.catch((err) => {
-		res.status(400).send('Could not save this group')
+	.post((req, res) => {
+		// { creator_id, name}
+		let creatorId = 1
+		let groupData = {creator_id: creatorId}
+		
+		Object.assign(groupData, req.body)
+
+		new Group(groupData).save()
+		.then((group) => {
+			if(group) {
+				res.status(200).send('Group saved:' + group.get('name'))
+			} else {
+				res.status(400).send('Could not save group')
+			}
+		})
+		.catch((err) => {
+			res.status(400).send('Could not save this group')
+		})
 	})
-})
 
 router.route('/groups/:id')
+	.get((req,res) => {
+		
+		let groupId = req.params.id
 
-.get((req,res) => {
-	
-	let groupId = req.params.id
-
-	Group.where({id:groupId}).fetch({withRelated: ['members', 'events']})
-	.then((group) => {
-		res.status(200).json(group)
+		Group.where({id:groupId}).fetch({withRelated: ['members', 'events']})
+		.then((group) => {
+			res.status(200).json(group)
+		})
 	})
-})
 
 router.post('/groups/:id/invite',(req,res) => {
 
@@ -77,7 +70,7 @@ router.post('/groups/:id/invite',(req,res) => {
 
 	//fetch Users' models from db
 	Promise.all(incomingMembers.map((member) => {
-		return User.where({unconfirmed_phone:member.unconfirmed_phone}).fetch()
+		return User.where({phone_validated:member.phone_validated}).fetch()
 	}))
 	.then((newMembers) => {
 		Group.where({id:groupId}).manageMembers(newMembers, 'invited')

@@ -28,6 +28,7 @@ export default class ProfilePageComponent extends React.Component {
 
     this.fetchAuthData = this.fetchAuthData.bind(this);
     this.fetchProfileData = this.fetchProfileData.bind(this);
+    this.sendPhoneVerificationCode = this.sendPhoneVerificationCode.bind(this);
 
     this.fetchAuthData();
   }
@@ -50,7 +51,7 @@ export default class ProfilePageComponent extends React.Component {
   fetchProfileData(id) {
     //this.sendAuthPhone();
     //this.test();
-    return fetch('/api/users/google/' + id, {credentials: 'include'})
+    return fetch('/api/user', {credentials: 'include'})
       .then(res => res.json())
       .then(res => {
         // might need to check res.result and update photo
@@ -60,8 +61,20 @@ export default class ProfilePageComponent extends React.Component {
   }
 
   sendAuthPhone() {
-    var phone = '+16466411017';
+    // var phone = '+16466411017';
+    var phone = '+19734879888';
+    
+    return fetch('/api/twilio/phone', { method: 'POST', 
+      body: JSON.stringify({phone:phone}),
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },});
+  }
 
+  sendPhoneVerificationCode() {
+    var phone = this.refs.phoneTextField.getValue();
     return fetch('/api/twilio/phone', { method: 'POST', 
       body: JSON.stringify({phone:phone}),
       credentials: 'include',
@@ -98,7 +111,7 @@ export default class ProfilePageComponent extends React.Component {
           this.handleClose();
           // send update request
           var profileUpdate = { 
-            phone: !this.refs.phoneTextField.getValue() ? this.props.profile.phone : this.refs.phoneTextField.getValue(),
+            phone: this.props.profile.phone,
             address: !this.refs.addressTextField.getValue() ? this.props.profile.address : this.refs.addressTextField.getValue(),
             city: !this.refs.cityTextField.getValue() ? this.props.profile.city : this.refs.cityTextField.getValue(),
             state: !this.refs.stateTextField.getValue() ? this.props.profile.state : this.refs.stateTextField.getValue(),
@@ -140,6 +153,12 @@ export default class ProfilePageComponent extends React.Component {
           primary={true}
           onTouchTap={firebaseHelpers.sendTestPushNotification}
         />
+        <TextField ref='phoneTextField' floatingLabelText="Phone Number"/>
+        <FlatButton
+          label="Send Phone Verification Code"
+          primary={true}
+          onTouchTap={this.sendPhoneVerificationCode}
+        />
       </div>
     ) : (<div> 
       <p> Please log in </p>
@@ -170,7 +189,6 @@ export default class ProfilePageComponent extends React.Component {
           open={this.state.open}
           onRequestClose={this.handleClose}
         >
-          <TextField ref='phoneTextField' floatingLabelText="Phone Number"/>
           <TextField ref='addressTextField' floatingLabelText="Address"/>
           <TextField ref='cityTextField' floatingLabelText="City"/>
           <TextField ref='stateTextField' floatingLabelText="State"/>

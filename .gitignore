@@ -58,6 +58,7 @@ typings/
 .env
 
 src/server/config/config.js
+src/client/app/config/config.jsx
 
 .DS_Store
 

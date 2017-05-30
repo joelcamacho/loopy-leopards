@@ -1,134 +1,52 @@
 const routes = require('express').Router();
-const apiKeys = require('../config/config.js');
+const helpers = require('../helpers/db.helpers.js');
+const util = require('../helpers/util.helpers.js');
 const twilio = require('twilio');
-const TwilioAuthService = require('node-twilio-verify')
-const User = require('../db/models/user.js');
-const Event = require('../db/models/event.js');
-
-// setup phone auth helper module
-twilioAuthService = new TwilioAuthService();
-twilioAuthService.init(apiKeys.twilioAccountSid, apiKeys.twilioAuthToken);
-twilioAuthService.setFromNumber(apiKeys.twilioFromNumber);
-
-//require the Twilio module and create a REST client 
-var client = twilio(apiKeys.twilioAccountSid, apiKeys.twilioAuthToken); 
-
-// Helper Methods
-const sendMessageToPhone = (phone, message, callback = (res) => res) => {
-  client.messages.create({ 
-    to: phone, 
-    from: apiKeys.twilioFromNumber, 
-    body: message, 
-  }, function(err, res) { 
-    if(err) {
-      console.log(err);
-    } else {
-      console.log(res.sid);
-      callback(res);
-    }
-  });
-}
-
-const sendCodeToPhone = (phone, profile, message = "To verify your HanginHubs please reply with the following 5 numbers and \'_" + profile.id + "\': \n(e.g. 12345_12)\n") => {
-  return twilioAuthService.sendCode(phone, message);
-}
-
-const authenticatePhoneWithCode = (phone, code) => {
-  return twilioAuthService.verifyCode(phone, code);
-}
-
-const sendEventInvitation = (user, message) => {
-  sendMessageToPhone(user.phone, message);
-}
-
-const sendEventInvitations = (event, users) => {
-  const message = `You have been invited an event on HanginHubs! Please go to the website to respond. Event Details: ${event.name} on ${event.date_time} at ${event.address}, ${event.city}, ${event.state}`;
-  users.forEach(user => sendEventInvitation(user, message));
-}
-
-const sendEventAnnouncement = (event, users, announcement) => {
-  const message = `Announcement for upcoming event \'${event.name}\': ${announcement}`;
-  users.forEach(user => sendEventInvitation(user, message));
-}
-
-// Example usage
-// var tempEvent = {name: 'Hack Reactor Social Night', date_time: 'Saturday, May 27, 5:00pm', address: '369 Lexington Ave', city: 'NYC', state: 'NY'};
-// var tempUsers = [{phone: '+19734879888'}, {phone: '+17182132839'}, {phone: '+16466411017'}];
-// sendEventInvitations(tempEvent, tempUsers);
-// sendEventAnnouncement(tempEvent, tempUsers, 'Just Joking, the event has been cancelled');
-
-// routes
 
 // handle verify webhook from twilio
 routes.post('/api/twilio/verify', function(req, res) {
-  console.log(req.body);
   const codeArr = req.body.Body.split('_');
   const code = codeArr[0];
   const userId = codeArr[1];
 
   if(!parseInt(code) || code.length !== 5 || !parseInt(userId)) {
-    console.log('invalid verification code');
-    res.end('invalid code');
-    return;
+    return res.end('invalid code');
   }
 
-  new User({id: userId}).fetch()
-    .then((user) => {
-      if(!!user) {
-        const isValid = authenticatePhoneWithCode(req.body.From, code);
-        console.log('user', user, user.get('phone_validated'));
-
-        if(user.get('phone_validated')) {
-          let msg = 'Your phone number has already been validated! ';
-          const twiml = new twilio.twiml.MessagingResponse();
-          twiml.message(msg);
-          res.writeHead(200, {'Content-Type': 'text/xml'});
-          res.end(twiml.toString());
-        } else if(isValid) {
-          let msg = 'Congratulations! Your phone number has been verified with HanginHubs!';
-          user.set({'phone_validated': true});
-          user.set({'phone': req.body.From});
-          user.save();
-          const twiml = new twilio.twiml.MessagingResponse();
-          twiml.message(msg);
-          res.writeHead(200, {'Content-Type': 'text/xml'});
-          res.end(twiml.toString());
-        } else {
-          const twiml = new twilio.twiml.MessagingResponse();
-          twiml.message('Invalid code! Please type the correct code, or send another code from your HanginHubs profile settings.');
-          res.writeHead(200, {'Content-Type': 'text/xml'});
-          res.end(twiml.toString());
-        }
-      } else {
-        console.log('invalid user id or phone');
-        res.end('invalid user id or phone');
-      }
-    });
+  helpers.getCurrentUserFromId(userId)
+  .catch(err => res.end('invalid user id or phone'))
+  .then(user => {
+    const isValid = util.authenticatePhoneWithCode(req.body.From, code);
+    console.log('got user', user, isValid, user.get('phone_validated'));
+    let twiml = new twilio.twiml.MessagingResponse();
+    if(user.get('phone_validated') === 1) {
+      twiml.message('Your phone number has already been validated!');
+      res.writeHead(200, {'Content-Type': 'text/xml'});
+      res.end(twiml.toString());
+    } else if(isValid) {
+      util.setVerifyPhoneNumber(userId, req.body.From);
+      twiml.message('Congratulations! Your phone number has been verified with HanginHubs!');
+      res.writeHead(200, {'Content-Type': 'text/xml'});
+      res.end(twiml.toString());
+    } else {
+      twiml.message('Invalid code! Please type the correct code, or send another code from your HanginHubs profile settings.');
+      res.writeHead(200, {'Content-Type': 'text/xml'});
+      res.end(twiml.toString());
+    }
+  })
 });
 
 // send code to current user's phone number
 // do this only if the user has created an account
 routes.post('/api/twilio/phone', function(req, res) {
+  if(!req.user) return res.send({result: 'User is not authenticated!'});
   const phone = req.body.phone;
 
-  // see if user is authenticated
-  if(!req.user) return res.send({result: 'User is not authenticated!'});
-
-
-  // see if phone already exists and is validated
-  new User({phone: phone, phone_validated: true}).fetch()
-    .then((user) => {
-      if(!!user){
-        console.log('Phone already validated!');
-        res.send({result: 'Phone already validated!'});
-      } else {
-        // find user
-        new User({google_id: req.user.id}).fetch()
-        .then((user) => {
-          sendCodeToPhone(phone, user);
-        })
-      }
-    })
+  util.isPhoneValidated(phone)
+  .then(result => res.send({result: result}))
+  .catch(err => helpers.getCurrentUserFromGoogleId(req.user.id))
+  .then(user => util.sendCodeToPhone(phone, user))
+  .catch(err => res.send({result: err}));
 });
 
 // broadcast a message to all users given an event

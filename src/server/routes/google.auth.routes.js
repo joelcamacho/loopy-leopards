@@ -29,19 +29,7 @@ routes.get('/auth/google/callback',
     userData.first_name = req.user.name.givenName;
     userData.last_name = req.user.name.familyName;
     userData.google_id = req.user.id;
-    userData.email = null;
-    userData.password = null;
-    userData.address = null;
-    userData.city = null;
-    userData.state = null;
-    userData.latitude = null;
-    userData.longitude = null;
-    userData.phone = null;;
-    userData.birthdate = null;
-    userData.registered = null;
-    userData.phone_validated = null;
-    userData.token = null;
-
+    
     console.log(userData);
 
     new User({google_id: userData.google_id}).fetch()
@@ -54,24 +42,12 @@ routes.get('/auth/google/callback',
         })
         .catch((err) => {
           console.log(err)
-          res.status(400).send(err)
+          res.redirect('/');
         })
       } else {
         res.redirect('/');
       }
     })
-    .catch((err) => {
-
-      User.forge(userData).save()
-      .then((user) => {
-        console.log(user);
-        res.redirect('/');  
-      })
-      .catch((err) => {
-        console.log(err)
-        res.status(400).send(err)
-      })
-    });
   });
 
 module.exports = routes;

@@ -5,7 +5,7 @@ const User = require('../db/models/user.js');
 // Get Current User's Id from current auth (google_id)
 exports.getUserIdFromGoogleId = google_id => {
   return new Promise(function (resolve, reject) {
-    if(!google_id) return reject('invalid google_id');
+    if(google_id === undefined) return reject('invalid google_id');
     new User({google_id: google_id}).fetch()
     .then(user => {
       if(!!user) {

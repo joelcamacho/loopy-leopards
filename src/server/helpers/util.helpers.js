@@ -1,12 +1,22 @@
-const apiKeys = require('../config/config.js');
 const fetch = require('node-fetch');
 const Promise = require('promise');
+const apiKeys = require('../config/config.js');
 const User = require('../db/models/user.js');
-const helpers = require('../helpers/db.helpers.js');
+const Event = require('../db/models/event.js');
+const helpers = require('./db.helpers.js');
+const twilio = require('twilio');
+const TwilioAuthService = require('node-twilio-verify')
 
-// TODO: add all twilio text messaging helper methods
+// setup phone auth helper module and twilio client
+const twilioAuthService = new TwilioAuthService();
+twilioAuthService.init(apiKeys.twilioAccountSid, apiKeys.twilioAuthToken);
+twilioAuthService.setFromNumber(apiKeys.twilioFromNumber);
+const client = twilio(apiKeys.twilioAccountSid, apiKeys.twilioAuthToken); 
 
-// TODO: add all FCM push notification helper methods
+
+// Firebase Cloud Messaging Notification helpers
+
+// To receive notification, user must allow notifications
 exports.pushToUserFromId = (id, options = {}) => {
   const key = apiKeys.fcmServerKey;
   const notification = {
@@ -35,6 +45,7 @@ exports.pushToUserFromId = (id, options = {}) => {
     })
 }
 
+// Register and unregister user to receive notifications
 exports.updateUserTokenFromId = (id, token) => {
   return new Promise(function (resolve, reject) {
     new User({id: id}).fetch()
@@ -49,3 +60,70 @@ exports.updateUserTokenFromId = (id, token) => {
     });
   })
 }
+
+// Twilio Helper Methods
+// Example usage
+// var tempEvent = {name: 'Hack Reactor Social Night', date_time: 'Saturday, May 27, 5:00pm', address: '369 Lexington Ave', city: 'NYC', state: 'NY'};
+// var tempUsers = [{phone: '+19734879888'}, {phone: '+17182132839'}, {phone: '+16466411017'}];
+// sendEventInvitations(tempEvent, tempUsers);
+// sendEventAnnouncement(tempEvent, tempUsers, 'Just Joking, the event has been cancelled');
+
+exports.sendMessageToPhone = (phone, message, callback = (res) => res) => {
+  client.messages.create({ 
+    to: phone, 
+    from: apiKeys.twilioFromNumber, 
+    body: message, 
+  }, function(err, res) { 
+    if(err) {
+      console.log(err);
+    } else {
+      console.log(res.sid);
+      callback(res);
+    }
+  });
+}
+
+exports.sendCodeToPhone = (phone, profile, message = "To verify your HanginHubs please reply with the following 5 numbers and \'_" + profile.id + "\': \n(e.g. 12345_12)\n") => {
+  return twilioAuthService.sendCode(phone, message);
+}
+
+exports.authenticatePhoneWithCode = (phone, code) => {
+  return twilioAuthService.verifyCode(phone, code);
+}
+
+exports.sendEventInvitation = (user, message) => {
+  sendMessageToPhone(user.phone, message);
+}
+
+exports.sendEventInvitations = (event, users) => {
+  const message = `You have been invited an event on HanginHubs! Please go to the website to respond. Event Details: ${event.name} on ${event.date_time} at ${event.address}, ${event.city}, ${event.state}`;
+  users.forEach(user => sendEventInvitation(user, message));
+}
+
+exports.sendEventAnnouncement = (event, users, announcement) => {
+  const message = `Announcement for upcoming event \'${event.name}\': ${announcement}`;
+  users.forEach(user => sendEventInvitation(user, message));
+}
+
+exports.setVerifyPhoneNumber = (id, phone) => {
+  helpers.getCurrentUserFromId(id)
+  .then(user => {
+    user.set({'phone_validated': true});
+    user.set({'phone': phone});
+    user.save();
+  })
+}
+
+exports.isPhoneValidated = (phone) => {
+  return new Promise(function (resolve, reject) {
+    new User({phone: phone, phone_validated: true}).fetch()
+      .then((user) => {
+        if(!!user) {
+          resolve('Phone already validated!');
+        } else {
+          reject('Phone not validated');
+        }
+      })
+  });
+}
+

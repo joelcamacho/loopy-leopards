@@ -36,11 +36,11 @@ routes.route('/users/:id')
 		.catch(err => res.status(400).send({result: err}))
 	})
 	// TESTING PURPOSES ONLY
-	// .delete((req,res) => {
-	// 	helpers.deleteCurrentUserFromId(req.params.id)
-	// 	.catch(err => res.status(400).send({result: err}))
-	// 	.then(result => res.send(result))
-	// })
+	.delete((req,res) => {
+		helpers.deleteCurrentUserFromId(req.params.id)
+		.catch(err => res.status(400).send({result: err}))
+		.then(result => res.send(result))
+	})
 	// .put((req,res) => {
 	// 	helpers.updateCurrentUserFromId(req.params.id, req.body)
 	// 	.catch(err => res.status(400).send({result: err}))

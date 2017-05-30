@@ -14,7 +14,7 @@ const User = bookshelf.Model.extend({
         this.set({'registered' : true})
       };
     })
-      this.set({'phone_validated' : false});
+    this.set({'phone_validated' : false});
     this.on("updating", (model, attrs, options) => {
       if(this.hasChanged('email')) {
         return this

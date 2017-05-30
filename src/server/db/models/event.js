@@ -11,7 +11,6 @@ const Event = bookshelf.Model.extend({
 
 	invitees: function() {
 		return this.belongsToMany('User').withPivot('voted')
-		// .withPivot(user_id)
 	},
 
 	group: function() {

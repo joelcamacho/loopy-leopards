@@ -27,7 +27,7 @@ router.route('/events')
 		}))
 		.then((result) => {
 			data.created = result
-			res.send(data)
+			res.status(200).json(data)
 		})
 		.catch((err) => {
 			res.status(400).send('Something went wrong')
@@ -52,19 +52,23 @@ router.route('/events')
 	// 	cost:
 	// 	voting_deadline:
 	// }
-
 	let id = 1,
-	eventAttributes = {creator_id: id};
+	eventAttributes = {creator_id: id},
+	data = {}
 
 	Object.assign(eventAttributes, req.body);
 
-	new Event(eventAttributes).save()
+	new Event(eventAttributes).save(null, null, null, {require:true})
 	.then((event) => {
-		res.status(200).json('Event saved: ' + event.get('name'));
+		event.related('invitees').attach(id)
+		.catch((err) => {
+			data.error = 'Sorry, could not save you as an invitee of this event'
+		})
+		data.event = event
+		res.status(200).json(data);
 	})
 	.catch((err) => {
-		console.log(err)
-		res.status(400).send('Could not save your event')
+		res.status(400).send('Sorry, could not save your event, please try again!')
 	})
 })
 

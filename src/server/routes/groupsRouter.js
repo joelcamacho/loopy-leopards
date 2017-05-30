@@ -29,24 +29,25 @@ router.route('/groups')
 
 .post((req, res) => {
 
-	let creatorId = 1
-	let groupData = {creator_id: creatorId}
+	let creatorId = 1,
+	groupData = {creator_id: creatorId},
+	data = {}
 	
 	Object.assign(groupData, req.body)
 
-	new Group(groupData).save()
+	new Group(groupData).save(null, null, null, {require:true})
 	.then((group) => {
-		if(group) {
-			res.status(200).send('Group saved:' + group.get('name'))
-		} else {
-			res.status(400).send('Could not save group')
-		}
+		group.related('members').attach(id)
+		.catch((err) => {
+			data.error = 'Sorry, could not save you as a member of this group'
+		})
+		data.group = group
+		res.status(200).json(data);
 	})
 	.catch((err) => {
 		res.status(400).send('Could not save this group')
 	})
 })
-
 
 router.route('/groups/:id')
 

@@ -8,7 +8,7 @@ export default class CreatePageComponent extends React.Component {
 
   render() {
     return (
-      <Paper> CreatePageComponent </Paper>
+      <Paper> CreatePageComponent, Please update this page component David </Paper>
     );
   }
 }

@@ -22,11 +22,11 @@ const rp = require('request-promise');
 routes.get('/api/yelp', (req, res) => {
 	if(!apiKeys.yelpAccessToken) res.send('yelp access token not set!');
   
-	const id = req.query.id || null;
-	const location = id ? null : req.query.location || null;
-	const longitude = location ? null : req.query.longitude || null;
-	const latitude = location ? null : req.query.latitude || null;
-	const terms = req.query.terms || null;
+	const id = req.query.id || undefined;
+	const location = id ? undefined : req.query.location || undefined;
+	const longitude = location ? undefined : req.query.longitude || undefined;
+	const latitude = location ? undefined : req.query.latitude || undefined;
+	const terms = req.query.terms || undefined;
 
 	const options = {
 	    uri: id ? `https://api.yelp.com/v3/businesses/${id}`

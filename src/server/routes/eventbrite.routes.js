@@ -13,11 +13,11 @@ const rp = require('request-promise');
 // eg. https://www.eventbriteapi.com/v3/events/search/?token=ALPXUSBHYYOPXWXOSA54&location.address=Manhattan&location.within=5mi
 
 routes.get('/api/eventbrite', (req, res) => {
-  const q = req.query.q || null
-  const locationAddress = req.query.location || null
-  const locationLongitude = locationAddress ? null : req.query.longitude || null
-  const locationLatitude = locationAddress ? null : req.query.latitude || null
-  const locationWithin = req.query.within || null
+  const q = req.query.q || undefined
+  const locationAddress = req.query.location || undefined
+  const locationLongitude = locationAddress ? undefined : req.query.longitude || undefined
+  const locationLatitude = locationAddress ? undefined : req.query.latitude || undefined
+  const locationWithin = req.query.within || undefined
 
 	const options = {
 	    uri: 'https://www.eventbriteapi.com/v3/events/search/?',

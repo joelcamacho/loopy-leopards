@@ -73,7 +73,7 @@ export default class NavComponent extends React.Component {
               }
           />
         </div>
-        <div style={{marginTop: '48pt'}}>
+        <div style={{marginTop: '48pt', backgroundColor: 'lightblue'}}>
           {this.props.children}
         </div>
       </div>

@@ -24,6 +24,9 @@ import ProfilePageContainer from './containers/profile.container.jsx';
 import GroupPageContainer from './containers/group.container.jsx';
 import FindPageContainer from './containers/find.container.jsx';
 import EventsPageContainer from './containers/events.container.jsx';
+import CreatePageContainer from './containers/create.container.jsx';
+import AlertsPageContainer from './containers/alerts.container.jsx';
+import AboutPageContainer from './containers/about.container.jsx';
 
 // import helpers
 import firebaseHelpers from './helpers/firebase.helper.jsx';
@@ -57,12 +60,14 @@ class App extends React.Component {
           	  <NavContainer>
             		<HashRouter>
             			<Switch>
-                    <Route exact path="/" component={HomePageContainer}/>
-                    <Route exact path="/home" component={HomePageContainer}/>
-                    <Route exact path="/profile" component={ProfilePageContainer}/>
+                    <Route exact path="/" component={FindPageContainer}/>
+                    <Route exact path="/search" component={FindPageContainer}/>
                     <Route exact path="/group" component={GroupPageContainer}/>
-                    <Route exact path="/find" component={FindPageContainer}/>
-                    <Route exact path="/events" component={EventsPageContainer}/>
+                    <Route exact path="/plans" component={EventsPageContainer}/>
+                    <Route exact path="/create" component={CreatePageContainer}/>
+                    <Route exact path="/alerts" component={AlertsPageContainer}/>
+                    <Route exact path="/profile" component={ProfilePageContainer}/>
+                    <Route exact path="/about" component={AboutPageContainer}/>
             	    </Switch>
                 </HashRouter>
               </NavContainer>

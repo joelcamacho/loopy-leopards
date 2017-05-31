@@ -59,12 +59,12 @@
   position: fixed;
   width: 100%;
   bottom: 0;
-  flex-direction: column
+  flex-direction: column;
+  z-index: 10;
 }
 .bottomNav {
   padding: 5pt 0pt;
   text-align: center;
-  z-index: 10;
   max-width: 800px;
 
   .bottomNavItem {

@@ -243,12 +243,12 @@ export default class FindPageComponent extends React.Component {
       body: JSON.stringify(
         {
           //need an img
-          // img: event.img,
+          img: this.props.event.img,
           name: this.props.event.title,
           //2 date time! now is event time
           date_Time: this.props.event.date_time,
-          // time: this.state.value12
-          // date: this.state.controlledDate
+          time: this.state.value12,
+          date: this.state.controlledDate,
           description: this.props.event.description.slice(0,250),
           address: this.props.event.address,
           city: this.props.event.city,
@@ -258,9 +258,8 @@ export default class FindPageComponent extends React.Component {
           longitude: this.props.event.longitude,
           comments: this.state.testValue,
           url: this.props.event.url,
-          //creator_id: this.state.auth.displayName,
+          //creator_id: this.props.auth.id,
           //group_id:
-          //users: this.state.invitedUsers.map(user => user.name),
         }
       )
     }
@@ -275,7 +274,7 @@ export default class FindPageComponent extends React.Component {
         rObj.phone = user.phone;
         return rObj;
       })
-      console.log(usersArray)
+
       let init = {
         method: 'POST',
         credentials: 'include',
@@ -289,7 +288,7 @@ export default class FindPageComponent extends React.Component {
           }
         )
       }
-      let url = '/api/events/' + res.id + '/invite';
+      let url = '/api/events/' + res.event.id + '/invite';
       fetch(url, init)
       .then(res => res.json())
       .catch(err => console.log("can not save users !!!!!!!!!"))
@@ -298,7 +297,7 @@ export default class FindPageComponent extends React.Component {
   }
 
   handleClickUser (user) {
-    console.log("searchUsers: ", user)
+
     let rightIconArray;
     let position
     rightIconArray = this.state.userStatus.map((ele, ind) => {
@@ -361,7 +360,6 @@ getIndex (name) {
     const { events } = this.props;
     const { event } = this.props;
     const { users } = this.props;
-    console.log("Event: ", event);
     ///////////////////////////Dialog/////////////////////////
     const actions = [
       <FlatButton

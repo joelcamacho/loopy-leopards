@@ -230,12 +230,6 @@ export default class FindPageComponent extends React.Component {
   }
 
   handleConfirm () {
-    // console.log("Date: ", this.state.controlledDate);
-    // console.log("testValue: ", this.state.testValue);
-    // console.log("time: ", this.state.value12);
-    // console.log("invitedUsers: ", this.state.invitedUsers.map(user => user.name));
-    // console.log("Event info: ", this.props.event);
-    // console.log("Check This: ", this.props.auth.displayName);
 
     let init = {
       method: 'POST',

@@ -19,7 +19,7 @@ export default class BottomNav extends React.Component {
       <div>
         <div className="bottomNavContainer">
           <Paper className="bottomNav">
-            <BottomNavigation>
+            <BottomNavigation className="bottomNavComponent">
               <HashRouter>
                 <div>
                   <Link to="/search"> 

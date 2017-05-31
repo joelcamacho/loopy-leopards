@@ -17,7 +17,7 @@ export default class EventsPageComponent extends React.Component {
 
   render() {
     return (<div>
-      <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey"}}>
+      <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
         <Tab className="tabsItem" label="Schedule" >
           <div className="tabsPage">
             <h2 style={styles.headline}>PUT UPCOMING PLANS LIST HERE and any conflicting plans </h2>

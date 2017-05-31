@@ -16,7 +16,7 @@ routes.get('/api/eventbrite', (req, res) => {
   const q = req.query.q || undefined
   const locationAddress = req.query.location || undefined
   const locationLongitude = locationAddress ? undefined : req.query.longitude || undefined
-  const locationlatitude = locationAddress ? undefined : req.query.latitude || undefined
+  const locationLatitude = locationAddress ? undefined : req.query.latitude || undefined
   const locationWithin = req.query.within || undefined
 
   const options = {

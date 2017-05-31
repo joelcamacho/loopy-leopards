@@ -25,7 +25,7 @@ routes.get('/api/eventbrite', (req, res) => {
           token: apiKeys.eventbriteAccessToken,
           q: q,
           "location.address": locationAddress,
-          "location.latitude": locationlatitude,
+          "location.latitude": locationLatitude,
           "location.longitude": locationLongitude,
           "location.within": locationWithin
       }

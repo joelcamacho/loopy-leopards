@@ -4,8 +4,8 @@ const yelpRoutes = require('./yelp.routes.js')
 const googleAuthRoutes = require('./google.auth.routes.js')
 const authRoutes = require('./auth.routes.js')
 const eventbriteRoutes = require('./eventbrite.routes.js')
-const eventRouter = require('./eventsRouter.js');
-const userRouter = require('./users.routes.js');
+const eventsRouters= require('./events.routes.js');
+const usersRoutes = require('./users.routes.js');
 const groupRouter = require('./groupsRouter.js');
 const twilioRoutes = require('./twilio.routes.js');
 const pushRoutes = require('./push.routes.js');
@@ -20,11 +20,6 @@ function ensureAuthenticated(req, res, next) {
 	}
 }
 
-// test route
-routes.get('/', (req, res) => {
-  res.status(200).json({ message: 'Connected!' });
-});
-
 // auth routes
 routes.use(googleAuthRoutes);
 routes.use(authRoutes);
@@ -36,7 +31,6 @@ routes.use(eventbriteRoutes);
 routes.use(twilioRoutes);
 routes.use(pushRoutes);
 
-routes.use('/api', eventRouter, userRouter, groupRouter);
-
+routes.use('/api', eventsRouters, usersRoutes, groupRouter);
 
 module.exports = routes;

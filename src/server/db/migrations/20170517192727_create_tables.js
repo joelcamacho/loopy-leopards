@@ -1,6 +1,6 @@
 exports.up = function(knex, Promise) {
   return Promise.all([
-    knex.schema.createTable('users', function(table) {
+knex.schema.createTable('users', function(table) {
       table.increments('id').primary();
       table.string('first_name');
       table.string('last_name');
@@ -18,16 +18,17 @@ exports.up = function(knex, Promise) {
       table.boolean('phone_validated').defaultTo(false);
       table.string('token').defaultTo(null);
     }),
+
     knex.schema.createTable('events', function(table) {
       table.increments('id').primary();
       table.string('name').notNullable();
       table.dateTime('date_time')
-      table.string('description');
+      table.string('description','longtext');
       // .notNullable();
       table.string('address',[20]);
       table.string('city',[20]);
       table.string('state', [2]);
-      table.string('phone',[11]);
+      table.string('phone',[14]);
       table.string('latitude');
       table.string('comments');
       //.notNullable()
@@ -43,6 +44,10 @@ exports.up = function(knex, Promise) {
       table.foreign('creator_id').references('users.id');
       table.integer('group_id').unsigned();
       table.foreign('group_id').references('groups.id');
+      table.string('url');
+      table.string('time');
+      table.string('date');
+      table.string('img');
     }),    
     knex.schema.createTable('groups', function(table) {
       table.increments('id').primary();

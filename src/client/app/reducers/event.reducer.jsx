@@ -37,7 +37,8 @@ export default function event(state = {status: 'first'}, action) {
         {latitude: action.payload.latitude},
         {longitude: action.payload.longitude},
         {description: action.payload.description},
-        {date_time: action.payload.date_time}
+        {date_time: action.payload.date_time},
+        {url: action.payload.url},
       );
     case "SET_STATE_BACK_TO_DEFAULT":
       return Object.assign({}, state, {status: 'first'});

@@ -17,36 +17,6 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Chip from 'material-ui/Chip';
 
-const fakeGroupData = {
-  name: 'Loopy Leopards',
-  list: [
-    {
-      name: 'Mao Ze Dong',
-      photo: 'http://www.dssk.net/uploads/allimg/201626/0800/00/49/00491536026.jpg',
-      phone: '123-123-1234'
-    },
-    {
-      name: 'Kimmy J',
-      photo: 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg',
-      phone: '123-123-KimJ'
-    },
-    {
-      name: 'Pu King',
-      photo: 'http://s7.sinaimg.cn/mw690/002Yaqefzy6IpUEtioC16&690',
-      phone: '123-123-1243'
-    },
-    {
-      name: 'An Bei',
-      photo: 'https://upload.wikimedia.org/wikipedia/commons/e/e9/Shinz%C5%8D_Abe_April_2015.jpg',
-      phone: '578-123-1234'
-    },
-    {
-      name: 'Donald John Trump',
-      photo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Donald_Trump_Arizona_2016.jpg/434px-Donald_Trump_Arizona_2016.jpg',
-      phone: '123-234-1234'
-    }
-  ],
-}
 
 
 export default class FindPageComponent extends React.Component {
@@ -60,29 +30,10 @@ export default class FindPageComponent extends React.Component {
       value12: null,
       testValue: 'Anything you want to say?',
       open: false,
-      userStatus: [{
-        name: 'Mao Ze Dong',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'Kimmy J',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'Pu King',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'An Bei',
-        rightIconDisplay: (<ContentAdd />),
-      },
-      {
-        name: 'Donald John Trump',
-        rightIconDisplay: (<ContentAdd />),
-      }
-      ],
+      userStatus: [],
       clickUserStatus: false,
       invitedUsers: [],
+      userGroupData: [],
     };
 
     this.handleChangeDate = (event, date) => {
@@ -121,16 +72,15 @@ export default class FindPageComponent extends React.Component {
       this.setState({open: false});
     };
 
-    this.group = fakeGroupData;
+    //this.group = this.state.userGroupData;
 
     this.handleSearchbar = (event, userInput) => {
       var users = [];
-      !!userInput ? this.group.list.forEach(userInfo => {
+      !!userInput ? this.state.userGroupData.forEach(userInfo => {
         if(userInfo.name.indexOf(userInput) > -1 || userInfo.phone.indexOf(userInput) > -1) {
           users.push(userInfo)
         }
-      }) : users = this.group.list;
-      console.log("user or users: ", users);
+      }) : users = this.state.userGroupData;
       this.props.searchUsers(users);
     }
 
@@ -185,7 +135,8 @@ export default class FindPageComponent extends React.Component {
             longitude: '',
             title: event.name.text,
             description: event.description.text,
-            date_time: event.start.local
+            date_time: event.start.local,
+            url: event.url,
           }
         })
         eventsbriteData = eventsbrite;
@@ -240,12 +191,38 @@ export default class FindPageComponent extends React.Component {
             i--;
           }
         }
-        //console.log("result: ", result)
+        console.log("result: ", result)
         this.props.addEvents(getUnique(result));
+      })
+      .then(res => {
+        fetch('/api/users', {credentials: 'include'})
+        .then(res => res.json())
+        .catch(error => {
+          console.log("Can not received users data from database!!!");
+        })
+        .then(res => {
+          let userStatusArray = res.map(user => {
+            var rObj = {};
+            rObj.name = user.first_name + ' ' + user.last_name;
+            rObj.rightIconDisplay = (<ContentAdd />);
+            return rObj;
+          })
+          this.setState({userStatus: userStatusArray});
+          let userGroup = res.map(user => {
+            var rObj = {};
+            rObj.name = user.first_name + ' ' + user.last_name;
+            rObj.photo = null;
+            rObj.phone = user.phone;
+            return rObj;
+          })
+          this.setState({userGroupData: userGroup});
+        })
       })
   }
 
   getEvent (event) {
+    //console.log('userStatus!!!!!!!!: ',this.state.userStatus);
+    //console.log('group!!!!!!!: ', this.state.userGroupData);
     this.props.createEvent(event);
   }
 
@@ -254,8 +231,73 @@ export default class FindPageComponent extends React.Component {
     this.props.setStateBackToDefault({status: 'first'});
   }
 
+  handleConfirm () {
+
+    let init = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(
+        {
+          //need an img
+          img: this.props.event.img,
+          name: this.props.event.title,
+          //2 date time! now is event time
+          date_Time: this.props.event.date_time,
+          time: this.state.value12,
+          date: this.state.controlledDate,
+          description: this.props.event.description.slice(0,250),
+          address: this.props.event.address,
+          city: this.props.event.city,
+          state: this.props.event.state,
+          phone: this.props.event.phone,
+          latitude: this.props.event.latitude,
+          longitude: this.props.event.longitude,
+          comments: this.state.testValue,
+          url: this.props.event.url,
+          //creator_id: this.props.auth.id,
+          //group_id:
+        }
+      )
+    }
+
+    fetch('/api/events', init)
+    .then(res => res.json())
+    .catch(err => console.log("can not save event data!!!!!!"))
+    .then(res => {
+      let usersArray = this.state.invitedUsers.map(user => {
+        let rObj = {};
+        rObj.first_name = user.name.split(" ")[0];
+        rObj.phone = user.phone;
+        return rObj;
+      })
+
+      let init = {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify(
+          {
+            invitees: usersArray
+          }
+        )
+      }
+      let url = '/api/events/' + res.event.id + '/invite';
+      fetch(url, init)
+      .then(res => res.json())
+      .catch(err => console.log("can not save users !!!!!!!!!"))
+      .then(res => console.log(res))
+    })
+  }
+
   handleClickUser (user) {
-    console.log("searchUsers: ", user)
+
     let rightIconArray;
     let position
     rightIconArray = this.state.userStatus.map((ele, ind) => {
@@ -276,7 +318,7 @@ export default class FindPageComponent extends React.Component {
       return rObj;
     })
     if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
-        this.state.invitedUsers.push({name: user.name, photo: user.photo});
+        this.state.invitedUsers.push({name: user.name, photo: user.photo, phone: user.phone});
     } else {
         const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(user.name);
         this.state.invitedUsers.splice(chipToDelete, 1);
@@ -288,7 +330,7 @@ export default class FindPageComponent extends React.Component {
 handleRequestDelete (name) {
   const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
   this.state.invitedUsers.splice(chipToDelete, 1);
-  console.log("invitedUser state: ", this.state.invitedUsers)
+  //console.log("invitedUser state: ", this.state.invitedUsers)
   let rightIconArray = this.state.userStatus.map((ele, ind) => {
     var rObj = {};
     if (ele.name === name) {
@@ -304,7 +346,7 @@ handleRequestDelete (name) {
 }
 
 getIndex (name) {
-  console.log(this.state);
+  //console.log(this.state);
   let RIC; 
   this.state.userStatus.forEach((ele,ind) => {
     if(ele.name === name) {
@@ -318,7 +360,6 @@ getIndex (name) {
     const { events } = this.props;
     const { event } = this.props;
     const { users } = this.props;
-    console.log("state from state: ", users.size);
     ///////////////////////////Dialog/////////////////////////
     const actions = [
       <FlatButton
@@ -378,7 +419,7 @@ getIndex (name) {
           <Paper className="container">
             <img src={event.img} alt="eventImg"/>
             {event.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.title}</p></div><Divider/></List>) : null}
-            {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description}</p></div><Divider/></List>) : null}
+            {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description.length > 100 ? event.description.slice(0,100) + '...' : event.description }{event.url ? (<a href={event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
             {event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.address}</p></div><Divider/></List>) : null}
             {event.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.city}</p></div><Divider/></List>) : null}
             {event.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.state}</p></div><Divider/></List>) : null}
@@ -421,7 +462,7 @@ getIndex (name) {
                   <Subheader> Current Members </Subheader>
                   {
                     !!users.size ? 
-                    this.group.list.map((obj, ind) => (<ListItem
+                    this.state.userGroupData.map((obj, ind) => (<ListItem
                     key={obj.phone }
                     primaryText={obj.name }
                     leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
@@ -446,8 +487,7 @@ getIndex (name) {
             <div>
             <Subheader>Comment</Subheader>
               <TextField
-                id="text-field-controlled"
-                value={this.state.testValue}
+                floatingLabelText="Anything you want to say?"
                 onChange={this.handleChangeTestValue}
                 multiLine={true}
               />
@@ -473,7 +513,7 @@ getIndex (name) {
             <div>
               <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
               <Link to="/home">
-              <FlatButton className="drawerItem" label="Confirm" onClick={() => this.backToEvents([])}/>
+              <FlatButton className="drawerItem" label="Confirm" onClick={() => this.handleConfirm()}/>
               </Link>
             </div>
             <br/>

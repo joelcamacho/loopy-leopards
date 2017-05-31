@@ -221,6 +221,8 @@ export default class FindPageComponent extends React.Component {
   }
 
   getEvent (event) {
+    //console.log('userStatus!!!!!!!!: ',this.state.userStatus);
+    //console.log('group!!!!!!!: ', this.state.userGroupData);
     this.props.createEvent(event);
   }
 

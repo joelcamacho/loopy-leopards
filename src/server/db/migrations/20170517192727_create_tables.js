@@ -5,7 +5,6 @@ exports.up = function(knex, Promise) {
       table.string('first_name');
       table.string('last_name');
       table.string('google_id').unique();
-
       table.string('email').defaultTo(null);
       table.string('password').defaultTo(null);
       table.string('address').defaultTo(null);
@@ -15,6 +14,9 @@ exports.up = function(knex, Promise) {
       table.string('longitude').defaultTo(null);
       table.string('phone').defaultTo(null);
       table.date('birthdate').defaultTo(null);
+      table.string('unconfirmed_phone')
+      // .notNullable();
+      table.string('phone').unique()
       table.boolean('registered').defaultTo(false);
       table.boolean('phone_validated').defaultTo(false);
       table.string('token').defaultTo(null);

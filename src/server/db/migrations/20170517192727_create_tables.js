@@ -5,6 +5,7 @@ exports.up = function(knex, Promise) {
       table.string('first_name');
       table.string('last_name');
       table.string('google_id').unique();
+
       table.string('email').defaultTo(null);
       table.string('password').defaultTo(null);
       table.string('address').defaultTo(null);
@@ -22,12 +23,12 @@ exports.up = function(knex, Promise) {
       table.increments('id').primary();
       table.string('name').notNullable();
       table.dateTime('date_time')
-      table.string('description');
+      table.string('description','longtext');
       // .notNullable();
       table.string('address',[20]);
       table.string('city',[20]);
       table.string('state', [2]);
-      table.string('phone',[11]);
+      table.string('phone',[14]);
       table.string('latitude');
       table.string('comments');
       //.notNullable()
@@ -36,6 +37,7 @@ exports.up = function(knex, Promise) {
       table.string('cost',[4]);
       table.string('status').defaultTo('suggested');
       table.dateTime('voting_deadline');
+      table.string('url');
       // .notNullable();
       table.integer('vote_count').defaultTo(1);
       table.timestamps([true],[true]);

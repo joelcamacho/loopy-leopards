@@ -52,6 +52,7 @@ router.route('/events')
 	// 	cost:
 	// 	voting_deadline:
 	// }
+	
 	let id = 1,
 	eventAttributes = {creator_id: id},
 	data = {}

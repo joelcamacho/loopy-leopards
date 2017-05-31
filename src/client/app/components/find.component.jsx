@@ -81,7 +81,7 @@ export default class FindPageComponent extends React.Component {
           users.push(userInfo)
         }
       }) : users = this.state.userGroupData;
-      console.log("user or users: ", users);
+      //console.log("user or users: ", users);
       this.props.searchUsers(users);
     }
 
@@ -136,7 +136,8 @@ export default class FindPageComponent extends React.Component {
             longitude: '',
             title: event.name.text,
             description: event.description.text,
-            date_time: event.start.local
+            date_time: event.start.local,
+            url: event.url,
           }
         })
         eventsbriteData = eventsbrite;
@@ -191,7 +192,7 @@ export default class FindPageComponent extends React.Component {
             i--;
           }
         }
-        //console.log("result: ", result)
+        console.log("result: ", result)
         this.props.addEvents(getUnique(result));
       })
       .then(res => {
@@ -201,7 +202,7 @@ export default class FindPageComponent extends React.Component {
           console.log("Can not received users data from database!!!");
         })
         .then(res => {
-          console.log("user response from databases: ", res);
+          //console.log("user response from databases: ", res);
           let userStatusArray = res.map(user => {
             var rObj = {};
             rObj.name = user.first_name + ' ' + user.last_name;
@@ -222,8 +223,8 @@ export default class FindPageComponent extends React.Component {
   }
 
   getEvent (event) {
-    console.log('userStatus!!!!!!!!: ',this.state.userStatus);
-    console.log('group!!!!!!!: ', this.state.userGroupData);
+    //console.log('userStatus!!!!!!!!: ',this.state.userStatus);
+    //console.log('group!!!!!!!: ', this.state.userGroupData);
     this.props.createEvent(event);
   }
 
@@ -233,12 +234,12 @@ export default class FindPageComponent extends React.Component {
   }
 
   handleConfirm () {
-    console.log("Date: ", this.state.controlledDate);
-    console.log("testValue: ", this.state.testValue);
-    console.log("time: ", this.state.value12);
-    console.log("invitedUsers: ", this.state.invitedUsers.map(user => user.name));
-    console.log("Event info: ", this.props.event);
-    console.log("Check This: ", this.props.auth.displayName);
+    // console.log("Date: ", this.state.controlledDate);
+    // console.log("testValue: ", this.state.testValue);
+    // console.log("time: ", this.state.value12);
+    // console.log("invitedUsers: ", this.state.invitedUsers.map(user => user.name));
+    // console.log("Event info: ", this.props.event);
+    // console.log("Check This: ", this.props.auth.displayName);
 
     let init = {
       method: 'POST',
@@ -256,7 +257,7 @@ export default class FindPageComponent extends React.Component {
           date_Time: this.props.event.date_time,
           // time: this.state.value12
           // date: this.state.controlledDate
-          description: this.props.event.description,
+          description: this.props.event.description.slice(0,250),
           address: this.props.event.address,
           city: this.props.event.city,
           state: this.props.event.state,
@@ -264,6 +265,7 @@ export default class FindPageComponent extends React.Component {
           latitude: this.props.event.latitude,
           longitude: this.props.event.longitude,
           comments: this.state.testValue,
+          url: this.props.event.url,
           //creator_id: this.state.auth.displayName,
           //group_id:
           //users: this.state.invitedUsers.map(user => user.name),
@@ -271,10 +273,36 @@ export default class FindPageComponent extends React.Component {
       )
     }
 
-    fetch('/api/events',init)
-    .then(res => console.log(res))
+    fetch('/api/events', init)
+    .then(res => res.json())
     .catch(err => console.log("can not save event data!!!!!!"))
-    
+    .then(res => {
+      let usersArray = this.state.invitedUsers.map(user => {
+        let rObj = {};
+        rObj.first_name = user.name.split(" ")[0];
+        rObj.phone = user.phone;
+        return rObj;
+      })
+      console.log(usersArray)
+      let init = {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify(
+          {
+            invitees: usersArray
+          }
+        )
+      }
+      let url = '/api/events/' + res.id + '/invite';
+      fetch(url, init)
+      .then(res => res.json())
+      .catch(err => console.log("can not save users !!!!!!!!!"))
+      .then(res => console.log(res))
+    })
   }
 
   handleClickUser (user) {
@@ -299,7 +327,7 @@ export default class FindPageComponent extends React.Component {
       return rObj;
     })
     if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
-        this.state.invitedUsers.push({name: user.name, photo: user.photo});
+        this.state.invitedUsers.push({name: user.name, photo: user.photo, phone: user.phone});
     } else {
         const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(user.name);
         this.state.invitedUsers.splice(chipToDelete, 1);
@@ -311,7 +339,7 @@ export default class FindPageComponent extends React.Component {
 handleRequestDelete (name) {
   const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
   this.state.invitedUsers.splice(chipToDelete, 1);
-  console.log("invitedUser state: ", this.state.invitedUsers)
+  //console.log("invitedUser state: ", this.state.invitedUsers)
   let rightIconArray = this.state.userStatus.map((ele, ind) => {
     var rObj = {};
     if (ele.name === name) {
@@ -327,7 +355,7 @@ handleRequestDelete (name) {
 }
 
 getIndex (name) {
-  console.log(this.state);
+  //console.log(this.state);
   let RIC; 
   this.state.userStatus.forEach((ele,ind) => {
     if(ele.name === name) {
@@ -341,7 +369,7 @@ getIndex (name) {
     const { events } = this.props;
     const { event } = this.props;
     const { users } = this.props;
-    console.log("state from state: ", users.size);
+    console.log("Event: ", event);
     ///////////////////////////Dialog/////////////////////////
     const actions = [
       <FlatButton
@@ -401,7 +429,7 @@ getIndex (name) {
           <Paper className="container">
             <img src={event.img} alt="eventImg"/>
             {event.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.title}</p></div><Divider/></List>) : null}
-            {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description}</p></div><Divider/></List>) : null}
+            {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description.length > 100 ? event.description.slice(0,100) + '...' : event.description }{event.url ? (<a href={event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
             {event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.address}</p></div><Divider/></List>) : null}
             {event.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.city}</p></div><Divider/></List>) : null}
             {event.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.state}</p></div><Divider/></List>) : null}

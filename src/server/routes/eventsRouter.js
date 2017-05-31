@@ -52,10 +52,7 @@ router.route('/events')
 	// 	cost:
 	// 	voting_deadline:
 	// }
-<<<<<<< HEAD
-=======
-	
->>>>>>> ReactClient16
+
 	let id = 1,
 	eventAttributes = {creator_id: id},
 	data = {}
@@ -64,16 +61,12 @@ router.route('/events')
 
 	new Event(eventAttributes).save(null, null, null, {require:true})
 	.then((event) => {
-<<<<<<< HEAD
 		event.related('invitees').attach(id)
 		.catch((err) => {
 			data.error = 'Sorry, could not save you as an invitee of this event'
 		})
 		data.event = event
 		res.status(200).json(data);
-=======
-		res.status(200).json(event);
->>>>>>> ReactClient16
 	})
 	.catch((err) => {
 		res.status(400).send('Sorry, could not save your event, please try again!')

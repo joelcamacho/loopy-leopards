@@ -1,13 +1,17 @@
 import React from 'react';
 import { HashRouter, Router, Link } from 'react-router-dom'
 import AuthComponent from './auth.component.jsx';
-import {
-  ResponsiveDrawer,
-  BodyContainer,
-  ResponsiveAppBar
-} from 'material-ui-responsive-drawer'
 import FlatButton from 'material-ui/FlatButton';
 import { Image } from 'material-ui-image'
+import AppBar from 'material-ui/AppBar';
+import IconHome from 'material-ui/svg-icons/action/home';
+
+
+
+import IconButton from 'material-ui/IconButton';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
+import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 
 export default class NavComponent extends React.Component {
   constructor(props) {
@@ -35,56 +39,44 @@ export default class NavComponent extends React.Component {
   render() {
     console.log(this.props.auth);
     return (
-      <div className="nav">
-          <ResponsiveDrawer>
-            <HashRouter>
-              <div className="drawer">
-                <Link to="/home"> 
-                  <FlatButton className="drawerItem" label="HOME" />
-                </Link>
-                <Link to="/profile"> 
-                  <FlatButton className="drawerItem" label="PROFILE" /> 
-                </Link>
-                <Link to="/find"> 
-                  <FlatButton className="drawerItem" label="FIND" /> 
-                </Link>
-                <Link to="/events"> 
-                  <FlatButton className="drawerItem" label="EVENTS" /> 
-                </Link>
-                <Link to="/group"> 
-                  <FlatButton className="drawerItem" label="GROUP" /> 
-                </Link>
-              </div>
-            </HashRouter>
-          </ResponsiveDrawer>
-          <BodyContainer>
-            <ResponsiveAppBar
-                title={'Hangin\' Hubs'}
-                iconElementRight={
-                  <a href={this.props.auth.id !== null ? "/logout" : "/auth/google"}> 
-                    {this.props.auth.id !== null ? (<Image imageStyle={{borderRadius: '50%'}} style={{backgroundColor: 'clear', marginTop: '3pt', right: '10pt', position: 'absolute', height: '30pt', width: '30pt'}} src={this.props.auth ? this.props.auth.photo : ''}/>) : null}
-                    <FlatButton className={this.props.auth.id !== null ? 'authIn' : 'auth' } label={ this.props.auth.id !== null ? "Log out" : "Log in"} />
+      <div>
+        <div className="nav">
+          <AppBar
+            showMenuIconButton={false}
+            title={<div>
+              <IconHome className="homeIcon" />
+              <span className="homeText"> Hangin Hubs </span>
+              </div>}
+            iconElementRight={
+                this.props.auth.id !== null ? 
+                (<div>
+                  <a href="/#/profile">
+                    <Image imageStyle={{borderRadius: '50%'}} style={{backgroundColor: 'clear', marginTop: '3pt', right: '40pt', position: 'absolute', height: '30pt', width: '30pt'}} src={this.props.auth ? this.props.auth.photo : ''}/>
                   </a>
-                }
-              />
-              <div style={{marginTop: '48pt'}}>
-                {this.props.children}
-              </div>
-          </BodyContainer>
+                  <IconMenu iconStyle={{ fill: 'white' }} iconButtonElement={<IconButton><MoreVertIcon/></IconButton>}
+                  targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                  anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
+                    <a className="navLink" href="/#/profile"> <MenuItem primaryText="Profile" /> </a>
+                    <a className="navLink" href="/#/about"> <MenuItem primaryText="About Us" /> </a>
+                    <a className="navLink" href="/logout"> <MenuItem primaryText="Sign out" /> </a>
+                  </IconMenu>
+                </div>
+                )
+                : (<IconMenu iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+                    targetOrigin={{horizontal: 'right', vertical: 'top'}}
+                    anchorOrigin={{horizontal: 'right', vertical: 'top'}} >
+                    <a className="navLink" href="/#/profile"> <MenuItem primaryText="Profile" /> </a>
+                    <a className="navLink" href="/#/about"> <MenuItem primaryText="About Us" /> </a>
+                    <a className="navLink" href="/auth/google"> <MenuItem primaryText="Sign In" /> </a>
+                  </IconMenu>
+                )
+              }
+          />
+        </div>
+        <div style={{marginTop: '48pt'}}>
+          {this.props.children}
+        </div>
       </div>
-
     );
   }
 }
-    	// <div className="nav">
-    	// 	<HashRouter>
-    	// 		<div>
-		   //  		<Link to="/home"> HOME </Link>
-		   //  		<Link to="/profile"> PROFILE </Link>
-		   //  		<Link to="/group"> GROUPS </Link>
-		   //  		<Link to="/find"> FIND </Link>
-		   //  		<Link to="/events"> EVENTS </Link>
-	    // 		</div>
-	    // 	</HashRouter>
-	    // 	<AuthComponent />
-    	// </div>

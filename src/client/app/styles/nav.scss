@@ -15,13 +15,25 @@
 // }
 
 .nav {
-  .drawer {
-    width: 100%;
+  position: fixed;
+  width: 100%;
+  min-height: 50pt;
+  top: 0;
+  z-index: 10;
+  color: white !important;
+
+  .homeIcon {
+    color: white !important;
+    height: 30pt !important;
+    position: absolute;
+    width: 30pt !important;
+    margin-top: 8pt;
   }
-  .drawerItem {
-    width: 100%;
-    height: 50pt !important;
+
+  .homeText {
+    margin-left: 40pt;
   }
+
   .auth {
     margin-top: 5pt !important;
     color: white !important;
@@ -33,5 +45,31 @@
   }
   .navBody {
     margin-top: 21pt !important;
+  }
+
+}
+
+.navLink {
+  text-decoration: none !important;
+}
+
+.bottomNavContainer {
+  display: flex;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  flex-direction: column
+}
+.bottomNav {
+  padding: 5pt 0pt;
+  text-align: center;
+  z-index: 10;
+  max-width: 800px;
+
+  .bottomNavItem {
+    background-color: black;
+    max-width: 18% !important;
+    min-width: 50pt !important;
   }
 }

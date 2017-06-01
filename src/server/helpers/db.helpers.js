@@ -1,6 +1,7 @@
 const Promise = require('promise');
 const User = require('../db/models/user.js');
 const Group = require('../db/models/group.js');
+const Event = require('../db/models/event.js');
 
 // ~~~~~~~~~~~~~~~~~ AUTH ~~~~~~~~~~~~~~~~~ 
 // Get Current User's Id from current auth (google_id)

@@ -53,10 +53,31 @@ const User = bookshelf.Model.extend({
   	return this.belongsToMany('Tag');
   },
 
-  getEvents: function() {
+  getAllEvents: function() {
     return this.fetch({withRelated: ['eventsInvitedTo', 'eventsCreated']})
     .then((results) => {
       return {invitedTo: results.related('eventsInvitedTo'), created: results.related('eventsCreated')}
+    })
+  },
+
+  getGroups: function() {
+    return this.fetch({withRelated: ['groupsBelongingTo', 'groupsCreated']})
+    .then((results) => {
+      return {belongingTo: results.related('groupsBelongingTo'), created: results.related('groupsCreated')}
+    })
+  },
+
+  getEvent: function(eventId) {
+    return this.getAllEvents()
+    .then((events) => {
+      return events.where({id:eventId})
+    })
+    .then((event) => {
+      if(event) {
+        return event
+      } else {
+        throw new Error('Looks like this isn\'t an active event')
+      }
     })
   }
 });

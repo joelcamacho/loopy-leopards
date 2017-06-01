@@ -1,103 +1,74 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import { HashRouter, Router, Link } from 'react-router-dom';
-import Paper from 'material-ui/Paper';
-import Subheader from 'material-ui/Subheader';
-import {List, ListItem} from 'material-ui/List';
-import Divider from 'material-ui/Divider';
-import TimePicker from 'material-ui/TimePicker';
-import DatePicker from 'material-ui/DatePicker';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
-import RaisedButton from 'material-ui/RaisedButton';
-import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
-import Dialog from 'material-ui/Dialog';
-import Avatar from 'material-ui/Avatar';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import ContentRemove from 'material-ui/svg-icons/content/remove';
-import Chip from 'material-ui/Chip';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
 
-
-
-export default class FindPageComponent extends React.Component {
+export default class SearchPageComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.getEvent = this.getEvent.bind(this);
-    this.backToEvents = this.backToEvents.bind(this);
 
     this.state = {
-      controlledDate: null,
-      value12: null,
-      testValue: 'Anything you want to say?',
-      open: false,
-      userStatus: [],
-      clickUserStatus: false,
-      invitedUsers: [],
-      userGroupData: [],
-    };
-
-    this.handleChangeDate = (event, date) => {
-      this.setState({
-        controlledDate: date,
-      });
-    };
-
-    this.handleChangeTimePicker12 = (event, date) => {
-      this.setState({value12: date});
-    };
-
-    this.handleChangeTestValue = (event) => {
-      this.setState({
-        testValue: event.target.value,
-      });
-    };
-
-    this.handleOpen = () => {
-      this.setState({open: true});
-    };
-
-    this.handleClose = () => {
-      this.state.invitedUsers = [];
-      var rightIconArray = this.state.userStatus.map((ele, ind) => {
-        var rObj = {};
-        rObj.name = ele.name;
-        rObj.rightIconDisplay = (<ContentAdd />);
-        return rObj;
-      })
-      this.setState({userStatus: rightIconArray});
-      this.setState({open: false});
-    };
-
-    this.handleSubmit = () => {
-      this.setState({open: false});
-    };
-
-    //this.group = this.state.userGroupData;
-
-    this.handleSearchbar = (event, userInput) => {
-      var users = [];
-      !!userInput ? this.state.userGroupData.forEach(userInfo => {
-        if(userInfo.name.indexOf(userInput) > -1 || userInfo.phone.indexOf(userInput) > -1) {
-          users.push(userInfo)
-        }
-      }) : users = this.state.userGroupData;
-      this.props.searchUsers(users);
+      expanded: false,
+      userLocation: 'Please enter your location',
+      latitude: 0,
+      longitude: 0,
+      toggleCheckBox: false,
+      userSearchEvent: '',
+      events: [],
+      showMoreButton: false,
+      searchButton: false,
     }
 
-    this.handleClickUser = this.handleClickUser.bind(this);
-    this.getIndex = this.getIndex.bind(this);
+    this.handleExpandChange = this.handleExpandChange.bind(this);
+    this.handleSearchResult = this.handleSearchResult.bind(this);
+    this.handleGetCurrentLocation = this.handleGetCurrentLocation.bind(this);
+    this.handleAddressTextFieldChange = this.handleAddressTextFieldChange.bind(this);
+    this.handleSearchTextFieldChange = this.handleSearchTextFieldChange.bind(this);
+    this.handleMoreSearchResult = this.handleMoreSearchResult.bind(this);
+    this.handleBackToTop = this.handleBackToTop.bind(this);
+    this.handleClickedEvent = this.handleClickedEvent.bind(this);
   }
-  //For yelp, give NYC temply
-  componentDidMount() {
 
-    var randomNumbers = [];
-    var eventsArray = [];
-    var eventsbriteData;
-    var eventsYelpData;
-    //pick up 10 events from api
+  handleExpandChange (expanded) {
+    this.setState({expanded: expanded});
+  };
+
+  handleAddressTextFieldChange (event) {
+    this.setState({userLocation: event.target.value});
+  }
+
+  handleSearchTextFieldChange (event) {
+    this.setState({userSearchEvent: event.target.value});
+  }
+
+  handleMoreSearchResult () {
+    this.setState({events: this.props.events});
+    this.setState({showMoreButton: true});
+  }
+
+  handleClickedEvent () {
+    console.log("Hello World")
+  }
+
+  handleBackToTop () {
+    window.scrollBy(0,-10);
+    scrolldelay = setTimeout(this.handleBackToTop(),100);
+  }
+
+  handleSearchResult () {
+    const userSearchEvent = this.state.userSearchEvent;
+    const userLocation = this.state.userLocation;
+    ///////////////////Helper Functions///////////////////
+    let randomNumbers = [];
+    let eventsArray = [];
+    let eventsbriteData;
+    let eventsYelpData;
+    //pick up 20 events from api
     function pickupEvents(array) {
       let length = array.length;
-        for (var i = 0; i < 13; i++) {
+        for (var i = 0; i < 20; i++) {
           var randomNumber = Math.floor(Math.random()*length);
           if (randomNumbers.indexOf(randomNumber) == -1) {
             randomNumbers.push(randomNumber);
@@ -107,7 +78,7 @@ export default class FindPageComponent extends React.Component {
           }
         }
     }
-    //filder the events
+    //get unique
     function getUnique(arr) {
       var unique = {};
         arr.forEach(function(a){ unique[ JSON.stringify(a) ] = 1 });
@@ -115,16 +86,25 @@ export default class FindPageComponent extends React.Component {
         return arr
     }
 
-    fetch('/api/eventbrite', {credentials: 'include'})
+    ///////////////////////////////////////////////////////
+
+    /////////////Get data from Eventbrite API//////////////
+    let init = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      query: JSON.stringify({location: userLocation, q: userSearchEvent})
+    }
+    fetch('/api/eventbrite', init)
       .then(res => res.json())
-      .catch(error => {
-        console.log("Can not received data from Eventbrite Api!!!");
-      })
+      .catch(error => console.log("Can not received data from Eventbrite Api!!!"))
       .then(res => {
-        //console.log('Received data from eventbrite api', res);
         pickupEvents(res.events);
-        console.log("pickup 13 events: ", eventsArray);
-        var eventsbrite = eventsArray.map(event => {
+        console.log("pickup 20 events from eventbrite: ", eventsArray);
+        let eventsbrite = eventsArray.map(event => {
           return {
             img: event.logo.original.url,
             phone: '',
@@ -140,11 +120,14 @@ export default class FindPageComponent extends React.Component {
           }
         })
         eventsbriteData = eventsbrite;
-        //this.props.addEvents(eventsbrite);
       })
+    ///////////////////////////////////////////////////////
+
+    //////////////////Get data from Yelp API///////////////
       .then(res => {
         let params = {
-          location: "NYC",
+          location: userLocation,
+          terms: userSearchEvent
         };
         let esc = encodeURIComponent
         let query = Object.keys(params)
@@ -162,7 +145,7 @@ export default class FindPageComponent extends React.Component {
         randomNumbers = [];
         eventsArray = [];
         pickupEvents(res.businesses);
-        //console.log("pickup 13 events from yelp: ", eventsArray);
+        console.log("pickup 20 events from yelp: ", eventsArray);
         var eventsYelp = eventsArray.map(event => {
           return {
             img: event.image_url,
@@ -178,349 +161,197 @@ export default class FindPageComponent extends React.Component {
         })
         eventsYelpData = eventsYelp;
       })
+    ///////////////////////////////////////////////////////
       .then(res => {
         randomNumbers = [];
         let mixedEvents = eventsbriteData.concat(eventsYelpData);
         //do random
         let result = []
-        for(var i = 0; i < 26; i++) {
-          var randomNumber = Math.floor(Math.random() * 26);
+        for(var i = 0; i < mixedEvents.length; i++) {
+          var randomNumber = Math.floor(Math.random() * mixedEvents.length);
           if (randomNumbers.indexOf(randomNumber) === -1) {
             result.push(mixedEvents[randomNumber]);
           } else {
             i--;
           }
         }
+        result = getUnique(result);
         console.log("result: ", result)
-        this.props.addEvents(getUnique(result));
+        this.props.addEvents(result);
+        this.setState({expanded: true});
+        this.setState({searchButton: false});
+        result.length > 20 ? this.setState({showMoreButton: false}) : this.setState({showMoreButton: true})
       })
-      .then(res => {
-        fetch('/api/users', {credentials: 'include'})
-        .then(res => res.json())
-        .catch(error => {
-          console.log("Can not received users data from database!!!");
-        })
-        .then(res => {
-          let userStatusArray = res.map(user => {
-            var rObj = {};
-            rObj.name = user.first_name + ' ' + user.last_name;
-            rObj.rightIconDisplay = (<ContentAdd />);
-            return rObj;
-          })
-          this.setState({userStatus: userStatusArray});
-          let userGroup = res.map(user => {
-            var rObj = {};
-            rObj.name = user.first_name + ' ' + user.last_name;
-            rObj.photo = null;
-            rObj.phone = user.phone;
-            return rObj;
-          })
-          this.setState({userGroupData: userGroup});
-        })
-      })
-  }
+    this.setState({searchButton: true});
+  };
 
-  getEvent (event) {
-    //console.log('userStatus!!!!!!!!: ',this.state.userStatus);
-    //console.log('group!!!!!!!: ', this.state.userGroupData);
-    this.props.createEvent(event);
-  }
-
-  backToEvents (events) {
-    this.props.addEvents(events);
-    this.props.setStateBackToDefault({status: 'first'});
-  }
-
-  handleConfirm () {
-
-    let init = {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(
-        {
-          //need an img
-          img: this.props.event.img,
-          name: this.props.event.title,
-          //2 date time! now is event time
-          date_Time: this.props.event.date_time,
-          time: this.state.value12,
-          date: this.state.controlledDate,
-          description: this.props.event.description.slice(0,250),
-          address: this.props.event.address,
-          city: this.props.event.city,
-          state: this.props.event.state,
-          phone: this.props.event.phone,
-          latitude: this.props.event.latitude,
-          longitude: this.props.event.longitude,
-          comments: this.state.testValue,
-          url: this.props.event.url,
-          //creator_id: this.props.auth.id,
-          //group_id:
-        }
-      )
-    }
-
-    fetch('/api/events', init)
-    .then(res => res.json())
-    .catch(err => console.log("can not save event data!!!!!!"))
-    .then(res => {
-      let usersArray = this.state.invitedUsers.map(user => {
-        let rObj = {};
-        rObj.first_name = user.name.split(" ")[0];
-        rObj.phone = user.phone;
-        return rObj;
-      })
-
-      let init = {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body:JSON.stringify(
-          {
-            invitees: usersArray
+  handleGetCurrentLocation (event) {
+    var that = this;
+    that.setState({searchButton: true});
+    if (!that.state.toggleCheckBox) {
+      if (navigator.geolocation) { 
+          navigator.geolocation.getCurrentPosition(function (position) { 
+            var coords = position.coords; 
+            let init = {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(
+                {
+                  latlngCode: {lat: coords.latitude, lng: coords.longitude},
+                }
+              )
+            }
+            fetch('/api/addressMap', init)
+            .then(res => res.json())
+            .catch(err => console.log("can not save event data: ", err))
+            .then(res => {
+              that.setState({searchButton: false});
+              that.setState({userLocation: res.results[0].formatted_address});
+            })
           }
         )
       }
-      let url = '/api/events/' + res.event.id + '/invite';
-      fetch(url, init)
-      .then(res => res.json())
-      .catch(err => console.log("can not save users !!!!!!!!!"))
-      .then(res => console.log(res))
-    })
+      that.setState({toggleCheckBox: true});
+    } else {
+      that.setState({userLocation: 'Please enter your location'});
+      that.setState({toggleCheckBox: false});
+      that.setState({searchButton: false});
+    }
   }
 
-  handleClickUser (user) {
-
-    let rightIconArray;
-    let position
-    rightIconArray = this.state.userStatus.map((ele, ind) => {
-
-      var rObj = {};
-      if(ele.name === user.name && ele.rightIconDisplay.type.displayName === "ContentAdd") {
-        rObj.name = user.name;
-        rObj.rightIconDisplay = (<ContentRemove />);
-        position = ind;
-      } else if (ele.name === user.name && ele.rightIconDisplay.type.displayName === "ContentRemove") {
-        rObj.name = user.name;
-        rObj.rightIconDisplay = (<ContentAdd />);
-        position = ind;
-      } else {
-        rObj.name = ele.name;
-        rObj.rightIconDisplay = ele.rightIconDisplay;
-      }
-      return rObj;
-    })
-    if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
-        this.state.invitedUsers.push({name: user.name, photo: user.photo, phone: user.phone});
-    } else {
-        const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(user.name);
-        this.state.invitedUsers.splice(chipToDelete, 1);
-    }
-    //console.log("!!!!!!!!!!: ", this.state.invitedUsers)
-    this.setState({userStatus: rightIconArray});
-  }
-
-handleRequestDelete (name) {
-  const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
-  this.state.invitedUsers.splice(chipToDelete, 1);
-  //console.log("invitedUser state: ", this.state.invitedUsers)
-  let rightIconArray = this.state.userStatus.map((ele, ind) => {
-    var rObj = {};
-    if (ele.name === name) {
-      rObj.name = name;
-      rObj.rightIconDisplay = (<ContentAdd />);
-    } else {
-      rObj.name = ele.name;
-      rObj.rightIconDisplay = ele.rightIconDisplay;
-    }
-    return rObj;
-  })
-  this.setState({userStatus: rightIconArray});
-}
-
-getIndex (name) {
-  //console.log(this.state);
-  let RIC; 
-  this.state.userStatus.forEach((ele,ind) => {
-    if(ele.name === name) {
-      RIC = ele.rightIconDisplay
-    }
-  })
-  return RIC;
-}
 
   render() {
     const { events } = this.props;
-    const { event } = this.props;
-    const { users } = this.props;
-    ///////////////////////////Dialog/////////////////////////
-    const actions = [
-      <FlatButton
-        label="Cancel"
-        primary={true}
-        onTouchTap={this.handleClose}
-      />,
-      <FlatButton
-        label="Submit"
-        primary={true}
-        keyboardFocused={true}
-        onTouchTap={this.handleSubmit}
-      />,
-    ];
-    /////////////////////////////////////////////////////////
+    console.log("events from props: ",events)
+    const styles = {
+      position: {
+        marginLeft: 16,
+      },
+      position_searchButton: {
+        marginBottom: 16,
+        marginLeft: 16,
+      },
+      img: {
+        height: 200,
+        width: 500,
+      }
+    }; 
 
-    if(events.length === 0 && event.status === 'first') {
-      //console.log(111)
-      return (
-        <p></p>
-      );
-    } else if (events.length > 0 && event.status === 'first') {
-      //console.log(222);
-      return (
-        <div>
+    return (
+      <div>
+        <Card expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
+          <CardHeader
+            actAsExpander={true}
+          />
+          <TextField
+            id="text-field-controlled"
+            value={this.state.userLocation}
+            onChange={this.handleAddressTextFieldChange}
+            style={styles.position}
+            multiLine={true}
+          />
+          <Checkbox
+            label="Current Location"
+            style={styles.position}
+            onCheck={() => this.handleGetCurrentLocation(event)}
+            checked={this.state.toggleCheckBox}
+          />
+          <TextField
+            hintText="Hint Text"
+            floatingLabelText="Search"
+            onChange={this.handleSearchTextFieldChange}
+            style={styles.position}
+          />
+          <br/>
+          <FlatButton 
+              label="Search" 
+              onTouchTap={this.handleSearchResult} 
+              style={styles.position_searchButton}
+              disabled={this.state.searchButton}
+          />
+          <br/>
           {
-            events.slice(2).map(event => {
+            events.slice(2, 20).map(event => {
               return (
-                <div className="find">
-                  <div className="eventImg"><img src={event.img} alt=""/></div>
-                    <div className="info">
-                        <div className="name">{event.title}</div>
-                    </div>
-                  <div className="btn-div">
-                    <FlatButton className="drawerItem" label="DETAIL" />
-                    <FlatButton className="drawerItem" label="Confirm" onClick={() => this.getEvent(event)}/>
-                  </div>
+                <div>
+                <CardMedia
+                  expandable={true}
+                  overlay={<CardTitle title={event.title}/>}
+                  onClick={this.handleClickedEvent}
+                >
+                  <img style={styles.img} src={event.img}/>
+                </CardMedia>
+                <br/>
                 </div>
               )
             })
           }
-        </div>
-      ); 
-    } else {
-      //console.log(333)
-      const styles = {
-        chip: {
-          margin: 5,
-        },
-        wrapper: {
-          display: 'flex',
-          flexWrap: 'wrap',
-        },
-      };
-      return (
-        <div className="comfirm">
-          <Paper className="container">
-            <img src={event.img} alt="eventImg"/>
-            {event.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.title}</p></div><Divider/></List>) : null}
-            {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description.length > 100 ? event.description.slice(0,100) + '...' : event.description }{event.url ? (<a href={event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
-            {event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.address}</p></div><Divider/></List>) : null}
-            {event.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.city}</p></div><Divider/></List>) : null}
-            {event.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.state}</p></div><Divider/></List>) : null}
-            {event.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.phone}</p></div><Divider/></List>) : null}
-            {event.date_time !== undefined ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.date_time}</p></div><Divider/></List>) : null}
-            <List>
-            <div>
-            <Subheader>Invite Friends</Subheader>
-            <div style={styles.wrapper}>
-            {
-                this.state.invitedUsers.map(user => (
-                  <Chip
-                    key={user.name} 
-                    style={styles.chip}
-                    onRequestDelete={() => this.handleRequestDelete(user.name)}
-                  >
-                    <Avatar src={user.photo} />
-                    {user.name}
-                  </Chip>
-                ))
-              }
-              </div>
-              <RaisedButton label="Invite" onTouchTap={this.handleOpen} />
-              
-              <Dialog
-                title="Invite your friends"
-                actions={actions}
-                modal={false}
-                open={this.state.open}
-                onRequestClose={this.handleClose}
-                autoScrollBodyContent={true}
-              >
-                <TextField
-                  hintText="Hint Text"
-                  floatingLabelText="Search"
-                  onChange={this.handleSearchbar}
-                />
+          <br/>
+          {
+            this.state.events.slice(20).map(event => {
+              return (
+                <div>
+                <CardMedia
+                  expandable={true}
+                  overlay={<CardTitle title={event.title}/>}
+                  onClick={this.handleClickedEvent}
+                >
+                  <img style={styles.img} src={event.img}/>
+                </CardMedia>
+                <br/>
+                </div>
+              )
+            })
+          }
+          <FlatButton 
+            expandable={true}
+            label="Show more" 
+            onTouchTap={this.handleMoreSearchResult} 
+            style={styles.position_searchButton}
+            disabled={this.state.showMoreButton}
+          />
+          <FlatButton
+            expandable={true} 
+            label="Top" 
+            onTouchTap={this.handleBackToTop} 
+            style={styles.position_searchButton}
+          />
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+        </Card>
+      
 
-                <List>
-                  <Subheader> Current Members </Subheader>
-                  {
-                    !!users.size ? 
-                    this.state.userGroupData.map((obj, ind) => (<ListItem
-                    key={obj.phone }
-                    primaryText={obj.name }
-                    leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={this.state.userStatus[ind].rightIconDisplay}
-                    onClick={() => this.handleClickUser(obj)}
-                  />)) :
-                    users.map((obj, ind) => (<ListItem
-                    key={!!obj.phone ? obj.phone : this.group.list.phone }
-                    primaryText={!!obj.name ? obj.name : this.group.list.name }
-                    leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={this.getIndex(obj.name)}
-                    onClick={() => this.handleClickUser(obj)}
-                  />))
-                  }
-                </List>
-              </Dialog>
-            </div>
-            <br/>
-            <Divider/>
-            </List>
-            <List>
-            <div>
-            <Subheader>Comment</Subheader>
-              <TextField
-                floatingLabelText="Anything you want to say?"
-                onChange={this.handleChangeTestValue}
-                multiLine={true}
-              />
-            </div>
-            </List>
-            <List>
-            <div>
-            <Subheader>Collection Time</Subheader>
-              <TimePicker
-                format="ampm"
-                hintText="12hr Format"
-                value={this.state.value12}
-                onChange={this.handleChangeTimePicker12}
-              />
-              <DatePicker
-                hintText="Controlled Date Input"
-                value={this.state.controlledDate}
-                onChange={this.handleChangeDate}
-              />
-            </div>
-            </List>
-            <br/>
-            <div>
-              <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
-              <Link to="/home">
-              <FlatButton className="drawerItem" label="Confirm" onClick={() => this.handleConfirm()}/>
-              </Link>
-            </div>
-            <br/>
-          </Paper>
-        </div>
-
-      );
-    }
+      </div>
+    ); 
   }
 }
+
+
+
+// <CardMedia
+//   expandable={true}
+//   overlay={<CardTitle title="Overlay title" subtitle="Overlay subtitle" />}
+// >
+//   <img src="images/nature-600-337.jpg" />
+// </CardMedia>
+
+// this.handleReduce = this.handleReduce.bind(this);
+// handleReduce () {
+//   this.setState({expanded: false});
+// };
+//<FlatButton label="Reduce" onTouchTap={this.handleReduce} />
+
+// <CardTitle title="Card title" subtitle="Card subtitle" expandable={true} />
+// <CardText expandable={true}>
+//   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+//   Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
+//   Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
+//   Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
+// </CardText>

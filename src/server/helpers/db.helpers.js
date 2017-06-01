@@ -319,7 +319,7 @@ exports.getCurrentUserEvents = (id) => {
         data.invitedTo = result
       })
       .catch((err) => {
-        throw new Error('Something went wrong')
+        reject('Something went wrong, please try again')
       })
       Promise.all(results.created.map((event) => {
         return event.where({id:event.id}).getInfo()
@@ -329,7 +329,7 @@ exports.getCurrentUserEvents = (id) => {
         resolve(data)
       })
       .catch((err) => {
-        throw new Error('Something went wrong')
+        reject('Something went wrong')
       })
     })
     .catch((err) => {
@@ -339,7 +339,7 @@ exports.getCurrentUserEvents = (id) => {
 };
 
 // Get specific events given event id
-exports.getEventFromId = (id, event_id) => {
+exports.getEventFromId = (event_id) => {
   return new Promise(function (resolve, reject) {
     User.where({id:id}).getEvent(event_id)
     .then((event) => {
@@ -378,17 +378,68 @@ exports.deleteEventFromId = (event_id) => {
 };
 
 // Invite User to Event given event id and user id
-exports.sendInvitationToJoinEvent = (id, event_id, options) => {};
+exports.requestORInviteToJoinEvent = (id, event_id, options) => {
+  return new Promise(function (resolve, reject) {
+    Event.where({id:event_id}).attachInvitees(id,'unconfirmed')
+    .then((result) => {
+      if(result) {
+        resolve(result);
+      } else {
+        reject('Could not get event', event_id);
+      }
+    });
+  });
+};
 
 // Reject Invitation to join event given event id and user id
-exports.rejectInvitationToJoinEvent = (id, event_id) => {};
+exports.rejectInvitationToJoinEvent = (id, event_id) => {
+  return new Promise(function (resolve, reject) {
+    Event.where({id:event_id}).removeInvitees(id)
+    .then((result) => {
+      resolve(result)
+    })
+    .catch((err) => {
+      reject('Something went wrong, please try again');
+    });
+  });
+};
 
 // Accept Invitation to join event given event id and user id
-exports.acceptInvitationToJoinEvent = (id, event_id) => {};
+exports.acceptInvitationToJoinEvent = (id, event_id) => {
+  return new Promise(function (resolve, reject) {
+    Event.where({id:event_id}).acceptRequestOrInvitation(id)
+    .then((result) => {
+      resolve(result)
+    })
+    .catch((err) => {
+      reject('Something went wrong, please try again')
+    })
+  })
+};
 
 // Upvote an event
-exports.voteForEvent = (id, event_id) => {};
+exports.voteForEvent = (id, event_id) => {
+  return new Promise(function (resolve, reject) {
+    Event.where({id: eventId}).vote(userId, true)
+    .then((result) => {
+      resolve(result)
+    })
+    .catch((err) => {
+      reject('Something went wrong, please try again')
+    })
+  })
+};
 
 // Downvote an event
-exports.unvoteForEvent = (id, event_id) => {};
+exports.unvoteForEvent = (id, event_id) => {
+  return new Promise(function (resolve, reject) {
+    Event.where({id: eventId}).vote(userId, false)
+    .then((result) => {
+      resolve(result)
+    })
+    .catch((err) => {
+      reject('Something went wrong, please try again')
+    })
+  })
+};
 

@@ -25,18 +25,72 @@ const Event = bookshelf.Model.extend({
 		return this.fetch({withRelated: ['invitees']})
 	},
 
-	addInvitees: function(invitees) {
-
-		return this.getInfo()
-		.then((event) => {
-			return event.related('invitees').attach(invitees)
-		})
-	},
-
 	vote: function(userId, vote) {
 		return this.getInfo()
 		.then((event) => {
 			return event.related('invitees').updatePivot({voted:vote},{query: {where: {user_id: userId}}})
+		})
+	},
+
+	attachInvitees: function(invitees, status) {
+
+		return this.getInfo()
+		.then((event) => {
+			if(event) {
+				return event.related('invitees').attach(invitees)
+			} else {
+				throw new Error('That event doesn\'t exist')
+			}
+		})
+		.then((invitees) => {
+			if (invitees) {
+				return invitees.updatePivot({status: status})
+			} else {
+				throw new Error('Could not add invitee to event')
+			}
+		})
+		.catch((err) => {
+			throw new Error('Something went wrong, please try again')
+		})
+	},
+
+	removeInvitees: function(invitees) {
+
+		return this.getInfo()
+		.then((event) => {
+			if(event) {
+				return event.related('invitees').detach(invitees)
+			} else {
+				throw new Error('That event doesn\'t exist')
+			}
+		})
+		.catch((err) => {
+			throw new Error('Something went wrong, please try again')
+		})
+	},
+
+	userInvitedORRequested: function(invitee) {
+		return this.getInfo()
+		.then((event) => {
+			return (!!event && !!event.related('invitees').get(id))
+		})
+		.catch((err) => {
+			throw new Error('Something went wrong, please try again')
+		})
+	},
+
+	acceptRequestORInvitation: function(invitees) {
+
+		return this.userInvitedORRequested(invitees)
+		.then((result) => {
+			if(result) {
+				return group.related('invitees').updatePivot({status:'confirmed'})
+			} else {
+				throw new Error('Must request invitation or be invited to event')
+			}
+		})
+		.catch((err) => {
+			throw new Error('Something went wrong, please try again')
 		})
 	}
 })

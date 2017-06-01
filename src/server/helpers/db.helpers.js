@@ -305,15 +305,32 @@ exports.rejectRequestToJoinGroup = (id, group_id) => {
 
 // ~~~~~~~~~~~~~~~~~ EVENT ~~~~~~~~~~~~~~~~~
 // Get all events for the user
+// 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 exports.getCurrentUserEvents = (id) => {
   return new Promise(function (resolve, reject) {
     User.where({id:id}).getAllEvents()
     .then((events) => {
-      if(events) {
-        resolve(events);
-      } else {
-        reject('No active events');
-      }
+      const data = {};
+      Promise.all(results.invitedTo.map((event) => {
+        return event.where({id:event.id}).getInfo()
+      }))
+      .then((result) => {
+        data.invitedTo = result
+      })
+      .catch((err) => {
+        throw new Error('Something went wrong')
+      })
+      Promise.all(results.created.map((event) => {
+        return event.where({id:event.id}).getInfo()
+      }))
+      .then((result) => {
+        data.created = result
+        resolve(data)
+      })
+      .catch((err) => {
+        throw new Error('Something went wrong')
+      })
     })
     .catch((err) => {
       reject('Something went wrong, please try again');
@@ -335,13 +352,29 @@ exports.getEventFromId = (id, event_id) => {
 };
 
 // Update event details given event id
-exports.updateEventFromId = (id, event_id) => {
-  
+exports.updateEventFromId = (event_id, updateAttributes) => {
+  return new Promise(function (resolve, reject) {
+    new Event({id:event_id}).save(updateAttributes, {patch: true})
+    .then((event) => {
+      resolve(event)
+    })
+    .catch((err) => {
+      reject('Could not update event, please try again')
+    })
+  })
 };
 
 // Delete event with given event id
-exports.deleteEventFromId = (id, event_id) => {
-
+exports.deleteEventFromId = (event_id) => {
+  return new Promise(function (resolve, reject) {
+    new Event({id: event_id}).destroy()
+    .then((event) => {
+      resolve(event.get('name') + ' deleted')
+    })
+    .catch((err) => {
+      reject('Could not delete event')
+    });
+  });
 };
 
 // Invite User to Event given event id and user id

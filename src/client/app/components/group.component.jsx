@@ -8,6 +8,16 @@ import CommunicationPhone from 'material-ui/svg-icons/communication/phone';
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
 import FlatButton from 'material-ui/FlatButton';
+import {Tabs, Tab} from 'material-ui/Tabs';
+
+const styles = {
+  headline: {
+    fontSize: 24,
+    paddingTop: 16,
+    marginBottom: 12,
+    fontWeight: 400,
+  },
+};
 
 const fakeGroupData = {
   name: 'Loopy Leopards',
@@ -99,7 +109,7 @@ export default class GroupPageComponent extends React.Component {
       .then(res => {
         //this.group = res.result;
 
-        //this.group = {};
+        this.group = {};
         this.group = fakeGroupData;
 
         this.forceUpdate();
@@ -161,82 +171,138 @@ export default class GroupPageComponent extends React.Component {
 
   render() {
     console.log(this.props.group);
+
     return (
       <div>
-        <div className="group">
-          <Paper className="container">
-            { this.group.name ?  (
-              <div>
-                <h3> { this.group.name } </h3>
-                <Divider/>
-                <List>
-                  <Subheader> Current Members </Subheader>
-                  {this.group.list ? this.group.list.map(obj => (<ListItem
-                    key={obj.phone}
-                    primaryText={obj.name}
-                    leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={<span className="phone">{obj.phone}</span>}
-                  />)) : null}
-                </List>
-                <Divider />
-                <List>
-                  <Subheader> Recent Guests </Subheader>
-                  {this.group.list ? this.group.guests.map(obj => (<ListItem
-                    onClick={() => this.actionInviteGuest(obj)}
-                    key={obj.phone}
-                    primaryText={obj.name}
-                    leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={(<ContentAdd />)}
-                    />)) : null}
-                  </List>
-                <Divider/>
-                <List>
-                  <Subheader> Pending Invitation Requests </Subheader>
-                  {this.group.list ? this.group.requests.map(obj => (<ListItem
-                    onClick={() => this.actionAcceptRequest(obj)}
-                    key={obj.phone}
-                    primaryText={obj.name}
-                    leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                    rightIcon={(<ContentAdd />)}
-                    />)) : null}
-                  </List>
-                <Divider/>
-                <List>
-                  <Subheader> Invite Friends </Subheader>
-                  <TextField ref='inviteTextFieldName' className="add" floatingLabelText="Name"/>
-                  <TextField ref='inviteTextFieldPhone' className="add"  floatingLabelText="Phone Number"/>
-                  <br />
-                  <FlatButton onClick={() => this.actionSendInvitation()} className="addBtn" label="Send Invitation" />
-                </List>
-                <Divider/>
-                <List>
-                  <FlatButton onClick={() => this.actionLeaveGroup()} className="addBtn" label="Leave Current Group" />
-                </List>
+        <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
+          
+          {this.group.name !== undefined ? (
+            <Tab className="tabsItem" label="Members" >
+              <div className="tabsPage">
+                <div className="group">
+                  <Paper className="container">
+                    <div>
+                      <h3> { this.group.name } </h3>
+                      <Divider/>
+                      <List>
+                        <Subheader> Current Members </Subheader>
+                        {this.group.list ? this.group.list.map(obj => (<ListItem
+                          key={obj.phone}
+                          primaryText={obj.name}
+                          leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                          rightIcon={<span className="phone">{obj.phone}</span>}
+                        />)) : null}
+                      </List>
+                    </div>
+                  </Paper>
+                </div>
               </div>
-            ) : (
-              <div>
-                <List>
-                  <Subheader> Join Group </Subheader>
-                  <TextField ref='joinTextField' className="add" floatingLabelText="Group Name"/>
-                  <br />
-                  <FlatButton onClick={() => this.actionSendRequest()} className="addBtn" label="Send Invite Request" />
-                </List>
-                <Divider/>
-                <List>
-                  <Subheader> Group Invitations </Subheader>
-                  {this.user.invitations ? this.user.invitations.map(group => (<ListItem
-                    onClick={() => this.actionAcceptInvitation(group)}
-                    key={group}
-                    primaryText={group}
-                    rightIcon={(<ContentAdd />)}
-                    />)) : null}
-                </List>
-              </div>
-          )}
+            </Tab>) : null }
 
-          </Paper>
-        </div>
+          {this.group.name !== undefined ? (
+            <Tab className="tabsItem" label="Invite" >
+              <div className="tabsPage">
+                  <div className="group">
+                    <Paper className="container">
+                      <div>
+                        <List>
+                          <Subheader> Invite Friends </Subheader>
+                          <TextField ref='inviteTextFieldName' className="add" floatingLabelText="Name"/>
+                          <TextField ref='inviteTextFieldPhone' className="add"  floatingLabelText="Phone Number"/>
+                          <br />
+                          <FlatButton onClick={() => this.actionSendInvitation()} className="addBtn" label="Send Invitation" />
+                        </List>
+                        <Divider/>
+                        <List>
+                          <Subheader> Pending Invitation Requests </Subheader>
+                          {this.group.list ? this.group.requests.map(obj => (<ListItem
+                            onClick={() => this.actionAcceptRequest(obj)}
+                            key={obj.phone}
+                            primaryText={obj.name}
+                            leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                            rightIcon={(<ContentAdd />)}
+                            />)) : null}
+                        </List>
+                      </div>
+                    </Paper>
+                  </div>
+              </div>
+            </Tab>) : null }
+
+          {this.group.name !== undefined ? (  <Tab className="tabsItem" label="Manage">
+              <div className="tabsPage">
+                <div className="group">
+                    <Paper className="container">
+                        <div>
+                          <List>
+                            <Subheader> Pending Invitation Requests </Subheader>
+                            {this.group.list ? this.group.requests.map(obj => (<ListItem
+                              onClick={() => this.actionAcceptRequest(obj)}
+                              key={obj.phone}
+                              primaryText={obj.name}
+                              leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                              rightIcon={(<ContentAdd />)}
+                              />)) : null}
+                          </List>
+                          <Divider/>
+                          <List>
+                            <FlatButton onClick={() => this.actionLeaveGroup()} className="addBtn" label="Leave Current Group" />
+                          </List>
+                        </div>
+                    </Paper>
+                  </div>
+              </div>
+            </Tab>) : null }
+          
+          {this.group.name === undefined ? ( 
+            <Tab className="tabsItem" label="Join Group">
+            <div className="tabsPage">
+              <div className="group">
+                  <Paper className="container">
+                    <div>
+                      <List>
+                        <Subheader> Join Group </Subheader>
+                        <TextField ref='joinTextField' className="add" floatingLabelText="Group Name"/>
+                        <br />
+                        <FlatButton onClick={() => this.actionSendRequest()} className="addBtn" label="Send Invite Request" />
+                      </List>
+                      <Divider/>
+                      <List>
+                        <Subheader> Group Invitations </Subheader>
+                        {this.user.invitations ? this.user.invitations.map(group => (<ListItem
+                          onClick={() => this.actionAcceptInvitation(group)}
+                          key={group}
+                          primaryText={group}
+                          rightIcon={(<ContentAdd />)}
+                          />)) : null}
+                      </List>
+                    </div>
+                  </Paper>
+                </div>
+            </div>
+          </Tab>
+          ) : null}
+        </Tabs>
       </div>
     );
   }
 }
+
+/* : (
+<div>
+  <List>
+    <Subheader> Join Group </Subheader>
+    <TextField ref='joinTextField' className="add" floatingLabelText="Group Name"/>
+    <br />
+    <FlatButton onClick={() => this.actionSendRequest()} className="addBtn" label="Send Invite Request" />
+  </List>
+  <Divider/>
+  <List>
+    <Subheader> Group Invitations </Subheader>
+    {this.user.invitations ? this.user.invitations.map(group => (<ListItem
+      onClick={() => this.actionAcceptInvitation(group)}
+      key={group}
+      primaryText={group}
+      rightIcon={(<ContentAdd />)}
+      />)) : null}
+      */

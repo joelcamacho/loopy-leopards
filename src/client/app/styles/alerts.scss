@@ -1,0 +1,19 @@
+
+
+.alertsContainer {
+  padding: 0 20pt 20pt 20pt;
+  min-height: 85vh;
+}
+
+.alertsTitle {
+  font-size: 50pt;
+  font-weight: 300;
+}
+
+.alertsItem {
+  min-height: 100px;
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

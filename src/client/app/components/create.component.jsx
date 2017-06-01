@@ -8,7 +8,6 @@ import Divider from 'material-ui/Divider';
 import TimePicker from 'material-ui/TimePicker';
 import DatePicker from 'material-ui/DatePicker';
 import TextField from 'material-ui/TextField';
-import Checkbox from 'material-ui/Checkbox';
 import RaisedButton from 'material-ui/RaisedButton';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import Dialog from 'material-ui/Dialog';
@@ -24,7 +23,12 @@ export default class CreatePageComponent extends React.Component {
     this.state = {
       controlledDate: null,
       value12: null,
-      testValue: '',
+      commentTestValue: '',
+      titleTestValue: '',
+      addressTestValue: '',
+      cityTestValue: '',
+      stateTestValue: '',
+      phoneTestValue: '',
       open: false,//
       userStatus: [],//
       clickUserStatus: false,
@@ -35,39 +39,66 @@ export default class CreatePageComponent extends React.Component {
     this.handleOpen =this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
     this.handleSearchbar = this.handleSearchbar.bind(this);
-    this.handleChangeTestValue = this.handleChangeTestValue.bind(this);
+    this.handleCommentTestValue = this.handleCommentTestValue.bind(this);
     this.handleChangeTimePicker12 = this.handleChangeTimePicker12.bind(this);
     this.handleChangeDate = this.handleChangeDate.bind(this);
-    this.backToEvents = this.backToEvents.bind(this);
+    // this.backToEvents = this.backToEvents.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDeleteChip = this.handleDeleteChip.bind(this);
+    this.handleTitleTestValue = this.handleTitleTestValue.bind(this);
+    this.handleDescriptionTestValue = this.handleDescriptionTestValue.bind(this);
+    this.handleAddressTestValue = this.handleAddressTestValue.bind(this);
+    this.handleCityTestValue = this.handleCityTestValue.bind(this);
+    this.handleStateTestValue = this.handleStateTestValue.bind(this);
+    this.handlePhoneTestValue = this.handlePhoneTestValue.bind(this);
   }
 
-  componentDidMount() {
-    fetch('/api/users', {credentials: 'include'})
-    .then(res => res.json())
-    .catch(error => {
-      console.log("Can not received users data from database: ", error);
-    })
-    .then(res => {
-      let userStatusArray = res.map(user => {
-        var rObj = {};
-        rObj.name = user.first_name + ' ' + user.last_name;
-        rObj.rightIconDisplay = (<ContentAdd />);
-        return rObj;
-      })
-      console.log("userStatus: ", userStatusArray)
-      this.setState({userStatus: userStatusArray});
-      let userGroup = res.map(user => {
-        var rObj = {};
-        rObj.name = user.first_name + ' ' + user.last_name;
-        rObj.photo = null;
-        rObj.phone = user.phone;
-        return rObj;
-      })
-      console.log("userGroupData: ", userGroup);
-      this.setState({userGroupData: userGroup});
-    })
+  handleCommentTestValue (event) {
+    this.setState({commentTestValue: event.target.value});
+  };
+
+  handleTitleTestValue (event) {
+    this.setState({titleTestValue: event.target.value});
   }
+
+  handleDescriptionTestValue (event) {
+    this.setState({descriptionTestValue: event.target.value});
+  }
+
+  handleAddressTestValue (event) {
+    this.setState({addressTestValue: event.target.value});
+  }
+
+  handleCityTestValue (event) {
+    this.setState({cityTestValue: event.target.value});
+  }
+
+  handleStateTestValue (event) {
+    this.setState({stateTestValue: event.target.value});
+  }
+
+  handlePhoneTestValue (event) {
+    this.setState({phoneTestValue: event.target.value});
+  }
+
+  handleChangeTimePicker12 (event, date) {
+    this.setState({value12: date});
+  };
+
+  handleChangeDate (event, date) {
+    this.setState({controlledDate: date});
+  };
+
+
+
+  // backToEvents (events) {
+  //   this.props.addEvents(events);
+  //   this.props.setStateBackToDefault({status: 'first'});
+  // }
+
+  handleSubmit () {
+    this.setState({open: false});
+  };
 
   handleOpen ()  {
     this.setState({open: true});
@@ -85,9 +116,45 @@ export default class CreatePageComponent extends React.Component {
     this.setState({open: false});
   };
 
+  getIndex (name) {
+    //console.log(this.state);
+    let RIC; 
+    this.state.userStatus.forEach((ele,ind) => {
+      if(ele.name === name) {
+        RIC = ele.rightIconDisplay
+      }
+    })
+    return RIC;
+  }
+
+  componentDidMount() {
+    console.log("Friends!!!")
+    fetch('/api/users', {credentials: 'include'})
+    .then(res => res.json())
+    .catch(error => {
+      console.log("Can not received users data from database: ", error);
+    })
+    .then(res => {
+      let userStatusArray = res.map(user => {
+        var rObj = {};
+        rObj.name = user.first_name + ' ' + user.last_name;
+        rObj.rightIconDisplay = (<ContentAdd />);
+        return rObj;
+      })
+      this.setState({userStatus: userStatusArray});
+      let userGroup = res.map(user => {
+        var rObj = {};
+        rObj.name = user.first_name + ' ' + user.last_name;
+        rObj.photo = null;
+        rObj.phone = user.phone;
+        return rObj;
+      })
+      this.setState({userGroupData: userGroup});
+    })
+  }
+
   handleSearchbar (event, userInput) {
     var users = [];
-    console.log(this.state.userGroupData);
     !!userInput ? this.state.userGroupData.forEach(userInfo => {
       if(userInfo.name.indexOf(userInput) > -1 || userInfo.phone.indexOf(userInput) > -1) {
           users.push(userInfo)
@@ -96,30 +163,23 @@ export default class CreatePageComponent extends React.Component {
     this.props.searchUsers(users);
   }
 
-  handleChangeTestValue (event) {
-    this.setState({
-      testValue: event.target.value,
-    });
-  };
-
-  handleChangeTimePicker12 (event, date) {
-    this.setState({value12: date});
-  };
-
-  handleChangeDate (event, date) {
-    this.setState({
-      controlledDate: date,
-    });
-  };
-
-  backToEvents (events) {
-    this.props.addEvents(events);
-    this.props.setStateBackToDefault({status: 'first'});
+  handleDeleteChip (name) {
+    const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
+    this.state.invitedUsers.splice(chipToDelete, 1);
+    //console.log("invitedUser state: ", this.state.invitedUsers)
+    let rightIconArray = this.state.userStatus.map((ele, ind) => {
+      var rObj = {};
+      if (ele.name === name) {
+        rObj.name = name;
+        rObj.rightIconDisplay = (<ContentAdd />);
+      } else {
+        rObj.name = ele.name;
+        rObj.rightIconDisplay = ele.rightIconDisplay;
+      }
+      return rObj;
+    })
+    this.setState({userStatus: rightIconArray});
   }
-
-  handleSubmit () {
-    this.setState({open: false});
-  };
 
   handleClickUser (user) {
     let rightIconArray;
@@ -150,10 +210,7 @@ export default class CreatePageComponent extends React.Component {
     this.setState({userStatus: rightIconArray});
   }
   
-
-
   handleConfirm () {
-
     let init = {
       method: 'POST',
       credentials: 'include',
@@ -165,29 +222,28 @@ export default class CreatePageComponent extends React.Component {
         {
           //need an img
           img: this.props.event.img,
-          name: this.props.event.title,
+          name: this.props.event.title || this.state.titleTestValue,
           //2 date time! now is event time
           date_Time: this.props.event.date_time,
           time: this.state.value12,
           date: this.state.controlledDate,
-          description: this.props.event.description.slice(0,250),
-          address: this.props.event.address,
-          city: this.props.event.city,
-          state: this.props.event.state,
-          phone: this.props.event.phone,
+          description: this.props.event.description.slice(0,250) || this.state.descriptionTestValue,
+          address: this.props.event.address || this.state.addressTestValue,
+          city: this.props.event.city || this.state.cityTestValue,
+          state: this.props.event.state || this.state.stateTestValue,
+          phone: this.props.event.phone || this.state.phoneTestValue,
           latitude: this.props.event.latitude,
           longitude: this.props.event.longitude,
-          comments: this.state.testValue,
+          comments: this.state.commentTestValue,
           url: this.props.event.url,
-          //creator_id: this.props.auth.id,
+          // creator_id: this.props.auth.id,
           //group_id:
         }
       )
     }
-
     fetch('/api/events', init)
     .then(res => res.json())
-    .catch(err => console.log("can not save event data!!!!!!"))
+    .catch(err => console.log("can not save event data: ", err))
     .then(res => {
       let usersArray = this.state.invitedUsers.map(user => {
         let rObj = {};
@@ -195,7 +251,6 @@ export default class CreatePageComponent extends React.Component {
         rObj.phone = user.phone;
         return rObj;
       })
-
       let init = {
         method: 'POST',
         credentials: 'include',
@@ -212,43 +267,15 @@ export default class CreatePageComponent extends React.Component {
       let url = '/api/events/' + res.event.id + '/invite';
       fetch(url, init)
       .then(res => res.json())
-      .catch(err => console.log("can not save users !!!!!!!!!"))
-      .then(res => console.log(res))
+      .catch(err => console.log("can not save users: ", err))
+      .then(res => this.props.setStateBackToDefault({}))
     })
-  }
-
-  handleRequestDelete (name) {
-    const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
-    this.state.invitedUsers.splice(chipToDelete, 1);
-    //console.log("invitedUser state: ", this.state.invitedUsers)
-    let rightIconArray = this.state.userStatus.map((ele, ind) => {
-      var rObj = {};
-      if (ele.name === name) {
-        rObj.name = name;
-        rObj.rightIconDisplay = (<ContentAdd />);
-      } else {
-        rObj.name = ele.name;
-        rObj.rightIconDisplay = ele.rightIconDisplay;
-      }
-      return rObj;
-    })
-    this.setState({userStatus: rightIconArray});
-  }
-
-  getIndex (name) {
-    //console.log(this.state);
-    let RIC; 
-    this.state.userStatus.forEach((ele,ind) => {
-      if(ele.name === name) {
-        RIC = ele.rightIconDisplay
-      }
-    })
-    return RIC;
   }
 
   render() {
     const { event } = this.props;
     const { users } = this.props;
+    console.log('event: ',event)
     ///////////////////////////Dialog/////////////////////////
     const actions = [
       <FlatButton
@@ -272,16 +299,17 @@ export default class CreatePageComponent extends React.Component {
         flexWrap: 'wrap',
       },
     };
+
     return (
       <div className="comfirm">
         <Paper className="container">
-          <img src={event.img} alt="eventImg"/>
-          {event.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.title}</p></div><Divider/></List>) : null}
-          {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description.length > 100 ? event.description.slice(0,100) + '...' : event.description }{event.url ? (<a href={event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
-          {event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.address}</p></div><Divider/></List>) : null}
-          {event.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.city}</p></div><Divider/></List>) : null}
-          {event.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.state}</p></div><Divider/></List>) : null}
-          {event.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.phone}</p></div><Divider/></List>) : null}
+          {event.img !== '' ? (<img src={event.img} alt="eventImg"/>) : (<div><h3>Create Your Own Event</h3><Divider/></div>)}
+          {event.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.title}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Title" onChange={this.handleTitleTestValue}/><br/></div>)}
+          {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description.length > 100 ? event.description.slice(0,100) + '...' : event.description }{event.url ? (<a href={event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Description" onChange={this.handleDescriptionTestValue}/><br/></div>)}
+          {event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.address}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Address" onChange={this.handleAddressTestValue}/><br/></div>)}
+          {event.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.city}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="City" onChange={this.handleCityTestValue}/><br/></div>)}
+          {event.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.state}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="State" onChange={this.handleStateTestValue}/><br/></div>)}
+          {event.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.phone}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Your phone number" onChange={this.handlePhoneTestValue}/><br/></div>)}
           {event.date_time !== undefined ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.date_time}</p></div><Divider/></List>) : null}
           <List>
           <div>
@@ -292,7 +320,7 @@ export default class CreatePageComponent extends React.Component {
                 <Chip
                   key={user.name} 
                   style={styles.chip}
-                  onRequestDelete={() => this.handleRequestDelete(user.name)}
+                  onRequestDelete={() => this.handleDeleteChip(user.name)}
                 >
                   <Avatar src={user.photo} />
                   {user.name}
@@ -346,7 +374,7 @@ export default class CreatePageComponent extends React.Component {
           <Subheader>Comment</Subheader>
             <TextField
               floatingLabelText="Anything you want to say?"
-              onChange={this.handleChangeTestValue}
+              onChange={this.handleCommentTestValue}
               multiLine={true}
             />
           </div>
@@ -369,8 +397,7 @@ export default class CreatePageComponent extends React.Component {
           </List>
           <br/>
           <div>
-            <FlatButton className="drawerItem" label="Back" onClick={() => this.backToEvents([])} />
-            <Link to="/home">
+            <Link to="/plans">
             <FlatButton className="drawerItem" label="Confirm" onClick={() => this.handleConfirm()}/>
             </Link>
           </div>

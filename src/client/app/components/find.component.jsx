@@ -101,7 +101,7 @@ export default class SearchPageComponent extends React.Component {
     }
     fetch('/api/eventbrite', init)
       .then(res => res.json())
-      .catch(error => console.log("Can not received data from Eventbrite Api!!!"))
+      .catch(error => console.log("Can not received data from Eventbrite Api: ", error))
       .then(res => {
         pickupEvents(res.events);
         console.log("pickup 20 events from eventbrite: ", eventsArray);
@@ -139,7 +139,7 @@ export default class SearchPageComponent extends React.Component {
       })
       .then(res => res.json())
       .catch(error => {
-        console.log("Can not received data from Yelp Api!!!");
+        console.log("Can not received data from Yelp Api: ", error);
       })
       .then(res =>{
         //console.log('received data from Yelo api: ', res);
@@ -177,7 +177,6 @@ export default class SearchPageComponent extends React.Component {
           }
         }
         result = getUnique(result);
-        console.log("result: ", result)
         this.props.addEvents(result);
         this.setState({expanded: true});
         this.setState({searchButton: false});
@@ -227,7 +226,6 @@ export default class SearchPageComponent extends React.Component {
 
   render() {
     const { events } = this.props;
-    console.log("events from props: ",events)
     const styles = {
       position: {
         marginLeft: 16,

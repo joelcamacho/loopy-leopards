@@ -1,16 +1,12 @@
 import { connect } from 'react-redux';
 import FindPageComponent from '../components/find.component.jsx';
 import action from '../actions/events.action.jsx';
-import searchUserAction from '../actions/searchUsers.action.jsx';
 
 export default connect(
 	//App is listening to state
   function mapStateToProps(state) {
     return { 
       events: state.events,
-      event: state.event,
-      users: state.searchUsers,
-      auth: state.auth.toJS()
     };
   },
 
@@ -21,12 +17,6 @@ export default connect(
     	},
       createEvent: function(event) {
         return dispatch(action.createEvent(event));
-      },
-      setStateBackToDefault: function(event) {
-        return dispatch(action.setStateBackToDefault(event));
-      },
-      searchUsers: function(users) {
-        return dispatch(searchUserAction.searchUsers(users));
       },
     }
   }

@@ -45,7 +45,6 @@ knex.schema.createTable('users', function(table) {
       table.foreign('creator_id').references('users.id');
       table.integer('group_id').unsigned();
       table.foreign('group_id').references('groups.id');
-      table.string('url');
       table.string('time');
       table.string('date');
       table.string('img');

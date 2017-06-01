@@ -95,11 +95,12 @@ exports.createNewUser = options => {
     User.forge(options).save()
     .then((user) => {
       // What is this if statement for?
-      if(user.get('email') === null && user.get('google_id') === null) {
-        resolve('added ' + user.get('name'));
-      } else {
-        resolve('Welcome, ' + user.get('first_name'));
-      }
+      // if(user.get('email') === null && user.get('google_id') === null) {
+      //   resolve('added ' + user.get('name'));
+      // } else {
+      //   resolve('Welcome, ' + user.get('first_name'));
+      // }
+      resolve(user);
     })
     .catch((err) => {
       if(err.code === "ER_DUP_ENTRY") {
@@ -156,7 +157,7 @@ exports.getCurrentUserGroup = (id) => {
         const data = {};
         data.groupsBelongingTo = groups.related('groupsBelongingTo');
         data.groupsCreated = groups.related('groupsCreated');
-        resolve(data);
+        resolve(data.id);
       } else {
         reject('Looks like you don\'t have any active groups');
       }
@@ -308,6 +309,23 @@ exports.rejectRequestToJoinGroup = (id, group_id) => {
 // Get all events for the user
 // 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+// Create a new event and set owner and event options obj and group
+exports.createNewEvent = (id, group_id, options) => {
+  options.creator_id = id;
+  options.group_id = group_id;
+  return new Promise(function (resolve, reject) {
+    new Event(options).save()
+    .then((event) => {
+      if(event) {
+        resolve(event);
+      } else {
+        reject('Could not save event');
+      }
+    });
+  });
+};
+
 exports.getCurrentUserEvents = (id) => {
   return new Promise(function (resolve, reject) {
     User.where({id:id}).getAllEvents()

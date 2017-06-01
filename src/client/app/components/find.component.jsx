@@ -48,8 +48,9 @@ export default class SearchPageComponent extends React.Component {
     this.setState({showMoreButton: true});
   }
 
-  handleClickedEvent () {
-    console.log("Hello World")
+  handleClickedEvent (event) {
+    event.userLocation = this.state.userLocation;
+    this.props.createEvent(event);
   }
 
   handleBackToTop () {
@@ -278,14 +279,16 @@ export default class SearchPageComponent extends React.Component {
             events.slice(2, 20).map(event => {
               return (
                 <div>
-                <CardMedia
-                  expandable={true}
-                  overlay={<CardTitle title={event.title}/>}
-                  onClick={this.handleClickedEvent}
-                >
-                  <img style={styles.img} src={event.img}/>
-                </CardMedia>
-                <br/>
+                  <Link to='/create'>
+                    <CardMedia
+                      expandable={true}
+                      overlay={<CardTitle title={event.title}/>}
+                      onClick={() => this.handleClickedEvent(event)}
+                    >
+                      <img style={styles.img} src={event.img}/>
+                    </CardMedia>
+                    <br/>
+                  </Link>
                 </div>
               )
             })
@@ -295,14 +298,16 @@ export default class SearchPageComponent extends React.Component {
             this.state.events.slice(20).map(event => {
               return (
                 <div>
-                <CardMedia
-                  expandable={true}
-                  overlay={<CardTitle title={event.title}/>}
-                  onClick={this.handleClickedEvent}
-                >
-                  <img style={styles.img} src={event.img}/>
-                </CardMedia>
-                <br/>
+                  <Link to='/create'>
+                    <CardMedia
+                      expandable={true}
+                      overlay={<CardTitle title={event.title}/>}
+                      onClick={() => this.handleClickedEvent(event)}
+                    >
+                      <img style={styles.img} src={event.img}/>
+                    </CardMedia>
+                    <br/>
+                    </Link>
                 </div>
               )
             })
@@ -326,8 +331,6 @@ export default class SearchPageComponent extends React.Component {
           <br/>
           <br/>
         </Card>
-      
-
       </div>
     ); 
   }

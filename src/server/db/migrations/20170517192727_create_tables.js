@@ -34,6 +34,7 @@ exports.up = function(knex, Promise) {
       table.string('longitude');
       // .notNullable();
       table.string('cost',[4]);
+      table.string('url');
       table.string('status').defaultTo('suggested');
       table.dateTime('voting_deadline');
       // .notNullable();

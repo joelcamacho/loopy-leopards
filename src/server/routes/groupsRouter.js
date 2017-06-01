@@ -30,9 +30,10 @@ router.route('/groups')
 		
 		Object.assign(groupData, req.body)
 
-		new Group(groupData).save()
+		new Group(groupData).save(null, null, null, {require:true})
 		.then((group) => {
 			if(group) {
+				group.related('members').attach(creatorId)
 				res.status(200).send('Group saved:' + group.get('name'))
 			} else {
 				res.status(400).send('Could not save group')
@@ -48,7 +49,7 @@ router.route('/groups/:id')
 		
 		let groupId = req.params.id
 
-		Group.where({id:groupId}).fetch({withRelated: ['members', 'events']})
+		Group.where({id:groupId}).getInfo()
 		.then((group) => {
 			res.status(200).json(group)
 		})
@@ -73,7 +74,7 @@ router.post('/groups/:id/invite',(req,res) => {
 		return User.where({phone_validated:member.phone_validated}).fetch()
 	}))
 	.then((newMembers) => {
-		Group.where({id:groupId}).manageMembers(newMembers, 'invited')
+		Group.where({id:groupId}).attachMembers(newMembers, 'invited')
 		.then((result) => {
 			res.status(200).send(result)
 		})

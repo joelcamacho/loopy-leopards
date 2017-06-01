@@ -18,19 +18,71 @@ const Group = bookshelf.Model.extend({
 	tags: function() {
 		return this.belongsToMany('Tag');
 	},
-
+	//Promise resolving to model or null
 	getInfo: function() {
-		return this.fetch({withRelated: 'members'})
+		return this.fetch({withRelated: ['members','events']});
 	},
 
-	manageMembers: function(newMembers, status) {
+	//Returns Promise
+	attachMembers: function(members, status) {
 
 		return this.getInfo()
 		.then((group) => {
-			return group.related('members').attach(newMembers)
+			if(group) {
+				return group.related('members').attach(members)
+			} else {
+				throw new Error('That group doesn\'t exist')
+			}
 		})
 		.then((members) => {
-			return members.updatePivot({status: status})
+			if (members) {
+				return members.updatePivot({status: status})
+			} else {
+				throw new Error('Could not add member to group')
+			}
+		})
+		.catch((err) => {
+			throw new Error('Something went wrong, please try again')
+		})
+	},
+
+	removeMembers: function(members) {
+
+		return this.getInfo()
+		.then((group) => {
+			if(group) {
+				return group.related('members').detach(members)
+			} else {
+				throw new Error('That group doesn\'t exist')
+			}
+		})
+		.catch((err) => {
+			throw new Error('Something went wrong, please try again')
+		})
+	},
+
+	memberInvitedORRequested: function(member) {
+		return this.getInfo()
+		.then((group) => {
+			return (!!group && !!group.related('members').get(id))
+		})
+		.catch((err) => {
+			throw new Error('Something went wrong, please try again')
+		})
+	},
+
+	acceptRequestORInvitation: function(members) {
+
+		return this.memberInvitedORRequested(members)
+		.then((result) => {
+			if(result) {
+				return group.related('members').updatePivot({status:'member'})
+			} else {
+				throw new Error('Must request membership or be invited to group')
+			}
+		})
+		.catch((err) => {
+			throw new Error('Something went wrong, please try again')
 		})
 	}
 })

@@ -11,7 +11,7 @@ router.route('/events')
 	data = {}
 
 	//retrieve all events that the user either created or was invited to
-	User.where({id:id}).getEvents()
+	User.where({id:id}).getAllEvents()
 	.then((results) => {
 		Promise.all(results.invitedTo.map((event) => {
 			return event.where({id:event.id}).getInfo()

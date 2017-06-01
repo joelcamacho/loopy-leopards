@@ -16,8 +16,7 @@ const client = twilio(apiKeys.twilioAccountSid, apiKeys.twilioAuthToken);
 
 // Firebase Cloud Messaging Notification helpers
 
-// To receive notification, user must allow notifications
-exports.pushToUserFromId = (id, options = {}) => {
+const _pushToUserFromId = (id, options = {}) => {
   const key = apiKeys.fcmServerKey;
   const notification = {
     'title': options.title || 'Kimmy J Master',
@@ -45,6 +44,19 @@ exports.pushToUserFromId = (id, options = {}) => {
     })
 }
 
+// Send push notification to user given id
+exports.pushToUserFromId = (id, options = {}) => {
+  return _pushToUserFromId(id, options);
+}
+
+// Send notifications a group of users
+exports.pushToUsers = (users, options = {}) => {
+  users.forEach(user => {
+    _pushToUserFromId(user.id, options)
+  })
+}
+
+// To receive notification, user must allow notifications
 // Register and unregister user to receive notifications
 exports.updateUserTokenFromId = (id, token) => {
   return new Promise(function (resolve, reject) {
@@ -68,7 +80,7 @@ exports.updateUserTokenFromId = (id, token) => {
 // sendEventInvitations(tempEvent, tempUsers);
 // sendEventAnnouncement(tempEvent, tempUsers, 'Just Joking, the event has been cancelled');
 
-exports.sendMessageToPhone = (phone, message, callback = (res) => res) => {
+const _sendMessageToPhone = (phone, message, callback = (res) => res) => {
   client.messages.create({ 
     to: phone, 
     from: apiKeys.twilioFromNumber, 
@@ -91,18 +103,22 @@ exports.authenticatePhoneWithCode = (phone, code) => {
   return twilioAuthService.verifyCode(phone, code);
 }
 
+const _sendEventInvitation = (user, message) => {
+  _sendMessageToPhone(user.phone, message);
+}
+
 exports.sendEventInvitation = (user, message) => {
-  sendMessageToPhone(user.phone, message);
+  _sendMessageToPhone(user.phone, message);
 }
 
 exports.sendEventInvitations = (event, users) => {
   const message = `You have been invited an event on HanginHubs! Please go to the website to respond. Event Details: ${event.name} on ${event.date_time} at ${event.address}, ${event.city}, ${event.state}`;
-  users.forEach(user => sendEventInvitation(user, message));
+  users.forEach(user => _sendEventInvitation(user, message));
 }
 
 exports.sendEventAnnouncement = (event, users, announcement) => {
   const message = `Announcement for upcoming event \'${event.name}\': ${announcement}`;
-  users.forEach(user => sendEventInvitation(user, message));
+  users.forEach(user => _sendEventInvitation(user, message));
 }
 
 exports.setVerifyPhoneNumber = (id, phone) => {

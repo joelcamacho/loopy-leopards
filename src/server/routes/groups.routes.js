@@ -9,10 +9,8 @@ const bookshelf = require('../db/models/db.js');
 // TODO: Remove all Tags stuff
 const Tag = require('../db/models/tag.js');
 
-// TODO: Move all database access to helper methods
-
 // TODO: Import helper methods
-
+const helpers = require('../helpers/db.helpers.js')
 
 // No User Context needed
 // GET all groups (no id or group_id needed)
@@ -20,55 +18,46 @@ const Tag = require('../db/models/tag.js');
 	// should contain a list of members
 	// should contain a list of requests from guests to join the group
 	// should contain a list of invitations from members to join to the group
-// POST, create a new group with options
-	// should check to see if options object contains {name}
-	// should check to see if groups already has that name
-	// if not already exists, then continue...
-  // should check if current user is in a group
-  // should only let the user create a group if the user is not in a group
-	// should current user to creator
-	// should set the name of the group with options
-	// should return the id and details of the event to the client
 router.route('/groups')
 	.get((req, res) => {
-		let id = 1,
-		data = {}
-		User.where({id:id}).fetch({withRelated: ['groupsBelongingTo','groupsCreated']})
-		.then((groups) => {
-			if(groups) {
-				data.groupsBelongingTo = groups.related('groupsBelongingTo')
-				data.groupsCreated = groups.related('groupsCreated')
-				res.status(200).json(data);
-			} else {
-				res.status(200).send('Looks like you don\'t have any active groups')
-			}
-		})
-		.catch((err) => {
-			res.send(err)
-		})
+		helpers.getAllGroupsInfo()
+		.then(groups => res.json(groups))
+		.catch(err => res.status(400).send({result: err}))
 	})
+	
+// POST, create a new group with options
 	.post((req, res) => {
-		// { creator_id, name}
-		let creatorId = 1
-		let groupData = {creator_id: creatorId}
-		
-		Object.assign(groupData, req.body)
+		let options = req.body,
+		groupName = req.body.name || null,
+		id = req.user.id
 
-		new Group(groupData).save(null, null, null, {require:true})
-		.then((group) => {
-			if(group) {
-				group.related('members').attach(creatorId)
-				res.status(200).send('Group saved:' + group.get('name'))
-			} else {
-				res.status(400).send('Could not save group')
+		User.where({id:id}).groupsBelongingTo()
+		.then(groups => {
+			if(!!groups) {
+				res.send('To create a new group, please leave your current group')
 			}
 		})
-		.catch((err) => {
-			res.status(400).send('Could not save this group')
-		})
+		// should check to see if options object contains {name}
+		if(groupName) {
+			// should check to see if groups already has that name
+			helpers.getAllGroupsInfo()
+			.then(groups => {
+				let exists = groups.find(group => group.name === groupName);
+
+				if(!!exists) {
+					res.send('Sorry, that group name already exists', exists);
+				} else {
+					// should only let the user create a group if the user is not in a group
+					// should current user to creator
+					// should set the name of the group with options
+					// should return the id and details of the event to the client
+					return helpers.createNewGroup(id,options)
+				}
+			})
+			.then(result => res.send(result))
+			.catch(err => res.send(err))
+		}
 	})
-
-
 // Require User to be authenticated
 
 // GET the group's detail (no id needed, but require group_id in query params)
@@ -77,6 +66,7 @@ router.route('/groups')
 	// should contain a list of requests from guests to join the group
 	// should contain a list of invitations from members to join to the group
 router.route('/groups/:id')
+
 	.get((req,res) => {
 		
 		let groupId = req.params.id

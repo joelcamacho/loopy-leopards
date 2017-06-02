@@ -1,6 +1,7 @@
 const Promise = require('promise');
 const User = require('../db/models/user.js');
 const Group = require('../db/models/group.js');
+const Event = require('../db/models/event.js');
 
 // ~~~~~~~~~~~~~~~~~ AUTH ~~~~~~~~~~~~~~~~~ 
 // Get Current User's Id from current auth (google_id)
@@ -128,17 +129,54 @@ exports.deleteCurrentUserFromId = (id, options) => {
   });
 };
 
-// ~~~~~~~~~~~~~~~~~ GROUP ~~~~~~~~~~~~~~~~~ 
+// ~~~~~~~~~~~~~~~~~ GROUP ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 // Get all group information
-exports.getAllGroups = () => {
+exports.getAllGroupsInfo = () => {
+
+  let compiledGroupInfo, ids, groupDetails
+  
   return new Promise(function (resolve, reject) {
     Group.fetchAll()
-    .then((groups) => {
-      if(groups){
-        resolve(groups);
-      } else {
-          reject('There are no active groups');
-      }
+    .then(groups => {
+      
+    compiledGroupInfo = groups.serialize()
+
+    let ids = compiledGroupInfo.map(group => group.creator_id)
+      //TODO: figure out how to optimize, so only fetching profile for UNIQUE users
+      // .filter((id,idx,array) => {
+      //  return array.indexOf(id) === idx
+      // })
+      return Promise.all(ids.map(id => {
+        return User.where({id:id}).fetch()
+      }))
+      .then(userProfiles => {
+        compiledGroupInfo.forEach((group,idx) => {
+          group.creator = userProfiles[idx].serialize()
+        })
+        return Promise.all(compiledGroupInfo.map(group => {
+          return Group.where({id:group.id}).getInfo()
+        }))
+      })
+      .then(groups => {
+        compiledGroupInfo.forEach((group, index) => {
+          group.all = groups[index].serialize().members
+          group.members = [];
+          group.requested = [];
+          group.invited = [];
+
+          group.all.forEach(profile => {
+            if(profile._pivot_status === null || profile._pivot_status === 'member') {
+              group.members.push(profile);
+            } else if(profile._pivot_status === 'requested') {
+              group.requested.push(profile);
+            } else if(profile._pivot_status === 'invited'){
+              group.invited.push(profile);
+            }
+          });
+          group.events = groups[index].serialize().events
+        })
+        resolve(compiledGroupInfo)
+      })
     })
     .catch((err) => {
       reject('Something went wrong, please try again')
@@ -170,7 +208,9 @@ exports.createNewGroup = (id, options) => {
     new Group(options).save()
     .then((group) => {
       if(group) {
-        resolve('Group saved:' + group.get('name'));
+        resolve('Group saved:' + group
+          // .get('name')
+          );
       } else {
         reject('Could not save group');
       }
@@ -308,6 +348,7 @@ exports.rejectRequestToJoinGroup = (id, group_id) => {
 // 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 exports.getCurrentUserEvents = (id) => {
+  //id = 1;
   return new Promise(function (resolve, reject) {
     User.where({id:id}).getAllEvents()
     .then((events) => {
@@ -435,11 +476,30 @@ exports.unvoteForEvent = (id, event_id) => {
   return new Promise(function (resolve, reject) {
     Event.where({id: eventId}).vote(userId, false)
     .then((result) => {
-      resolve(result)
+      resolve(result);
     })
     .catch((err) => {
-      reject('Something went wrong, please try again')
-    })
-  })
+      reject('Something went wrong, please try again');
+    });
+  });
 };
 
+exports.getAllUsersGroups = (id) => {
+  return new Promise(function (resolve, reject) {
+    let id = 1,
+    data = {};
+    User.where({id:id}).fetch({withRelated: ['groupsBelongingTo','groupsCreated']})
+    .then((groups) => {
+      if(groups) {
+        data.groupsBelongingTo = groups.related('groupsBelongingTo');
+        data.groupsCreated = groups.related('groupsCreated');
+        resolve(data);
+      } else {
+        reject('Looks like you don\'t have any active groups');
+      }
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+  });
+};

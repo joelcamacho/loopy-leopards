@@ -2,6 +2,9 @@ const router = require('express').Router();
 const bookshelf = require('../db/models/db.js');
 const User = require('../db/models/user.js');
 const Event = require('../db/models/event.js');
+const Group = require('../db/models/group.js');
+const helpers = require('../helpers/db.helpers.js')
+const Promise = require('promise')
 
 // TODO: Move all database access to helper methods
 
@@ -22,8 +25,8 @@ router.route('/events')
 	//TODO: get ID
 	let id = 1,
 	data = {}
-
-	//retrieve all events that the user either created or was invited to
+  
+	// retrieve all events that the user either created or was invited to
 	User.where({id:id}).getAllEvents()
 	.then((results) => {
 		Promise.all(results.invitedTo.map((event) => {

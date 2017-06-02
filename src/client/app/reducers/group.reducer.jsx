@@ -64,7 +64,7 @@ const emptyInit = fromJS({
   requested: []
 });
 
-export default function group(state = emptyInit, action) {
+export default function group(state = groupInit, action) {
   switch (action.type) {
     case 'UPDATE_GROUP':
       return fromJS(action.payload);

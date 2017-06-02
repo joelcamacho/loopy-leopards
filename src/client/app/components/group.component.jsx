@@ -182,7 +182,7 @@ export default class GroupPageComponent extends React.Component {
               </div>
             </Tab>) : null }
           
-          {!!this.props.group ? ( 
+          {!this.props.group.name ? ( 
             <Tab className="tabsItem" label="Join Group">
             <div className="tabsPage">
               <div className="group">

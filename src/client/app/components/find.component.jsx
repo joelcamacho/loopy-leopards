@@ -48,8 +48,9 @@ export default class SearchPageComponent extends React.Component {
     this.setState({showMoreButton: true});
   }
 
-  handleClickedEvent () {
-    console.log("Hello World")
+  handleClickedEvent (event) {
+    event.userLocation = this.state.userLocation;
+    this.props.createEvent(event);
   }
 
   handleBackToTop () {
@@ -57,9 +58,17 @@ export default class SearchPageComponent extends React.Component {
     scrolldelay = setTimeout(this.handleBackToTop(),100);
   }
 
+  componentDidMount() {
+    fetch('/api/user', {credentials: 'include'})
+    .then(res => res.json())
+    .then(res => {
+      this.props.updateProfile(res);
+    })
+  }
+
   handleSearchResult () {
     const userSearchEvent = this.state.userSearchEvent;
-    const userLocation = this.state.userLocation;
+    const userLocation = this.state.userLocation === 'Please enter your location' ? null : this.state.userLocation
     ///////////////////Helper Functions///////////////////
     let randomNumbers = [];
     let eventsArray = [];
@@ -100,7 +109,7 @@ export default class SearchPageComponent extends React.Component {
     }
     fetch('/api/eventbrite', init)
       .then(res => res.json())
-      .catch(error => console.log("Can not received data from Eventbrite Api!!!"))
+      .catch(error => console.log("Can not received data from Eventbrite Api: ", error))
       .then(res => {
         pickupEvents(res.events);
         console.log("pickup 20 events from eventbrite: ", eventsArray);
@@ -138,7 +147,7 @@ export default class SearchPageComponent extends React.Component {
       })
       .then(res => res.json())
       .catch(error => {
-        console.log("Can not received data from Yelp Api!!!");
+        console.log("Can not received data from Yelp Api: ", error);
       })
       .then(res =>{
         //console.log('received data from Yelo api: ', res);
@@ -176,7 +185,6 @@ export default class SearchPageComponent extends React.Component {
           }
         }
         result = getUnique(result);
-        console.log("result: ", result)
         this.props.addEvents(result);
         this.setState({expanded: true});
         this.setState({searchButton: false});
@@ -226,7 +234,6 @@ export default class SearchPageComponent extends React.Component {
 
   render() {
     const { events } = this.props;
-    console.log("events from props: ",events)
     const styles = {
       position: {
         marginLeft: 16,
@@ -278,14 +285,16 @@ export default class SearchPageComponent extends React.Component {
             events.slice(2, 20).map(event => {
               return (
                 <div>
-                <CardMedia
-                  expandable={true}
-                  overlay={<CardTitle title={event.title}/>}
-                  onClick={this.handleClickedEvent}
-                >
-                  <img style={styles.img} src={event.img}/>
-                </CardMedia>
-                <br/>
+                  <Link to='/create'>
+                    <CardMedia
+                      expandable={true}
+                      overlay={<CardTitle title={event.title}/>}
+                      onClick={() => this.handleClickedEvent(event)}
+                    >
+                      <img style={styles.img} src={event.img}/>
+                    </CardMedia>
+                    <br/>
+                  </Link>
                 </div>
               )
             })
@@ -295,14 +304,16 @@ export default class SearchPageComponent extends React.Component {
             this.state.events.slice(20).map(event => {
               return (
                 <div>
-                <CardMedia
-                  expandable={true}
-                  overlay={<CardTitle title={event.title}/>}
-                  onClick={this.handleClickedEvent}
-                >
-                  <img style={styles.img} src={event.img}/>
-                </CardMedia>
-                <br/>
+                  <Link to='/create'>
+                    <CardMedia
+                      expandable={true}
+                      overlay={<CardTitle title={event.title}/>}
+                      onClick={() => this.handleClickedEvent(event)}
+                    >
+                      <img style={styles.img} src={event.img}/>
+                    </CardMedia>
+                    <br/>
+                    </Link>
                 </div>
               )
             })
@@ -326,8 +337,6 @@ export default class SearchPageComponent extends React.Component {
           <br/>
           <br/>
         </Card>
-      
-
       </div>
     ); 
   }

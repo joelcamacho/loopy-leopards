@@ -1,29 +1,18 @@
 const { fromJS, Map, List } = require('immutable')
 
 const eventInit = fromJS({
-  img: 'http://dedicatedtodlp.com/wp-content/uploads/2013/06/photopass-front.jpg',
-  title: 'Disney Land Get Together!',
-  date: Date.now(),
-  description: 'blah blah just go',
-  address: '1313 Disneyland Dr',
-  latitude: '',
-  longitude: '',
-  city: 'Anaheim',
-  state: 'CA',
-  phone: '132-234-1923',
-  cost: '1000',
-  date_time: '',
-  list: [
-    {
-      name: 'Doood',
-      phone: 'yee'
-    }
-  ],
-  activeState: 'In progress'
+  img: '',
+  title: '',
+  description: '',
+  address: '',
+  city: '',
+  state: '',
+  phone: '',
+  activeState: 'In progress',
 });
 
 
-export default function event(state = {status: 'first'}, action) {
+export default function event(state = eventInit.toJS(), action) {
   switch (action.type) {
     case "CREATE_EVENT":
       return Object.assign({}, state,
@@ -41,7 +30,7 @@ export default function event(state = {status: 'first'}, action) {
         {url: action.payload.url},
       );
     case "SET_STATE_BACK_TO_DEFAULT":
-      return Object.assign({}, state, {status: 'first'});
+      return Object.assign({}, eventInit.toJS(), action.payload);
     case 'MODIFY_EVENT':
       return state.map((v, k) => !!action.payload[k] ? action.payload[k] : v);
     case 'RESET_GROUP': 

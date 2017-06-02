@@ -62,15 +62,13 @@ export default class SearchPageComponent extends React.Component {
     fetch('/api/user', {credentials: 'include'})
     .then(res => res.json())
     .then(res => {
-      // might need to check res.result and update photo
-      console.log('got back profile', res);
       this.props.updateProfile(res);
     })
   }
 
   handleSearchResult () {
     const userSearchEvent = this.state.userSearchEvent;
-    const userLocation = this.state.userLocation;
+    const userLocation = this.state.userLocation === 'Please enter your location' ? null : this.state.userLocation
     ///////////////////Helper Functions///////////////////
     let randomNumbers = [];
     let eventsArray = [];

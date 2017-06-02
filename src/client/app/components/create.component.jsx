@@ -30,11 +30,11 @@ export default class CreatePageComponent extends React.Component {
       cityTestValue: '',
       stateTestValue: '',
       phoneTestValue: '',
-      open: false,//
-      userStatus: [],//
+      open: false,
+      userStatus: [],
       clickUserStatus: false,
       invitedUsers: [],
-      userGroupData: [],//
+      userGroupData: [],
     };
 
     this.handleOpen =this.handleOpen.bind(this);
@@ -121,25 +121,33 @@ export default class CreatePageComponent extends React.Component {
   }
 
   componentDidMount() {
+    let currentUserFirstName = this.props.profile.first_name || "";
+    let currentUserLastName = this.props.profile.last_name || "";
     fetch('/api/users', {credentials: 'include'})
     .then(res => res.json())
     .catch(error => {
       console.log("Can not received users data from database: ", error);
     })
     .then(res => {
-      let userStatusArray = res.map(user => {
-        var rObj = {};
-        rObj.name = user.first_name + ' ' + user.last_name;
-        rObj.rightIconDisplay = (<ContentAdd />);
-        return rObj;
+      let userStatusArray = []
+      res.forEach(user => {
+        if (user.first_name !== currentUserFirstName && user.last_name !== currentUserLastName) {
+          var rObj = {};
+          rObj.name = user.first_name + ' ' + user.last_name;
+          rObj.rightIconDisplay = (<ContentAdd />);
+          userStatusArray.push(rObj);
+        }
       })
       this.setState({userStatus: userStatusArray});
-      let userGroup = res.map(user => {
-        var rObj = {};
-        rObj.name = user.first_name + ' ' + user.last_name;
-        rObj.photo = null;
-        rObj.phone = user.phone;
-        return rObj;
+      let userGroup = [];
+      res.forEach(user => {
+        if (user.first_name !== currentUserFirstName && user.last_name !== currentUserLastName) {
+          var rObj = {};
+          rObj.name = user.first_name + ' ' + user.last_name;
+          rObj.photo = null;
+          rObj.phone = user.phone || null;
+          userGroup.push(rObj);
+        }
       })
       this.setState({userGroupData: userGroup});
     })
@@ -262,7 +270,7 @@ export default class CreatePageComponent extends React.Component {
   render() {
     const { event } = this.props;
     const { users } = this.props;
-    console.log('event: ',event)
+    //console.log('event: ',event)
     ///////////////////////////Dialog/////////////////////////
     const actions = [
       <FlatButton
@@ -309,7 +317,7 @@ export default class CreatePageComponent extends React.Component {
                   style={styles.chip}
                   onRequestDelete={() => this.handleDeleteChip(user.name)}
                 >
-                  <Avatar src={user.photo} />
+                  <Avatar src={!!user.photo ? user.photo : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />
                   {user.name}
                 </Chip>
               ))

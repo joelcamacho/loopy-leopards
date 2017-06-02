@@ -5,13 +5,13 @@ import FlatButton from 'material-ui/FlatButton';
 import { Image } from 'material-ui-image'
 import AppBar from 'material-ui/AppBar';
 import IconHome from 'material-ui/svg-icons/action/home';
-
-
-
 import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+
+// import helpers
+import firebaseHelpers from '../helpers/firebase.helper.jsx';
 
 export default class NavComponent extends React.Component {
   constructor(props) {
@@ -33,6 +33,10 @@ export default class NavComponent extends React.Component {
         console.log(res.result);
         res.result.photo = res.result.photos[0].value;
         this.props.updateUser(res.result);
+        firebaseHelpers.requestPushNotificationPermissions();
+        firebaseHelpers.setMessageReceivedHandler((alert) => {
+          this.props.addAlert(alert);
+        })
       })
   }
 

@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import NavComponent from '../components/nav.component.jsx';
 import authActions from '../actions/auth.action.jsx';
 import profileActions from '../actions/profile.action.jsx';
+import alertsActions from '../actions/alerts.action.jsx';
 
 export default connect(
   function mapStateToProps(state) {
@@ -15,6 +16,7 @@ export default connect(
       resetUser: () => dispatch(authActions.resetUser()),
       updateProfile: (profile) => dispatch(profileActions.updateProfile(profile)),
       resetProfile: () => dispatch(profileActions.resetProfile()),
+      addAlert: (alert) => dispatch(alertsActions.addAlert(alert))
     };
   }
 )(NavComponent);

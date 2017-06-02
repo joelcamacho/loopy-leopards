@@ -9,7 +9,6 @@ import TextField from 'material-ui/TextField';
 // import helpers
 import firebaseHelpers from '../helpers/firebase.helper.jsx';
 
-
 export default class ProfilePageComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -25,10 +24,6 @@ export default class ProfilePageComponent extends React.Component {
     this.handleClose = () => {
       this.setState({open: false});
     };
-
-    firebaseHelpers.setMessageReceivedHandler((alert) => {
-      this.props.addAlert(alert);
-    })
 
     this.fetchAuthData = this.fetchAuthData.bind(this);
     this.fetchProfileData = this.fetchProfileData.bind(this);

@@ -26,6 +26,10 @@ export default class ProfilePageComponent extends React.Component {
       this.setState({open: false});
     };
 
+    firebaseHelpers.setMessageReceivedHandler((alert) => {
+      this.props.addAlert(alert);
+    })
+
     this.fetchAuthData = this.fetchAuthData.bind(this);
     this.fetchProfileData = this.fetchProfileData.bind(this);
     this.sendPhoneVerificationCode = this.sendPhoneVerificationCode.bind(this);

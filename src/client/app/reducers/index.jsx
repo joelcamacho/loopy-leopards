@@ -7,6 +7,7 @@ import event from './event.reducer.jsx';
 import auth from './auth.reducer.jsx';
 import searchUsers from './searchUsers.reducer.jsx';
 import invitations from './invitations.reducer.jsx';
+import alerts from './alerts.reducer.jsx';
 
 export default combineReducers({
 	profile,
@@ -16,5 +17,6 @@ export default combineReducers({
   auth,
   browser: responsiveStateReducer,
   searchUsers,
-  invitations
+  invitations,
+  alerts
 })

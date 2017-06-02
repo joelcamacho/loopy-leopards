@@ -12,22 +12,22 @@ const util = require('../helpers/util.helpers.js');
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/events')
 	.get((req,res) => {
-		if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to get events!'});
-		helpers.getUserIdFromGoogleId(req.user.id)
+		//if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to get events!'});
+		helpers.getUserIdFromGoogleId('105464304823044640566')
 		.catch(err => res.send({result: err}))
 		.then(id => helpers.getCurrentUserEvents(id))
 		.catch(err => res.send({result: err}))
 		.then(result => res.send(result));
 	})
 	.post((req,res) => {
-		if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to get events!'});
+		//if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to get events!'});
 		if(!req.body) return res.send({result: "Body must contain event details!"});
 
 		let user_id = null;
 		let group_id = null;
 		let options = req.body;
 
-		helpers.getUserIdFromGoogleId(req.user.id)
+		helpers.getUserIdFromGoogleId('105464304823044640566')
 		.catch(err => res.send({result: err}))
 		.then(id => {
 			user_id = id;

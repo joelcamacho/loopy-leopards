@@ -44,9 +44,7 @@ const eventsInit = fromJS([
 export default function events(state = [], action) {
   switch (action.type) {
     case 'ADD_BULK_TO_EVENTS':
-      state = state.concat(action.payload);
-      //console.log("New events state: ", state);
-      return state;
+      return action.payload;
     case 'ADD_TO_EVENTS':
       return state.push(action.payload);
     case 'REMOVE_FROM_EVENT':

@@ -89,13 +89,6 @@ export default class CreatePageComponent extends React.Component {
     this.setState({controlledDate: date});
   };
 
-
-
-  // backToEvents (events) {
-  //   this.props.addEvents(events);
-  //   this.props.setStateBackToDefault({status: 'first'});
-  // }
-
   handleSubmit () {
     this.setState({open: false});
   };
@@ -117,7 +110,6 @@ export default class CreatePageComponent extends React.Component {
   };
 
   getIndex (name) {
-    //console.log(this.state);
     let RIC; 
     this.state.userStatus.forEach((ele,ind) => {
       if(ele.name === name) {
@@ -166,7 +158,6 @@ export default class CreatePageComponent extends React.Component {
   handleDeleteChip (name) {
     const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
     this.state.invitedUsers.splice(chipToDelete, 1);
-    //console.log("invitedUser state: ", this.state.invitedUsers)
     let rightIconArray = this.state.userStatus.map((ele, ind) => {
       var rObj = {};
       if (ele.name === name) {
@@ -206,7 +197,6 @@ export default class CreatePageComponent extends React.Component {
         const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(user.name);
         this.state.invitedUsers.splice(chipToDelete, 1);
     }
-    //console.log("!!!!!!!!!!: ", this.state.invitedUsers)
     this.setState({userStatus: rightIconArray});
   }
   
@@ -220,10 +210,8 @@ export default class CreatePageComponent extends React.Component {
       },
       body: JSON.stringify(
         {
-          //need an img
           img: this.props.event.img,
           name: this.props.event.title || this.state.titleTestValue,
-          //2 date time! now is event time
           date_Time: this.props.event.date_time,
           time: this.state.value12,
           date: this.state.controlledDate,
@@ -237,7 +225,6 @@ export default class CreatePageComponent extends React.Component {
           comments: this.state.commentTestValue,
           url: this.props.event.url,
           // creator_id: this.props.auth.id,
-          //group_id:
         }
       )
     }
@@ -301,9 +288,9 @@ export default class CreatePageComponent extends React.Component {
     };
 
     return (
-      <div className="comfirm">
+      <div className="createContainer">
         <Paper className="container">
-          {event.img !== '' ? (<img src={event.img} alt="eventImg"/>) : (<div><h3>Create Your Own Event</h3><Divider/></div>)}
+          {event.img !== '' ? (<img src={event.img} alt="eventImg"/>) : (<div><br/><h1>Create Your Own Event</h1><Divider/></div>)}
           {event.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.title}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Title" onChange={this.handleTitleTestValue}/><br/></div>)}
           {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description.length > 100 ? event.description.slice(0,100) + '...' : event.description }{event.url ? (<a href={event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Description" onChange={this.handleDescriptionTestValue}/><br/></div>)}
           {event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.address}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Address" onChange={this.handleAddressTestValue}/><br/></div>)}
@@ -407,10 +394,3 @@ export default class CreatePageComponent extends React.Component {
     );
   }
 }
-
-
-// return (
-//   <div className="createContainer">
-//     <Paper className="createItem"> CreatePageComponent, Please update this page component David </Paper>
-//   </div>
-// );

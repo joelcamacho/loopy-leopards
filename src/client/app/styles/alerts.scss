@@ -1,19 +1,74 @@
 
 
 .alertsContainer {
-  padding: 0 20pt 20pt 20pt;
+  padding: 10pt 20pt 40pt 20pt;
   min-height: 85vh;
 }
 
 .alertsTitle {
-  font-size: 50pt;
+  font-size: 35pt;
   font-weight: 300;
+  margin: 20px;
 }
 
 .alertsItem {
   min-height: 100px;
   margin: 20px;
   display: flex;
+  align-items: flex-start;
+}
+
+.alertsItemNone {
+  margin: 20px;
+  display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 100px;
+}
+
+.removeIcon {
+  position: absolute;
+  margin-top: 0px;
+  right: 0;
+  margin-right: 55px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.removeIcon:hover {
+  background-color: rgba(0,0,0,0.5);
+  border-radius: 50%;
+}
+
+.alertContent {
+  min-height: 100pt;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-left: 30px;
+}
+
+.alertIcon {
+
+}
+
+@media screen and (max-width: 600px) {
+  .alertIcon {
+    display: none;
+    height: 0;
+    width: 0;
+  }
+}
+
+
+.alertTitle {
+  width: 100%;
+  margin: 0;
+  margin-top: 20px;
+}
+
+.alertBody {
+  width: 100%;
+  margin: 0;
 }

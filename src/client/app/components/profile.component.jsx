@@ -9,7 +9,6 @@ import TextField from 'material-ui/TextField';
 // import helpers
 import firebaseHelpers from '../helpers/firebase.helper.jsx';
 
-
 export default class ProfilePageComponent extends React.Component {
   constructor(props) {
     super(props);

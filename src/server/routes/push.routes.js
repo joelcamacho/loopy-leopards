@@ -33,7 +33,7 @@ routes.post('/api/push/notification', function(req, res) {
     .catch(err => res.send({result: err}))
     .then(result => res.send({result:result}));
   } else {
-    util.pushToUserFromId(1)
+    util.pushToUserFromId(1, req.body)
     .catch(err => res.send({result: err}))
     .then(result => res.send({result:result}));
   }

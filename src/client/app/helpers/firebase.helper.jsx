@@ -5,6 +5,8 @@ import config from '../config/config.jsx';
 firebase.initializeApp(config);
 const messaging = firebase.messaging();
 
+let messageReceivedHandler = () => {};
+
 const sendTokenToServer = (token) => {
   fetch('/api/push/register', { method: 'POST', 
     body: JSON.stringify({token: token}),
@@ -54,6 +56,7 @@ let helpers = {
             messaging.onMessage(function(payload) {
               console.log("Message received. ", payload);
               // Handle message received when app is in forefront
+              messageReceivedHandler(payload.notification);
             });
             sendTokenToServer(currentToken);
           } else {
@@ -80,6 +83,9 @@ let helpers = {
     });
   },
 
+  setMessageReceivedHandler: (fn) => {
+    messageReceivedHandler = fn;
+  },
 
   sendUnregisterToServer: () => {
     fetch('/api/push/unregister', { method: 'POST',

@@ -154,6 +154,10 @@ router.route('/group/send/request')
 	// should delete user / group entry for current user
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/group/invitations')
+	.get((req,res) => {
+		// Should return {result: [group]}
+		res.send({result: 'Still working on this endpoint!'});		
+	})
 	.post((req,res) => {
 		res.send({result: 'Still working on this endpoint!'});
 	})

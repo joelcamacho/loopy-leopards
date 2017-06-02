@@ -312,47 +312,52 @@ exports.rejectRequestToJoinGroup = (id, group_id) => {
 
 // Create a new event and set owner and event options obj and group
 exports.createNewEvent = (id, group_id, options) => {
-  options.creator_id = id;
-  options.group_id = group_id;
+  let data = {}
+  Object.assign(options, {creator_id: id});
+
   return new Promise(function (resolve, reject) {
-    new Event(options).save()
+    new Event(options).save(null, null, null, {require:true})
+    .catch((err) => {
+      reject('Sorry, could not save your event, please try again!')
+    })    
     .then((event) => {
-      if(event) {
-        resolve(event);
-      } else {
-        reject('Could not save event');
-      }
-    });
-  });
+      data.event = event
+      return event.related('invitees').attach(id)
+    })
+    .catch((err) => {
+      reject('Sorry, could not save you as an invitee of this event')
+    })
+    .then(() => {
+      resolve(data);
+    })
+  })
 };
 
 exports.getCurrentUserEvents = (id) => {
+  let compiledEvents = {invitedTo: [], created: []};
+
   return new Promise(function (resolve, reject) {
     User.where({id:id}).getAllEvents()
     .then((events) => {
-      const data = {};
-      Promise.all(results.invitedTo.map((event) => {
+      compiledEvents.invitedTo = events.invitedTo;
+      compiledEvents.created = events.created;
+      return Promise.all(compiledEvents.created.map((event) => {
         return event.where({id:event.id}).getInfo()
       }))
-      .then((result) => {
-        data.invitedTo = result
-      })
-      .catch((err) => {
-        reject('Something went wrong, please try again')
-      })
-      Promise.all(results.created.map((event) => {
-        return event.where({id:event.id}).getInfo()
-      }))
-      .then((result) => {
-        data.created = result
-        resolve(data)
-      })
-      .catch((err) => {
-        reject('Something went wrong')
-      })
     })
-    .catch((err) => {
-      reject('Something went wrong, please try again');
+    .then((events) => {
+      compiledEvents.created = events.map(event => event.serialize());
+      return Promise.all(compiledEvents.invitedTo.map((event) => {
+        return event.where({id:event.id}).getInfo()
+      }))
+    })
+    .then((events) => {
+      compiledEvents.invitedTo = events.map(event => event.serialize());
+      return new User({id: id}).fetch()
+    })
+    .then((user) => {
+      compiledEvents.creator = user.serialize();
+      resolve(compiledEvents);
     });
   });
 };
@@ -360,38 +365,35 @@ exports.getCurrentUserEvents = (id) => {
 // Get specific events given event id
 exports.getEventFromId = (event_id) => {
   return new Promise(function (resolve, reject) {
-    User.where({id:id}).getEvent(event_id)
-    .then((event) => {
-      resolve(event)
-    })
-    .catch((err) => {
-      reject('Something went wrong, please try again')
-    })
-  })
+    Event.where({id:event_id}).fetch()
+    .catch((err) => reject(err))
+    .then((event) => resolve(event))
+  });
 };
 
 // Update event details given event id
 exports.updateEventFromId = (event_id, updateAttributes) => {
   return new Promise(function (resolve, reject) {
     new Event({id:event_id}).save(updateAttributes, {patch: true})
-    .then((event) => {
-      resolve(event)
-    })
     .catch((err) => {
-      reject('Could not update event, please try again')
+      reject('Could not update event, please try again');
     })
+    .then((event) => {
+      resolve(event);
+    });
   })
 };
 
 // Delete event with given event id
+// <-- Not working for Event ? but working for user
 exports.deleteEventFromId = (event_id) => {
   return new Promise(function (resolve, reject) {
     new Event({id: event_id}).destroy()
-    .then((event) => {
-      resolve(event.get('name') + ' deleted')
-    })
     .catch((err) => {
       reject('Could not delete event')
+    })
+    .then((event) => {
+      resolve(event + ' deleted')
     });
   });
 };

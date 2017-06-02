@@ -15,6 +15,7 @@ import Avatar from 'material-ui/Avatar';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Chip from 'material-ui/Chip';
+import firebaseHelpers from '../helpers/firebase.helper.jsx';
 
 export default class CreatePageComponent extends React.Component {
   constructor(props) {
@@ -120,7 +121,6 @@ export default class CreatePageComponent extends React.Component {
   }
 
   componentDidMount() {
-    console.log("Friends!!!")
     fetch('/api/users', {credentials: 'include'})
     .then(res => res.json())
     .catch(error => {
@@ -199,7 +199,7 @@ export default class CreatePageComponent extends React.Component {
     }
     this.setState({userStatus: rightIconArray});
   }
-  
+
   handleConfirm () {
     let init = {
       method: 'POST',
@@ -224,7 +224,7 @@ export default class CreatePageComponent extends React.Component {
           longitude: this.props.event.longitude,
           comments: this.state.commentTestValue,
           url: this.props.event.url,
-          // creator_id: this.props.auth.id,
+          creator_id: this.props.profile.id,
         }
       )
     }

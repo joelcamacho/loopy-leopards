@@ -2,39 +2,85 @@ const { fromJS, Map, List } = require('immutable')
 
 const groupInit = fromJS({
   name: 'Loopy Leopards',
-  list: [
+  creator_id: 1,
+  creator: {
+    name: 'Gangplank',
+    photo: null,
+    phone: '321-321-4321'
+  },
+  members: [
     {
-      name: 'Giancarlo',
+      name: 'Eric Hoffman',
+      photo: null,
       phone: '123-123-1234'
     },
-    { 
-      name: 'Joe',
-      phone: '987 merge sort'
+    {
+      name: 'Kimmy J',
+      photo: 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg',
+      phone: '123-123-KimJ'
+    },
+    {
+      name: 'Brendan Lim',
+      photo: null,
+      phone: '123-123-1243'
+    },
+  ],
+  invited: [
+    {
+      name: 'Kimmy J J',
+      photo: null,
+      phone: '412-123-1234'
+    },
+    {
+      name: 'Ra',
+      photo: null,
+      phone: '123-123-4124'
+    }
+  ],
+  requested: [
+    {
+      name: 'Kimmy J Jd',
+      photo: null,
+      phone: '412-123-1234'
+    },
+    {
+      name: 'Rae',
+      photo: null,
+      phone: '123-123-4124'
     }
   ]
 });
 
-export default function group(state = groupInit, action) {
+const emptyInit = fromJS({
+  name: null,
+  creator_id: null,
+  creator: {
+    name: null,
+    photo: null,
+    phone: null
+  },
+  members: [],
+  invited: [],
+  requested: []
+});
+
+export default function group(state = emptyInit, action) {
   switch (action.type) {
-    case 'ADD_TO_GROUP':
-      return state.map((v, k) => k === 'list' ? v.push(action.payload) : v);
-    case 'REMOVE_FROM_GROUP':
-      let idx;
-
-      state.toJS().list.forEach((v, index) => {
-        if(v.phone === action.payload.phone) {
-          idx = index;
-        }
-      });
-
-      return idx !== undefined ?
-        state.map((v, k) => k === 'list' ? v.splice(idx, 1) : v)
-        : state;
+    case 'UPDATE_GROUP':
+      return fromJS(action.payload);
     case 'RESET_GROUP': 
    		return fromJS({
-        name: '',
-        list: []
-      });
+      name: null,
+      creator_id: null,
+      creator: {
+        name: null,
+        photo: null,
+        phone: null
+      },
+      members: [],
+      invited: [],
+      requested: []
+    });
     default:
      	return state
   }

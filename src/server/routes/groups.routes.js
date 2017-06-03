@@ -31,7 +31,7 @@ router.route('/groups')
 // ***************** WORKING *******************
 		let options = req.body;
 		let groupName = req.body.name || null;
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
 
 		helpers.getUserIdFromGoogleId(google_id)
@@ -97,7 +97,7 @@ router.route('/groups/:id')
 router.route('/group')
 	.get((req,res) => {
 // ***************** WORKING *******************
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
 
 		helpers.getUserIdFromGoogleId(google_id)
@@ -112,7 +112,7 @@ router.route('/group')
 	})
 	.delete((req,res) => {
 // ***************** WORKING *******************
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
 
 		helpers.getUserIdFromGoogleId(google_id)
@@ -140,7 +140,7 @@ router.route('/group/send/invite')
 	.post((req,res) => {	
 // ***************** WORKING *******************	
 		let phone = req.body.phone;
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
 		let group_id = null;
 
@@ -189,8 +189,8 @@ router.route('/group/send/invite')
 	// should send notification to all users in that group
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/group/send/request')
+// ***************** WORKING *******************	
 	.post((req,res) => {
-
 		let name = req.body.name;
 		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
@@ -204,10 +204,10 @@ router.route('/group/send/request')
 			user_id = id;
 			return Group.where({name: name}).fetch()
 		})
-		.then(group => {
+		.then(group => {			
 			if(!group) res.send('This group doesn\'t exist');
 			else {
-				return helpers.sendRequestToJoinGroup(user_id, group.id);
+				return helpers.sendRequestToJoinGroup(user_id, group.serialize().id);
 			}
 		})
 		.catch(err => res.send(err))
@@ -238,7 +238,7 @@ router.route('/group/invitations')
 	.get((req,res) => {
 // ***************** WORKING *******************	
 		let data = {},
-		google_id = req.user ? req.user.id : '105464304823044640566';
+		google_id = req.user ? req.user.id : null;
 
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
@@ -253,7 +253,7 @@ router.route('/group/invitations')
 	})
 	.post((req,res) => {
 // ***************** WORKING *******************	
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let group_id = req.body.group_id;
 		let user_id = null;
 
@@ -283,7 +283,7 @@ router.route('/group/invitations')
 	})
 	.delete((req,res) => {
 // ***************** WORKING *******************
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let group_id = req.body.group_id;
 		let user_id = null;
 
@@ -292,7 +292,7 @@ router.route('/group/invitations')
 
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
-			user_id = 3;
+			user_id = id;
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {
@@ -333,69 +333,107 @@ router.route('/group/invitations')
 	// should delete user / group entry for guest user
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/group/requests')
-	.post((req,res) => {
-		
-		let group_id = req.body.group_id,
-		guest_id = req.body.guest_id
+	.get((req,res) => {
+// ***************** WORKING *******************
+		let data = {};
+		let google_id = req.user ? req.user.id : null;
+		let user_id;
 
-		User.where({id:guest_id}).groupsBelongingTo()
+		helpers.getUserIdFromGoogleId(google_id)
+		.then(id => {
+			user_id = id;
+			return helpers.getCurrentUserGroup(user_id)
+		})
 		.then(groups => {
-			if(groups) {
-				res.send('Must leave current group to request an invitation to another', group)
+			if(!!groups.groupsBelongingTo.serialize()[0]) {
+				group_id = groups.groupsBelongingTo.serialize()[0].id;
+				return Group.where({id: group_id}).getInfo();
 			} else {
-				groups = groups.map(group => group.serialize())
-				let isMember = groups.find(group => group.status === 'member')
-
-				if(isMember) {
-					res.send('You are already in a group.')
-				} else {
-					let exist = groups.find(group => group.id === group_id);
-
-					if(!exist) {
-						return res.send('Invalid group_id');
-					} else {
-						if(exist.status === 'requested') {
-							return helpers.acceptRequestToJoinGroup(user_id, exist.id);
-						} else {
-							res.send('User has not requested to join group')
-						}
-					}
-				}
+				res.send({result: 'You are not in a group!'});
 			}
 		})
-		.then(result => res.send(result))
+		.then(group => {
+			let result = group.serialize().members;
+			result = result.filter(user => user._pivot_status === 'requested');
+			res.send(result);
+		})
+	})
+	.post((req,res) => {
+// ***************** WORKING *******************
+		let google_id = req.user ? req.user.id : null;
+		let user_id = null;
+		let group_id = null;
+		let guest_id = req.body.guest_id;
+
+		helpers.getUserIdFromGoogleId(google_id)
+		.then(id => {
+			user_id = id;
+			return helpers.getCurrentUserGroup(user_id)
+		})
+		.then(groups => {
+			if(!!groups.groupsBelongingTo.serialize()[0]) {
+				group_id = groups.groupsBelongingTo.serialize()[0].id;
+				return helpers.getCurrentUserGroup(guest_id)
+			} else {
+				res.send({result: 'You are not in a group!'});
+			}
+		})
+		.then(groups => {
+			let result = groups.groupsBelongingTo;
+			result = result.map(group => group.serialize());
+			result = result.filter(group => group._pivot_status === 'requested');
+
+
+			let exists = result.find(group => group.id === group_id);
+
+			if(!exists) {
+				res.send('This user wasn\'t invited');
+			} else {
+				return helpers.joinGroup(guest_id, exists.id);
+			}
+		})
+		.then(result => {
+			res.send(result);
+		})
 		.catch(err => res.send(err));
 	})
 	.delete((req,res) => {
-		let group_id = req.body.group_id,
-		guest_id = req.body.guest_id
+// ***************** WORKING *******************
+		let google_id = req.user ? req.user.id : null;
+		let user_id = null;
+		let group_id = null;
+		let guest_id = req.body.guest_id;
 
-		User.where({id:guest_id}).groupsBelongingTo()
+		helpers.getUserIdFromGoogleId(google_id)
+		.then(id => {
+			user_id = id;
+			return helpers.getCurrentUserGroup(user_id)
+		})
 		.then(groups => {
-			if(groups) {
-				res.send('Must leave current group to request an invitation to another', group)
+			if(!!groups.groupsBelongingTo.serialize()[0]) {
+				group_id = groups.groupsBelongingTo.serialize()[0].id;
+				return helpers.getCurrentUserGroup(guest_id)
 			} else {
-				groups = groups.map(group => group.serialize())
-				let isMember = groups.find(group => group.status === 'member')
-
-				if(isMember) {
-					res.send('You are already in a group.')
-				} else {
-					let exist = groups.find(group => group.id === group_id);
-
-					if(!exist) {
-						return res.send('Invalid group_id');
-					} else {
-						if(exist.status === 'requested') {
-							return helpers.rejectRequestToJoinGroup(user_id, exist.id);
-						} else {
-							res.send('User has not requested to join group')
-						}
-					}
-				}
+				res.send({result: 'You are not in a group!'});
 			}
 		})
-		.then(result => res.send(result))
+		.then(groups => {
+			let result = groups.groupsBelongingTo;
+			result = result.map(group => group.serialize());
+			result = result.filter(group => group._pivot_status === 'requested');
+
+
+			let exists = result.find(group => group.id === group_id);
+
+			if(!exists) {
+				res.send('This user wasn\'t invited');
+			} else {
+				return helpers.rejectInvitationToJoinGroup(guest_id, exists.id);
+			}
+		})
+		.then(result => {
+			res.send(result);
+		})
 		.catch(err => res.send(err));
 	})
 

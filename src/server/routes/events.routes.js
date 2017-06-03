@@ -11,52 +11,65 @@ const util = require('../helpers/util.helpers.js');
 	// should invite all members of the group after creating event
 	// should invite all guest phone numbers after creating event
 // Possible areas for sending text messages and notifications via the util helpers
-router.route('/events')
 
-	.get((req,res) => {
-		//TODO: get ID
-		let id = 1,
-		data = {}
+// router.route('/events')
+
+// 	.get((req,res) => {
+// 		//TODO: get ID
+// 		let id = 1,
+// 		data = {}
 	  
-		// retrieve all events that the user either created or was invited to
-		User.where({id:id}).getAllEvents()
-		.then((results) => {
-			Promise.all(results.invitedTo.map((event) => {
-				return event.where({id:event.id}).getInfo()
-			}))
-			.then((result) => {
-				data.invitedTo = result
-			})
-			.catch((err) => {
-				res.status(400).send('Something went wrong')
-			})
-			Promise.all(results.created.map((event) => {
-				return event.where({id:event.id}).getInfo()
-			}))
-			.then((result) => {
-				data.created = result
-				res.status(200).json(data)
-			})
-			.catch((err) => {
-				res.status(400).send('Something went wrong')
-			})
-		})
+// 		// retrieve all events that the user either created or was invited to
+// 		User.where({id:id}).getAllEvents()
+// 		.then((results) => {
+// 			Promise.all(results.invitedTo.map((event) => {
+// 				return event.where({id:event.id}).getInfo()
+// 			}))
+// 			.then((result) => {
+// 				data.invitedTo = result
+// 			})
+// 			.catch((err) => {
+// 				res.status(400).send('Something went wrong')
+// 			})
+// 			Promise.all(results.created.map((event) => {
+// 				return event.where({id:event.id}).getInfo()
+// 			}))
+// 			.then((result) => {
+// 				data.created = result
+// 				res.status(200).json(data)
+// 			})
+// 			.catch((err) => {
+// 				res.status(400).send('Something went wrong')
+// 			})
+// 		})
+
+router.route('/events') 
+	.get((req,res) => { 
+		if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to get events!'});
+		helpers.getUserIdFromGoogleId(req.user.id)
+		.catch(err => res.send({result: err}))
+		.then(id => helpers.getCurrentUserEvents(id))
+		.catch(err => res.send({result: err}))
+		.then(result => res.send(result));
 	})
 	.post((req,res) => {
-		//if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to get events!'});
+		if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to get events!'});
 		if(!req.body) return res.send({result: "Body must contain event details!"});
 
 		let user_id = null;
 		let group_id = null;
 		let options = req.body;
 
-		helpers.getUserIdFromGoogleId('105464304823044640566')
+		helpers.getUserIdFromGoogleId(user_id)
 		.catch(err => res.send({result: err}))
 		.then(id => {
 			user_id = id;
 			return helpers.getCurrentUserGroup(id);
 		})
-		.catch(err => res.send(err))
+		.catch(err => {
+			group_id = null;
+			return helpers.createNewEvent(user_id, null, options);
+		})
 		.then(id => {
 			group_id = id;
 			return helpers.createNewEvent(user_id, group_id, options);
@@ -72,13 +85,12 @@ router.route('/events')
 router.route('/events/:id')
 	.get((req,res) => {
 		if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
-
 		let event_id = req.params.id;
-
 		helpers.getEventFromId(event_id)
 		.catch(err => res.send({result: err}))
 		.then(result => res.send(result));
 	})
+	// Testing purposes 
 	.put((req,res) => {
 		if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
 		if(!req.body) return res.send({result: 'Body must contain event details!'});
@@ -100,6 +112,19 @@ router.route('/events/:id')
 		.catch(err => res.send({result: err}))
 		.then(result => res.send({result: result}));
 	});
+
+
+
+
+
+
+
+
+// STILL NEED TO TEST THESE
+// down here..
+
+
+
 
 // POST, invite user to event
 	// should check all users to see if phone number exists

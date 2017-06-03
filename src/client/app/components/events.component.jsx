@@ -3,7 +3,7 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import {GridList, GridTile} from 'material-ui/GridList';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
-import StarBorder from 'material-ui/svg-icons/toggle/star-border';
+import ThumbUp from 'material-ui/svg-icons/action/thumb-up';
 
 const styles = {
   headline: {
@@ -154,6 +154,13 @@ export default class EventsPageComponent extends React.Component {
       newUserEvents.push(userEvent);
     })
     this.setState({userEvents: newUserEvents});
+
+    delete event.voteStatus;
+    console.log("voted event is ready to save to database: ", event)
+    //save event which include vote result in to database;
+    //fetch(...)
+
+
   }
   //get user's events data from database
   componentDidMount() {
@@ -211,7 +218,7 @@ export default class EventsPageComponent extends React.Component {
                   key={event.time}
                   title={event.time}
                   subtitle={<span>by <b>{event.description}</b></span>}
-                  actionIcon={<span><b style={{color: "white"}}>{event.vote_count}</b><IconButton onClick={() => this.handleVote(event)}><StarBorder color="white" /></IconButton></span>}
+                  actionIcon={<span><b style={{color: "white"}}>{event.vote_count}</b><IconButton onClick={() => this.handleVote(event)}><ThumbUp color="white" /></IconButton></span>}
                 >
                   <img onClick={this.handleEventClick} src={event.img} />
                 </GridTile>

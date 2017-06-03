@@ -1,4 +1,5 @@
 const router = require('express').Router();
+
 const helpers = require('../helpers/db.helpers.js');
 const util = require('../helpers/util.helpers.js');
 
@@ -11,13 +12,35 @@ const util = require('../helpers/util.helpers.js');
 	// should invite all guest phone numbers after creating event
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/events')
+
 	.get((req,res) => {
-		//if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to get events!'});
-		helpers.getUserIdFromGoogleId('105464304823044640566')
-		.catch(err => res.send({result: err}))
-		.then(id => helpers.getCurrentUserEvents(id))
-		.catch(err => res.send({result: err}))
-		.then(result => res.send(result));
+		//TODO: get ID
+		let id = 1,
+		data = {}
+	  
+		// retrieve all events that the user either created or was invited to
+		User.where({id:id}).getAllEvents()
+		.then((results) => {
+			Promise.all(results.invitedTo.map((event) => {
+				return event.where({id:event.id}).getInfo()
+			}))
+			.then((result) => {
+				data.invitedTo = result
+			})
+			.catch((err) => {
+				res.status(400).send('Something went wrong')
+			})
+			Promise.all(results.created.map((event) => {
+				return event.where({id:event.id}).getInfo()
+			}))
+			.then((result) => {
+				data.created = result
+				res.status(200).json(data)
+			})
+			.catch((err) => {
+				res.status(400).send('Something went wrong')
+			})
+		})
 	})
 	.post((req,res) => {
 		//if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to get events!'});

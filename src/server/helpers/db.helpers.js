@@ -3,6 +3,12 @@ const User = require('../db/models/user.js');
 const Group = require('../db/models/group.js');
 const Event = require('../db/models/event.js');
 
+const userAlreadyInGroup = (id) => {
+    return User.where({id:id}).getGroups()
+    .then(group => {
+      return !!group
+    })
+}
 // ~~~~~~~~~~~~~~~~~ AUTH ~~~~~~~~~~~~~~~~~ 
 // Get Current User's Id from current auth (google_id)
 exports.getUserIdFromGoogleId = google_id => {
@@ -130,17 +136,54 @@ exports.deleteCurrentUserFromId = (id, options) => {
   });
 };
 
-// ~~~~~~~~~~~~~~~~~ GROUP ~~~~~~~~~~~~~~~~~ 
+// ~~~~~~~~~~~~~~~~~ GROUP ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 // Get all group information
-exports.getAllGroups = () => {
+exports.getAllGroupsInfo = () => {
+
+  let compiledGroupInfo, ids, groupDetails
+  
   return new Promise(function (resolve, reject) {
     Group.fetchAll()
-    .then((groups) => {
-      if(groups){
-        resolve(groups);
-      } else {
-          reject('There are no active groups');
-      }
+    .then(groups => {
+      
+    compiledGroupInfo = groups.serialize()
+
+    let ids = compiledGroupInfo.map(group => group.creator_id)
+      //TODO: figure out how to optimize, so only fetching profile for UNIQUE users
+      // .filter((id,idx,array) => {
+      //  return array.indexOf(id) === idx
+      // })
+      return Promise.all(ids.map(id => {
+        return User.where({id:id}).fetch()
+      }))
+      .then(userProfiles => {
+        compiledGroupInfo.forEach((group,idx) => {
+          group.creator = userProfiles[idx].serialize()
+        })
+        return Promise.all(compiledGroupInfo.map(group => {
+          return Group.where({id:group.id}).getInfo()
+        }))
+      })
+      .then(groups => {
+        compiledGroupInfo.forEach((group, index) => {
+          group.all = groups[index].serialize().members
+          group.members = [];
+          group.requested = [];
+          group.invited = [];
+
+          group.all.forEach(profile => {
+            if(profile._pivot_status === null || profile._pivot_status === 'member') {
+              group.members.push(profile);
+            } else if(profile._pivot_status === 'requested') {
+              group.requested.push(profile);
+            } else if(profile._pivot_status === 'invited'){
+              group.invited.push(profile);
+            }
+          });
+          group.events = groups[index].serialize().events
+        })
+        resolve(compiledGroupInfo)
+      })
     })
     .catch((err) => {
       reject('Something went wrong, please try again')
@@ -168,11 +211,22 @@ exports.getCurrentUserGroup = (id) => {
 // Create a new group and set owner and group options obj
 exports.createNewGroup = (id, options) => {
   options.creator_id = id;
+  //see if User is already in group
   return new Promise(function (resolve, reject) {
-    new Group(options).save()
+
+    userAlreadyInGroup(id)
+    .then(result => {
+      if(result) {
+        return new Group(options).save()
+      } else {
+        reject('User is already in a group')
+      }
+    })
     .then((group) => {
       if(group) {
-        resolve('Group saved:' + group.get('name'));
+        resolve('Group saved:' + group
+          // .get('name')
+          );
       } else {
         reject('Could not save group');
       }
@@ -213,7 +267,15 @@ exports.leaveGroup = (id, group_id) => {
 // Join Group
 exports.joinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
-    Group.where({id:group_id}).acceptRequestOrInvitation(id)
+
+    userAlreadyInGroup(id)
+    .then(result => {
+      if (result) {
+        return Group.where({id:group_id}).acceptRequestOrInvitation(id)
+      } else {
+        reject('Must leave current group to join another')
+      }
+    })
     .then((result) => {
       resolve(result);
     })
@@ -226,7 +288,16 @@ exports.joinGroup = (id, group_id) => {
 // Send Request to join group given group id
 exports.sendRequestToJoinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
-    Group.where({id:group_id}).attachMembers(id,'requested')
+
+    userAlreadyInGroup(id)
+    .then(result => {
+      if(result) {
+        return Group.where({id:group_id}).attachMembers(id,'requested')
+      } else {
+        reject('Cannot request to join a group if you are currently in a group')
+      }
+    })
+    
     .then((result) => {
       resolve(result)
     })
@@ -266,11 +337,17 @@ exports.rejectInvitationToJoinGroup = (id, group_id) => {
 };
 
 // Invite a user to a group given user id
-// 
-// ~~~~~~~~~~~~~~Needs to send notification~~~~~~~~~~~~~~~~~~~~//
 exports.sendInvitationToJoinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
-    Group.where({id:group_id}).attachMembers(id,'invited')
+    userAlreadyInGroup(id)
+    .then(result => {
+      if(result) {
+        return Group.where({id:group_id}).attachMembers(id,'invited')
+      } else {
+        reject('Cannot invite a user that is already in another group')
+      }
+    })
+    
     .then((result) => {
       if(result) {
         resolve(result);
@@ -293,6 +370,7 @@ exports.acceptRequestToJoinGroup = (id, group_id) => {
     });
   });
 };
+
 exports.rejectRequestToJoinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
     Group.where({id:group_id}).removeMembers(id)
@@ -327,6 +405,7 @@ exports.createNewEvent = (id, group_id, options) => {
 };
 
 exports.getCurrentUserEvents = (id) => {
+  //id = 1;
   return new Promise(function (resolve, reject) {
     User.where({id:id}).getAllEvents()
     .then((events) => {
@@ -388,10 +467,10 @@ exports.deleteEventFromId = (event_id) => {
   return new Promise(function (resolve, reject) {
     new Event({id: event_id}).destroy()
     .then((event) => {
-      resolve(event.get('name') + ' deleted')
+      resolve(event.get('name') + ' deleted');
     })
     .catch((err) => {
-      reject('Could not delete event')
+      reject('Could not delete event');
     });
   });
 };
@@ -415,7 +494,7 @@ exports.rejectInvitationToJoinEvent = (id, event_id) => {
   return new Promise(function (resolve, reject) {
     Event.where({id:event_id}).removeInvitees(id)
     .then((result) => {
-      resolve(result)
+      resolve(result);
     })
     .catch((err) => {
       reject('Something went wrong, please try again');
@@ -428,12 +507,12 @@ exports.acceptInvitationToJoinEvent = (id, event_id) => {
   return new Promise(function (resolve, reject) {
     Event.where({id:event_id}).acceptRequestOrInvitation(id)
     .then((result) => {
-      resolve(result)
+      resolve(result);
     })
     .catch((err) => {
-      reject('Something went wrong, please try again')
-    })
-  })
+      reject('Something went wrong, please try again');
+    });
+  });
 };
 
 // Upvote an event
@@ -441,12 +520,12 @@ exports.voteForEvent = (id, event_id) => {
   return new Promise(function (resolve, reject) {
     Event.where({id: eventId}).vote(userId, true)
     .then((result) => {
-      resolve(result)
+      resolve(result);
     })
     .catch((err) => {
-      reject('Something went wrong, please try again')
-    })
-  })
+      reject('Something went wrong, please try again');
+    });
+  });
 };
 
 // Downvote an event
@@ -454,11 +533,30 @@ exports.unvoteForEvent = (id, event_id) => {
   return new Promise(function (resolve, reject) {
     Event.where({id: eventId}).vote(userId, false)
     .then((result) => {
-      resolve(result)
+      resolve(result);
     })
     .catch((err) => {
-      reject('Something went wrong, please try again')
-    })
-  })
+      reject('Something went wrong, please try again');
+    });
+  });
 };
 
+exports.getAllUsersGroups = (id) => {
+  return new Promise(function (resolve, reject) {
+    let id = 1,
+    data = {};
+    User.where({id:id}).fetch({withRelated: ['groupsBelongingTo','groupsCreated']})
+    .then((groups) => {
+      if(groups) {
+        data.groupsBelongingTo = groups.related('groupsBelongingTo');
+        data.groupsCreated = groups.related('groupsCreated');
+        resolve(data);
+      } else {
+        reject('Looks like you don\'t have any active groups');
+      }
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+  });
+};

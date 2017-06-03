@@ -263,12 +263,15 @@ exports.getGroup = (group_id) => {
 // Leave current Group
 exports.leaveGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
-    Group.where({id:group_id}).removeMembers(id)
-    .then((result) => {
-      resolve(result);
+    Group.where({id:group_id}).fetch()
+    .then(group => {
+      return group.removeMembers(id);
     })
-    .catch((err) => {
-      reject('Could not remove from group');
+    .then(result => {
+      resolve(result.serialize());
+    })
+    .catch(err => {
+      console.log('err', err);
     });
   });
 };

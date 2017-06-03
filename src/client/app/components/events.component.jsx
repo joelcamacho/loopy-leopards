@@ -42,6 +42,7 @@ const fakeEvents = [
     comments: 'Let\'s GO!!!',
     url: "www.google.com",
     creator_id: 1,
+    vote_count: 5,
   },
   {
     img: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F30676000%2F25399112885%2F1%2Foriginal.jpg?s=aad7d5822407c610ad5a604bc9a55a98',
@@ -59,6 +60,7 @@ const fakeEvents = [
     comments: 'Let\'s GO!!!',
     url: "www.google.com",
     creator_id: 1,
+    vote_count: 6,
   },
   {
     img: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F16579431%2F145182189853%2F1%2Foriginal.jpg?s=1e0dad5ec9b6b0bf86d48945bc23b5bd',
@@ -76,6 +78,7 @@ const fakeEvents = [
     comments: 'Let\'s GO!!!',
     url: "www.google.com",
     creator_id: 1,
+    vote_count: 7,
   },
   {
     img: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F30676000%2F25399112885%2F1%2Foriginal.jpg?s=aad7d5822407c610ad5a604bc9a55a98',
@@ -93,6 +96,7 @@ const fakeEvents = [
     comments: 'Let\'s GO!!!',
     url: "www.google.com",
     creator_id: 1,
+    vote_count: 8,
   },
   {
     img: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F16579431%2F145182189853%2F1%2Foriginal.jpg?s=1e0dad5ec9b6b0bf86d48945bc23b5bd',
@@ -110,6 +114,7 @@ const fakeEvents = [
     comments: 'Let\'s GO!!!',
     url: "www.google.com",
     creator_id: 1,
+    vote_count: 9,
   }
 ]
 
@@ -117,15 +122,42 @@ const fakeEvents = [
 export default class EventsPageComponent extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      userEvents: [],
+    }
+
+    this.handleVote = this.handleVote.bind(this);
+    this.handleEventClick = this.handleEventClick.bind(this);
   }
 
   handleEventClick () {
     console.log("Hello World!")
   }
 
+  handleVote (event) {
+    let newUserEvents = []
+    this.state.userEvents.forEach(userEvent => {
+      if(userEvent.name === event.name) {//check this when get real data!!!!!!
+        userEvent.vote_count = ++event.vote_count;
+      }
+      newUserEvents.push(userEvent);
+    })
+    this.setState({userEvents: newUserEvents});
+  }
+  //get user's events data from database
+  componentDidMount() {
+    // fetch('/api/events', {credentials: 'include'})
+    // .then(res => res.json())
+    // .catch(err => console.log("Can not get user's events from server: ", err))
+    // .then(res => this.setState({userEvents: res}))
+    this.setState({userEvents: fakeEvents})
+  }
+
   render() {
-    var date = new Date();
-    console.log(date.toLocaleDateString())
+    let date = new Date();
+    let today = date.toLocaleDateString();
+    console.log(today)
     return (<div>
       <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
         <Tab className="tabsItem" label="Schedule" >
@@ -138,7 +170,7 @@ export default class EventsPageComponent extends React.Component {
               style={styles.gridList}
             >
               <Subheader>December</Subheader>
-              {fakeEvents.map((event) => (
+              {this.state.userEvents.map((event) => (
                 <GridTile
                   key={event.time}
                   title={event.time}
@@ -160,18 +192,16 @@ export default class EventsPageComponent extends React.Component {
               padding={15}
               cellHeight={180}
               style={styles.gridList}
-
             >
               <Subheader>December</Subheader>
-              {fakeEvents.map((event) => (
+              {this.state.userEvents.map((event) => (
                 <GridTile
                   key={event.time}
                   title={event.time}
                   subtitle={<span>by <b>{event.description}</b></span>}
-                  onClick={this.handleEventClick}
-                  actionIcon={<IconButton><StarBorder color="white" /></IconButton>}
+                  actionIcon={<span><b style={{color: "white"}}>{event.vote_count}</b><IconButton onClick={() => this.handleVote(event)}><StarBorder color="white" /></IconButton></span>}
                 >
-                  <img src={event.img} />
+                  <img onClick={this.handleEventClick} src={event.img} />
                 </GridTile>
               ))}
             </GridList>

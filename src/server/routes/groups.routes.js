@@ -110,8 +110,8 @@ router.route('/group')
 		})
 		.catch(err => res.send(err))
 	})
-
 	.delete((req,res) => {
+// ***************** WORKING *******************
 		let google_id = req.user ? req.user.id : '105464304823044640566';
 		let user_id = null;
 
@@ -121,7 +121,7 @@ router.route('/group')
 			return helpers.getCurrentUserGroup(user_id);
 		})
 		.then(group => {
-			return helpers.leaveGroup(user_id, group.id)
+			return helpers.leaveGroup(user_id, group.groupsBelongingTo.serialize()[0].id)
 		})
 		.then(result => res.json(result))
 		.catch(err => res.send(err))

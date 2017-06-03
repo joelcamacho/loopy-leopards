@@ -125,6 +125,7 @@ export default class EventsPageComponent extends React.Component {
 
     this.state = {
       userEvents: [],
+      voteStatus: false,
     }
 
     this.handleVote = this.handleVote.bind(this);
@@ -137,9 +138,18 @@ export default class EventsPageComponent extends React.Component {
 
   handleVote (event) {
     let newUserEvents = []
+    console.log(event.voteStatus)
+    if (!event.voteStatus) {
+      ++event.vote_count;
+      event.voteStatus = true;
+    } else {
+      --event.vote_count;
+      event.voteStatus = false;
+    }
+
     this.state.userEvents.forEach(userEvent => {
       if(userEvent.name === event.name) {//check this when get real data!!!!!!
-        userEvent.vote_count = ++event.vote_count;
+        userEvent.vote_count = event.vote_count;
       }
       newUserEvents.push(userEvent);
     })
@@ -151,6 +161,8 @@ export default class EventsPageComponent extends React.Component {
     // .then(res => res.json())
     // .catch(err => console.log("Can not get user's events from server: ", err))
     // .then(res => this.setState({userEvents: res}))
+    let res = fakeEvents;
+    fakeEvents.map(event => event.voteStatus = false);
     this.setState({userEvents: fakeEvents})
   }
 

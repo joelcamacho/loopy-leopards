@@ -49,15 +49,19 @@ const Group = bookshelf.Model.extend({
 	removeMembers: function(members) {
 
 		return this.getInfo()
+		.catch((err) => {
+			console.log(err);
+			throw new Error('Something went wrong, please try again')
+		})
 		.then((group) => {
+
+			console.log('got to group', group);
+
 			if(group) {
 				return group.related('members').detach(members)
 			} else {
 				throw new Error('That group doesn\'t exist')
 			}
-		})
-		.catch((err) => {
-			throw new Error('Something went wrong, please try again')
 		})
 	},
 

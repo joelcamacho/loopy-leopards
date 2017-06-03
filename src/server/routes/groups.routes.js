@@ -20,6 +20,7 @@ const helpers = require('../helpers/db.helpers.js')
 	// should contain a list of invitations from members to join to the group
 router.route('/groups')
 	.get((req, res) => {
+// ***************** WORKING *******************
 		helpers.getAllGroupsInfo()
 		.then(groups => res.json(groups))
 		.catch(err => res.status(400).send({result: err}))
@@ -27,40 +28,45 @@ router.route('/groups')
 	
 // POST, create a new group with options
 	.post((req, res) => {
-		let options = req.body,
-		groupName = req.body.name || null,
-		googleId = req.user.id
+// ***************** WORKING *******************
+		let options = req.body;
+		let groupName = req.body.name || null;
+		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let user_id = null;
 
-		helpers.getUserIdFromGoogleId(id)
+		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
+			user_id = id;
 			return User.where({id:id}).groupsBelongingTo()
 		})
 		.then(groups => {
-			if(!!groups) {
-				res.send('To create a new group, please leave your current group')
+			if(groups.serialize().length > 0) {
+				res.send({result: 'To create a new group, please leave your current group'})
+			} else {
+				// should check to see if options object contains {name}
+				if(groupName) {
+					// should check to see if groups already has that name
+					helpers.getAllGroupsInfo()
+					.then(groups => {						
+						let exists = groups.find(group => group.name === groupName);
+
+						if(!!exists) {
+							res.send({ result: 'Sorry, that group name already exists'});
+						} else {
+							// should only let the user create a group if the user is not in a group
+							// should current user to creator
+							// should set the name of the group with options
+							// should return the id and details of the event to the client
+							return helpers.createNewGroup(user_id, options)
+						}
+					})
+					.catch(err => res.send({result: err}))
+					.then(result => res.send({result: result}))
+				}
 			}
 		})
-		// should check to see if options object contains {name}
-		if(groupName) {
-			// should check to see if groups already has that name
-			helpers.getAllGroupsInfo()
-			.then(groups => {
-				let exists = groups.find(group => group.name === groupName);
-
-				if(!!exists) {
-					res.send('Sorry, that group name already exists', exists);
-				} else {
-					// should only let the user create a group if the user is not in a group
-					// should current user to creator
-					// should set the name of the group with options
-					// should return the id and details of the event to the client
-					return helpers.createNewGroup(id,options)
-				}
-			})
-			.then(result => res.send(result))
-			.catch(err => res.send(err))
-		}
 	})
+
 // Require User to be authenticated
 
 // GET the group's detail (no id needed, but require group_id in query params)
@@ -69,9 +75,8 @@ router.route('/groups')
 	// should contain a list of requests from guests to join the group
 	// should contain a list of invitations from members to join to the group
 router.route('/groups/:id')
-
 	.get((req,res) => {
-		
+// ***************** WORKING *******************		
 		let groupId = req.params.id
 
 		Group.where({id:groupId}).getInfo()
@@ -91,27 +96,32 @@ router.route('/groups/:id')
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/group')
 	.get((req,res) => {
-		let googleId = req.user.id;
+// ***************** WORKING *******************
+		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let user_id = null;
 
-		helpers.getUserIdFromGoogleId(googleId)
+		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
-			return helpers.getCurrrentUserGroup(userId)
+			user_id = id;
+			return helpers.getCurrentUserGroup(user_id)
 		})
-		.then(result => res.json(result))
+		.then(result => {
+			res.send(result)
+		})
 		.catch(err => res.send(err))
 	})
 
 	.delete((req,res) => {
-		let googleId = req.user.id
+		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let user_id = null;
 
-		let user_id = null
-		helpers.getUserIdFromGoogleId(googleId)
+		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
-			user_id = id
-			return helpers.getCurrrentUserGroup(user_id)
+			user_id = id;
+			return helpers.getCurrentUserGroup(user_id);
 		})
 		.then(group => {
-			return helpers.leaveGroup(id, group.id)
+			return helpers.leaveGroup(user_id, group.id)
 		})
 		.then(result => res.json(result))
 		.catch(err => res.send(err))

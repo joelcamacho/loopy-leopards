@@ -5,8 +5,8 @@ const Event = require('../db/models/event.js');
 
 const userAlreadyInGroup = (id) => {
     return User.where({id:id}).getGroups()
-    .then(group => {
-      return !!group
+    .then(groups => {
+      return groups.belongingTo.serialize().length > 0;
     })
 }
 // ~~~~~~~~~~~~~~~~~ AUTH ~~~~~~~~~~~~~~~~~ 
@@ -194,13 +194,13 @@ exports.getAllGroupsInfo = () => {
 // Get Current User's Group Information
 exports.getCurrentUserGroup = (id) => {
   return new Promise(function (resolve, reject) {
-    User.where({id:id}).fetch({withRelated: ['groupsBelongingTo','groupsCreated']})
+    User.where({id:id}).getGroups()
     .then((groups) => {
       if(groups) {
         const data = {};
-        data.groupsBelongingTo = groups.related('groupsBelongingTo');
-        data.groupsCreated = groups.related('groupsCreated');
-        resolve(data.id);
+        data.groupsBelongingTo = groups.belongingTo;
+        data.groupsCreated = groups.created;
+        resolve(data);
       } else {
         reject('Looks like you don\'t have any active groups');
       }
@@ -210,25 +210,34 @@ exports.getCurrentUserGroup = (id) => {
 
 // Create a new group and set owner and group options obj
 exports.createNewGroup = (id, options) => {
+  let group_id = null;
+  let group_details = null;
+
   options.creator_id = id;
   //see if User is already in group
   return new Promise(function (resolve, reject) {
-
     userAlreadyInGroup(id)
     .then(result => {
       if(result) {
-        return new Group(options).save()
-      } else {
         reject('User is already in a group')
+      } else {
+        return new Group(options).save()
       }
     })
     .then((group) => {
       if(group) {
-        resolve('Group saved:' + group
-          // .get('name')
-          );
+        group_id = group.id;
+        group_details = group;
+        return group.attachMembers(id, 'member');
       } else {
         reject('Could not save group');
+      }
+    })
+    .then((users) => {
+      if(users) {
+        resolve(group_details);
+      } else {
+        reject('Could not save user as part of the group');
       }
     });
   });

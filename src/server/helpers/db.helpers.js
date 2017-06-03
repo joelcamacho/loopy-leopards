@@ -310,10 +310,9 @@ exports.joinGroup = (id, group_id) => {
 // Send Request to join group given group id
 exports.sendRequestToJoinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
-
     userAlreadyInGroup(id)
     .then(result => {
-      if(result) {
+      if(!result) {
         return Group.where({id:group_id}).attachMembers(id,'requested')
       } else {
         reject('Cannot request to join a group if you are currently in a group')

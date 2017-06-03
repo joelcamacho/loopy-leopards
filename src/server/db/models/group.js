@@ -24,25 +24,25 @@ const Group = bookshelf.Model.extend({
 	},
 
 	//Returns Promise
-	attachMembers: function(members, status) {
+	attachMembers: function(user, status) {
 
 		return this.getInfo()
 		.then((group) => {
 			if(group) {
-				return group.related('members').attach(members)
+				return group.related('members').attach(user)
 			} else {
 				throw new Error('That group doesn\'t exist')
 			}
 		})
 		.then((members) => {
 			if (members) {
-				return members.updatePivot({status: status})
+				return members.updatePivot({status: status}, {query: {where: {user_id: user}}} )
 			} else {
 				throw new Error('Could not add member to group')
 			}
 		})
 		.catch((err) => {
-			throw new Error('Something went wrong, please try again')
+			throw new Error(err);
 		})
 	},
 
@@ -75,12 +75,14 @@ const Group = bookshelf.Model.extend({
 		})
 	},
 
-	acceptRequestORInvitation: function(members) {
-
-		return this.memberInvitedORRequested(members)
-		.then((result) => {
-			if(result) {
-				return group.related('members').updatePivot({status:'member'})
+	acceptRequestORInvitation: function(user) {
+		console.log(user);
+		
+		return this.getInfo()
+		.then((members) => {
+			console.log(members);
+			if(members) {
+				return members.updatePivot({status: 'member'}, {query: {where: {user_id: user}}} )
 			} else {
 				throw new Error('Must request membership or be invited to group')
 			}

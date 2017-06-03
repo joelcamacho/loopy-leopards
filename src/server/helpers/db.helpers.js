@@ -6,7 +6,8 @@ const Event = require('../db/models/event.js');
 const userAlreadyInGroup = (id) => {
     return User.where({id:id}).getGroups()
     .then(groups => {
-      return groups.belongingTo.serialize().length > 0;
+      let members = groups.belongingTo.serialize().filter(user => user._pivot_status === 'member')
+      return members.length > 0;
     })
 }
 // ~~~~~~~~~~~~~~~~~ AUTH ~~~~~~~~~~~~~~~~~ 
@@ -279,20 +280,29 @@ exports.leaveGroup = (id, group_id) => {
 // Join Group
 exports.joinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
-
     userAlreadyInGroup(id)
     .then(result => {
-      if (result) {
-        return Group.where({id:group_id}).acceptRequestOrInvitation(id)
+      if (!result) {
+        return Group.where({id: group_id}).getInfo()
       } else {
         reject('Must leave current group to join another')
+      }
+    })
+    .then(group => {
+      return group.related('members');
+    })
+    .then(members => {
+      if(members) {
+        return members.updatePivot({status: 'member'}, {query: {where: {user_id: id}}} )
+      } else {
+        throw new Error('Must request membership or be invited to group')
       }
     })
     .then((result) => {
       resolve(result);
     })
     .catch((err) => {
-      reject('Something went wrong, please try again')
+      reject(err);
     });
   });
 };
@@ -353,13 +363,12 @@ exports.sendInvitationToJoinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
     userAlreadyInGroup(id)
     .then(result => {
-      if(result) {
-        return Group.where({id:group_id}).attachMembers(id,'invited')
+      if(!result) {
+        return Group.where({id:group_id}).attachMembers(id,'invited');
       } else {
-        reject('Cannot invite a user that is already in another group')
+        reject('Cannot invite a user that is already in another group');
       }
     })
-    
     .then((result) => {
       if(result) {
         resolve(result);

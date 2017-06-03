@@ -29,9 +29,12 @@ router.route('/groups')
 	.post((req, res) => {
 		let options = req.body,
 		groupName = req.body.name || null,
-		id = req.user.id
+		googleId = req.user.id
 
-		User.where({id:id}).groupsBelongingTo()
+		helpers.getUserIdFromGoogleId(id)
+		.then(id => {
+			return User.where({id:id}).groupsBelongingTo()
+		})
 		.then(groups => {
 			if(!!groups) {
 				res.send('To create a new group, please leave your current group')
@@ -77,7 +80,6 @@ router.route('/groups/:id')
 		})
 	})
 
-
 // GET the current user's group detail
 	// should contain name of the group and creator profile
 	// should contain a list of members
@@ -89,10 +91,30 @@ router.route('/groups/:id')
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/group')
 	.get((req,res) => {
-		res.send({result: 'Still working on this endpoint!'});
+		let googleId = req.user.id;
+
+		helpers.getUserIdFromGoogleId(googleId)
+		.then(id => {
+			return helpers.getCurrrentUserGroup(userId)
+		})
+		.then(result => res.json(result))
+		.catch(err => res.send(err))
 	})
+
 	.delete((req,res) => {
-		res.send({result: 'Still working on this endpoint!'});
+		let googleId = req.user.id
+
+		let user_id = null
+		helpers.getUserIdFromGoogleId(googleId)
+		.then(id => {
+			user_id = id
+			return helpers.getCurrrentUserGroup(user_id)
+		})
+		.then(group => {
+			return helpers.leaveGroup(id, group.id)
+		})
+		.then(result => res.json(result))
+		.catch(err => res.send(err))
 	})
 
 // POST, send an invitation to another user to join current user's group
@@ -105,8 +127,43 @@ router.route('/group')
 	// if not in a group, then set status in user / group to 'invited'
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/group/send/invite')
-	.post((req,res) => {
-		res.send({result: 'Still working on this endpoint!'});
+
+	.post((req,res) => {		
+		let phone = req.body.phone;
+		let google_id = req.user ? req.user.id : null;
+		let user_id = null;
+		let group_id = null;
+
+		if(!phone) return res.send('Must include a phone number')
+		if(!google_id) return res.send('Must be authenticated');
+
+		helpers.getUserIdFromGoogleId(google_id)
+		.then(id => {
+			user_id = id;
+			return helpers.getCurrentUserGroup(id)
+		})
+		.catch(err => res.send('Current user is not in a group!'))
+		.then(group => {
+			group_id = group.id;
+			return User.where({phone: phone}).fetch();
+		})
+		.then(user => {
+			if(user) {
+				// if guest user exists
+				return user;
+			} else {
+				// if guest user is not in db
+				return helpers.createNewUser({
+					name: "Anonymous",
+					phone: phone
+				});
+			}
+		})
+		.then(user => {
+			return helpers.sendInvitationToJoinGroup(user.id, group_id);
+		})
+		.catch(err => res.send(err))
+		.then(result => res.send(result));
 	})
 
 // POST, send a request from the current user to a group to join the group
@@ -120,7 +177,28 @@ router.route('/group/send/invite')
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/group/send/request')
 	.post((req,res) => {
-		res.send({result: 'Still working on this endpoint!'});
+
+		let name = req.body.name;
+		let google_id = req.user ? req.user.id : null;
+		let user_id = null;
+		let group_id = null;
+
+		if(!name) return res.send('Must include a name')
+		if(!google_id) return res.send('Must be authenticated');
+
+		helpers.getUserIdFromGoogleId(google_id)
+		.then(id => {
+			user_id = id;
+			return Group.where({name: name}).fetch()
+		})
+		.then(group => {
+			if(!group) res.send('This group doesn\'t exist');
+			else {
+				return helpers.sendRequestToJoinGroup(user_id, group.id);
+			}
+		})
+		.catch(err => res.send(err))
+		.then(result => res.send(result));
 	})
 
 // POST, current user accept a group's invitation
@@ -146,13 +224,77 @@ router.route('/group/send/request')
 router.route('/group/invitations')
 	.get((req,res) => {
 		// Should return {result: [group]}
-		res.send({result: 'Still working on this endpoint!'});		
+		let data = {},
+		google_id = req.user ? req.user.id : null;
+
+		helpers.getUserIdFromGoogleId(google_id)
+		.then(id => {
+			return User.where({id:id}).groupsBelongingTo()
+		})
+		.then(groups => {
+			let result = groups.map(group => group.serialize());
+			result = result.filter(group => group.status === 'invited');
+			res.send(result);
+		})
 	})
 	.post((req,res) => {
-		res.send({result: 'Still working on this endpoint!'});
+		let google_id = req.user ? req.user.id : null;
+		let group_id = req.body.group_id;
+		let user_id = null;
+
+		if(!google_id) return res.send('User must be authenticated');
+		if(!group_id) return res.send('Body must contain group_id field');
+
+		helpers.getUserIdFromGoogleId(google_id)
+		.then(id => {
+			user_id = id;
+			return User.where({id: user_id}).groupsBelongingTo();
+		})
+		.then(groups => {
+			let exist = groups.find(group => group.id === group_id);
+
+			if(!exist) {
+				return res.send('Invalid group_id');
+			} else {
+				if(exist.status === 'invited') {
+					return helpers.joinGroup(user_id, exist.id);
+				} else {
+					res.send('User has not been invited to group')
+				}
+			}
+		})
+		.catch(err => res.send(err))
+		.then(result => res.send(result));
 	})
 	.delete((req,res) => {
-		res.send({result: 'Still working on this endpoint!'});
+
+		let google_id = req.user ? req.user.id : null;
+		let group_id = req.body.group_id;
+		let user_id = null;
+
+		if(!google_id) return res.send('User must be authenticated');
+		if(!group_id) return res.send('Body must contain group_id field');
+
+		helpers.getUserIdFromGoogleId(google_id)
+		.then(id => {
+			user_id = id;
+			return User.where({id: user_id}).groupsBelongingTo();
+		})
+		.then(groups => {
+			let exist = groups.find(group => group.id === group_id);
+
+			if(!exist) {
+				return res.send('Invalid group_id');
+			} else {
+				if(exist.status === 'invited') {
+					return helpers.rejectInvitationToJoinGroup(user_id, exist.id);
+				} else {
+					res.send('User has not been invited to group')
+				}
+			}
+		})
+		.catch(err => res.send(err))
+		.then(result => res.send(result))
 	})
 
 // POST, current user's group accept a guest user's request to join the group
@@ -177,81 +319,69 @@ router.route('/group/invitations')
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/group/requests')
 	.post((req,res) => {
-		res.send({result: 'Still working on this endpoint!'});
+		
+		let group_id = req.body.group_id,
+		guest_id = req.body.guest_id
+
+		User.where({id:guest_id}).groupsBelongingTo()
+		.then(groups => {
+			if(groups) {
+				res.send('Must leave current group to request an invitation to another', group)
+			} else {
+				groups = groups.map(group => group.serialize())
+				let isMember = groups.find(group => group.status === 'member')
+
+				if(isMember) {
+					res.send('You are already in a group.')
+				} else {
+					let exist = groups.find(group => group.id === group_id);
+
+					if(!exist) {
+						return res.send('Invalid group_id');
+					} else {
+						if(exist.status === 'requested') {
+							return helpers.acceptRequestToJoinGroup(user_id, exist.id);
+						} else {
+							res.send('User has not requested to join group')
+						}
+					}
+				}
+			}
+		})
+		.then(result => res.send(result))
+		.catch(err => res.send(err));
 	})
 	.delete((req,res) => {
-		res.send({result: 'Still working on this endpoint!'});
-	})
+		let group_id = req.body.group_id,
+		guest_id = req.body.guest_id
 
+		User.where({id:guest_id}).groupsBelongingTo()
+		.then(groups => {
+			if(groups) {
+				res.send('Must leave current group to request an invitation to another', group)
+			} else {
+				groups = groups.map(group => group.serialize())
+				let isMember = groups.find(group => group.status === 'member')
 
+				if(isMember) {
+					res.send('You are already in a group.')
+				} else {
+					let exist = groups.find(group => group.id === group_id);
 
-// TODO: Remove endpoints (refactored to /group)
-
-// TODO: Remove this endpoint (refactored to /group)
-router.post('/groups/:id/invite',(req,res) => {
-	let Members = bookshelf.Collection.extend({model: User}),
-	groupId = req.params.id,
-
-	incomingMembers = req.body.invitedMembers
-	//make incoming Member list into a collection
-	incomingMemberColl = Members.forge(incomingMembers)
-	//Save models in collection into database. Will only save unique models. If duplicates, will return error
-	incomingMemberColl.invokeThen('save')
-	.catch((err) => {
-		console.log(err)
-	})
-
-	//fetch Users' models from db
-	Promise.all(incomingMembers.map((member) => {
-		return User.where({phone_validated:member.phone_validated}).fetch()
-	}))
-	.then((newMembers) => {
-		Group.where({id:groupId}).attachMembers(newMembers, 'invited')
-		.then((result) => {
-			res.status(200).send(result)
+					if(!exist) {
+						return res.send('Invalid group_id');
+					} else {
+						if(exist.status === 'requested') {
+							return helpers.rejectRequestToJoinGroup(user_id, exist.id);
+						} else {
+							res.send('User has not requested to join group')
+						}
+					}
+				}
+			}
 		})
-		.catch((err) => {
-			res.status(400).send('Something went wrong')
-		})
+		.then(result => res.send(result))
+		.catch(err => res.send(err));
 	})
-});
-
-// TODO: Remove this endpoint (refactored to /group)
-router.post('/groups/:id/acceptInvite', (req,res) => {
-	let groupId = req.params.id
-
-	//check group to see if member is invited
-	Group.where({id:groupId}).getInfo()
-	.then((group) => {
-		return group.related('members')
-		.updatePivot({status:'member'},{query: {where: {user_id: userId}}})
-	})
-	.then((result) => {
-		res.status(200).send(result)
-	})
-	.catch((err) => {
-		res.status(400).send(err)
-	})
-})
-
-// TODO: Remove this endpoint (refactored to /group)
-router.post('/groups/:id/request',(req,res) => {
-	let Members = bookshelf.Collection.extend({model: User}),
-	groupId = req.params.id,
-	userId = 1
-
-	Group.where({id:eventId}).getInfo()
-	.then((group) => {
-		return group.related('members')
-		.updatePivot({status:'requested'},{query: {where: {user_id: userId}}})
-	})
-	.then((result)=> {
-		res.status(200).send('You\'ve requested to be a part of the group')
-	})
-	.catch((err) => {
-		res.status(400).send('Something went wrong, please try again')
-	})
-});
-
 
 module.exports = router

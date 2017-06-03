@@ -3,6 +3,12 @@ const User = require('../db/models/user.js');
 const Group = require('../db/models/group.js');
 const Event = require('../db/models/event.js');
 
+const userAlreadyInGroup = (id) => {
+    return User.where({id:id}).getGroups()
+    .then(group => {
+      return !!group
+    })
+}
 // ~~~~~~~~~~~~~~~~~ AUTH ~~~~~~~~~~~~~~~~~ 
 // Get Current User's Id from current auth (google_id)
 exports.getUserIdFromGoogleId = google_id => {
@@ -205,8 +211,17 @@ exports.getCurrentUserGroup = (id) => {
 // Create a new group and set owner and group options obj
 exports.createNewGroup = (id, options) => {
   options.creator_id = id;
+  //see if User is already in group
   return new Promise(function (resolve, reject) {
-    new Group(options).save()
+
+    userAlreadyInGroup(id)
+    .then(result => {
+      if(result) {
+        return new Group(options).save()
+      } else {
+        reject('User is already in a group')
+      }
+    })
     .then((group) => {
       if(group) {
         resolve('Group saved:' + group
@@ -252,7 +267,15 @@ exports.leaveGroup = (id, group_id) => {
 // Join Group
 exports.joinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
-    Group.where({id:group_id}).acceptRequestOrInvitation(id)
+
+    userAlreadyInGroup(id)
+    .then(result => {
+      if (result) {
+        return Group.where({id:group_id}).acceptRequestOrInvitation(id)
+      } else {
+        reject('Must leave current group to join another')
+      }
+    })
     .then((result) => {
       resolve(result);
     })
@@ -265,7 +288,16 @@ exports.joinGroup = (id, group_id) => {
 // Send Request to join group given group id
 exports.sendRequestToJoinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
-    Group.where({id:group_id}).attachMembers(id,'requested')
+
+    userAlreadyInGroup(id)
+    .then(result => {
+      if(result) {
+        return Group.where({id:group_id}).attachMembers(id,'requested')
+      } else {
+        reject('Cannot request to join a group if you are currently in a group')
+      }
+    })
+    
     .then((result) => {
       resolve(result)
     })
@@ -305,11 +337,17 @@ exports.rejectInvitationToJoinGroup = (id, group_id) => {
 };
 
 // Invite a user to a group given user id
-// 
-// ~~~~~~~~~~~~~~Needs to send notification~~~~~~~~~~~~~~~~~~~~//
 exports.sendInvitationToJoinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
-    Group.where({id:group_id}).attachMembers(id,'invited')
+    userAlreadyInGroup(id)
+    .then(result => {
+      if(result) {
+        return Group.where({id:group_id}).attachMembers(id,'invited')
+      } else {
+        reject('Cannot invite a user that is already in another group')
+      }
+    })
+    
     .then((result) => {
       if(result) {
         resolve(result);
@@ -332,6 +370,7 @@ exports.acceptRequestToJoinGroup = (id, group_id) => {
     });
   });
 };
+
 exports.rejectRequestToJoinGroup = (id, group_id) => {
   return new Promise(function (resolve, reject) {
     Group.where({id:group_id}).removeMembers(id)
@@ -428,10 +467,10 @@ exports.deleteEventFromId = (event_id) => {
   return new Promise(function (resolve, reject) {
     new Event({id: event_id}).destroy()
     .then((event) => {
-      resolve(event.get('name') + ' deleted')
+      resolve(event.get('name') + ' deleted');
     })
     .catch((err) => {
-      reject('Could not delete event')
+      reject('Could not delete event');
     });
   });
 };
@@ -455,7 +494,7 @@ exports.rejectInvitationToJoinEvent = (id, event_id) => {
   return new Promise(function (resolve, reject) {
     Event.where({id:event_id}).removeInvitees(id)
     .then((result) => {
-      resolve(result)
+      resolve(result);
     })
     .catch((err) => {
       reject('Something went wrong, please try again');
@@ -468,12 +507,12 @@ exports.acceptInvitationToJoinEvent = (id, event_id) => {
   return new Promise(function (resolve, reject) {
     Event.where({id:event_id}).acceptRequestOrInvitation(id)
     .then((result) => {
-      resolve(result)
+      resolve(result);
     })
     .catch((err) => {
-      reject('Something went wrong, please try again')
-    })
-  })
+      reject('Something went wrong, please try again');
+    });
+  });
 };
 
 // Upvote an event
@@ -481,12 +520,12 @@ exports.voteForEvent = (id, event_id) => {
   return new Promise(function (resolve, reject) {
     Event.where({id: eventId}).vote(userId, true)
     .then((result) => {
-      resolve(result)
+      resolve(result);
     })
     .catch((err) => {
-      reject('Something went wrong, please try again')
-    })
-  })
+      reject('Something went wrong, please try again');
+    });
+  });
 };
 
 // Downvote an event

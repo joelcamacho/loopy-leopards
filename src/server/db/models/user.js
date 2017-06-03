@@ -34,7 +34,7 @@ const User = bookshelf.Model.extend({
   },
 
   groupsBelongingTo: function() {
-  	return this.belongsToMany('Group');
+  	return this.belongsToMany('Group').withPivot('status');
   },
 
   groupsCreated: function() {

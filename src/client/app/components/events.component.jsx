@@ -4,6 +4,11 @@ import {GridList, GridTile} from 'material-ui/GridList';
 import IconButton from 'material-ui/IconButton';
 import Subheader from 'material-ui/Subheader';
 import ThumbUp from 'material-ui/svg-icons/action/thumb-up';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
+import TextField from 'material-ui/TextField';
+import {List, ListItem} from 'material-ui/List';
+import Divider from 'material-ui/Divider';
 
 const styles = {
   headline: {
@@ -127,11 +132,34 @@ export default class EventsPageComponent extends React.Component {
       userEvents: [],
       voteStatus: false,
       eventsDays: [],
+      open: false,
+      eventDetails: {},
     }
 
     this.handleVote = this.handleVote.bind(this);
     this.handleEventClick = this.handleEventClick.bind(this);
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
   }
+
+  handleOpen (event)  {
+    console.log(event);
+    this.setState({eventDetails: event})
+    this.setState({open: true});
+  };
+
+  handleClose () {
+    // this.state.invitedUsers = [];
+    // var rightIconArray = this.state.userStatus.map((ele, ind) => {
+    //   var rObj = {};
+    //   rObj.name = ele.name;
+    //   rObj.rightIconDisplay = (<ContentAdd />);
+    //   return rObj;
+    // })
+    // this.setState({userStatus: rightIconArray});
+    this.setState({open: false});
+  };
+
 
   handleEventClick () {
     console.log("Hello World!")
@@ -191,6 +219,7 @@ export default class EventsPageComponent extends React.Component {
     let date = new Date();
     let today = date.toLocaleDateString();
     //console.log(today)
+    console.log("description: ", this.state.eventDetails.date_Time)
     return (
       <div>
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
@@ -199,7 +228,6 @@ export default class EventsPageComponent extends React.Component {
             <h1 style={{margin:'40 20 0 0'}}>Today</h1>
             <GridList
               cols={1}
-              padding={15}
               cellHeight={180}
               style={styles.gridList}
             >
@@ -209,14 +237,13 @@ export default class EventsPageComponent extends React.Component {
                   key={event.time}
                   title={event.time}
                   subtitle={<span><b>{event.description}</b></span>}
-                  onClick={this.handleEventClick}
+                  onClick={() => this.handleOpen(event)}
                 >
                   <img src={event.img} />
                 </GridTile>
               ))}
             </GridList>
           </div>
-          
         </Tab>
         <Tab className="tabsItem" label="All Plans" >
           {this.state.eventsDays.map(eventdate => (
@@ -227,6 +254,7 @@ export default class EventsPageComponent extends React.Component {
                 padding={15}
                 cellHeight={180}
                 style={styles.gridList}
+                key={eventdate.date}
               >
                 <Subheader>&nbsp;</Subheader>
                 {eventdate.events.map(event => 
@@ -236,7 +264,7 @@ export default class EventsPageComponent extends React.Component {
                     subtitle={<span><b>{event.description}</b></span>}
                     actionIcon={<span><b style={{color: "white"}}>{event.vote_count}</b><IconButton onClick={() => this.handleVote(event)}><ThumbUp color="white" /></IconButton></span>}
                   >
-                    <img onClick={this.handleEventClick} src={event.img} />
+                    <img onClick={() => this.handleOpen(event)} src={event.img} />
                   </GridTile>
                 ))}
               </GridList>
@@ -244,48 +272,29 @@ export default class EventsPageComponent extends React.Component {
           ))}
         </Tab>
       </Tabs>
+      <Dialog
+        title="Event Detail"
+        actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
+        modal={false}
+        open={this.state.open}
+        onRequestClose={this.handleClose}
+        autoScrollBodyContent={true}
+      >
+        <br/>
+        {this.state.eventDetails.img !== '' ? (<img src={this.state.eventDetails.img} alt="eventImg"/>) : null}
+        {this.state.eventDetails.name !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.name}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.description.length > 100 ? this.state.eventDetails.description.slice(0,100) + '...' : this.state.eventDetails.description }{this.state.eventDetails.url ? (<a href={this.state.eventDetails.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.address}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.city}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.state}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.phone}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Group:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
+          
+      </Dialog>
     </div>);
   }
 }
-
-//  </Tab>
-//   <Tab className="tabsItem" label="Calendar">
-//     <div className="tabsPage">
-//       <h2 style={styles.headline}>PUT Calendar View of Plans Here </h2>
-//       <p>
-//         This is a third example tab.
-//       </p>
-//     </div>
-//   </Tab>
-// </Tabs>
-
-
-// {
-//             this.state.eventsDays.map(eventdate => {
-//               return
-//               (
-                
-
-//                 <GridList
-//                   cols={1}
-//                   padding={15}
-//                   cellHeight={180}
-//                   style={styles.gridList}
-//                 >
-//                   <Subheader>December</Subheader>
-//                   {eventdate.event.map((event) => (
-//                     <GridTile
-//                       key={event.time}
-//                       title={event.time}
-//                       subtitle={<span>by <b>{event.description}</b></span>}
-//                       
-//                     >
-//                     <img onClick={this.handleEventClick} src={event.img} />
-//                     </GridTile>
-//                   ))}
-//                 </GridList>
-                
-//           )})}
 
 
 

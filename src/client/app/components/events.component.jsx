@@ -126,6 +126,7 @@ export default class EventsPageComponent extends React.Component {
     this.state = {
       userEvents: [],
       voteStatus: false,
+      eventsDays: [],
     }
 
     this.handleVote = this.handleVote.bind(this);
@@ -155,7 +156,7 @@ export default class EventsPageComponent extends React.Component {
     })
     this.setState({userEvents: newUserEvents});
 
-    delete event.voteStatus;
+    //delete event.voteStatus;
     console.log("voted event is ready to save to database: ", event)
     //save event which include vote result in to database;
     //fetch(...)
@@ -169,33 +170,45 @@ export default class EventsPageComponent extends React.Component {
     // .catch(err => console.log("Can not get user's events from server: ", err))
     // .then(res => this.setState({userEvents: res}))
     let res = fakeEvents;
-    fakeEvents.map(event => event.voteStatus = false);
-    this.setState({userEvents: fakeEvents})
+    let eventsDays = [];
+    res.map(event => event.voteStatus = false);
+    this.setState({userEvents: res});
+    res.forEach(event => eventsDays.push(event.date));
+    eventsDays = eventsDays
+    .filter((ele,ind) => eventsDays.indexOf(ele) === ind)
+    .map(date => {
+      let rObj = {};
+      rObj.date = date;
+      rObj.events = res.filter(event => event.date === date);
+      return rObj;
+    })
+    console.log("eventsDays: ", eventsDays)
+    this.setState({eventsDays: eventsDays})
   }
 
   render() {
+    //console.log("!!!!!!!", this.state.eventDays);
     let date = new Date();
     let today = date.toLocaleDateString();
-    console.log(today)
+    //console.log(today)
     return (
       <div>
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
         <Tab className="tabsItem" label="Schedule" >
           <div style={styles.root}>
             <h1 style={{margin:'40 20 0 0'}}>Today</h1>
-
             <GridList
               cols={1}
               padding={15}
               cellHeight={180}
               style={styles.gridList}
             >
-              <Subheader>December</Subheader>
+              <Subheader>&nbsp;</Subheader>
               {this.state.userEvents.filter(event => event.date === today).map((event) => 
                 (<GridTile
                   key={event.time}
                   title={event.time}
-                  subtitle={<span>by <b>{event.description}</b></span>}
+                  subtitle={<span><b>{event.description}</b></span>}
                   onClick={this.handleEventClick}
                 >
                   <img src={event.img} />
@@ -206,27 +219,29 @@ export default class EventsPageComponent extends React.Component {
           
         </Tab>
         <Tab className="tabsItem" label="All Plans" >
-          <div style={styles.root}>
-            <h1 style={{margin:'40 20 0 0'}}>Tody</h1>
-            <GridList
-              cols={1}
-              padding={15}
-              cellHeight={180}
-              style={styles.gridList}
-            >
-              <Subheader>December</Subheader>
-              {this.state.userEvents.map((event) => (
-                <GridTile
-                  key={event.time}
-                  title={event.time}
-                  subtitle={<span>by <b>{event.description}</b></span>}
-                  actionIcon={<span><b style={{color: "white"}}>{event.vote_count}</b><IconButton onClick={() => this.handleVote(event)}><ThumbUp color="white" /></IconButton></span>}
-                >
-                  <img onClick={this.handleEventClick} src={event.img} />
-                </GridTile>
-              ))}
-            </GridList>
-          </div>
+          {this.state.eventsDays.map(eventdate => (
+            <div style={styles.root}>
+              <h1 style={{margin:'40 20 0 0'}}>{eventdate.date}</h1>
+              <GridList
+                cols={1}
+                padding={15}
+                cellHeight={180}
+                style={styles.gridList}
+              >
+                <Subheader>&nbsp;</Subheader>
+                {eventdate.events.map(event => 
+                  (<GridTile 
+                    key={event.time}
+                    title={event.time}
+                    subtitle={<span><b>{event.description}</b></span>}
+                    actionIcon={<span><b style={{color: "white"}}>{event.vote_count}</b><IconButton onClick={() => this.handleVote(event)}><ThumbUp color="white" /></IconButton></span>}
+                  >
+                    <img onClick={this.handleEventClick} src={event.img} />
+                  </GridTile>
+                ))}
+              </GridList>
+            </div>
+          ))}
         </Tab>
       </Tabs>
     </div>);
@@ -243,5 +258,37 @@ export default class EventsPageComponent extends React.Component {
 //     </div>
 //   </Tab>
 // </Tabs>
+
+
+// {
+//             this.state.eventsDays.map(eventdate => {
+//               return
+//               (
+                
+
+//                 <GridList
+//                   cols={1}
+//                   padding={15}
+//                   cellHeight={180}
+//                   style={styles.gridList}
+//                 >
+//                   <Subheader>December</Subheader>
+//                   {eventdate.event.map((event) => (
+//                     <GridTile
+//                       key={event.time}
+//                       title={event.time}
+//                       subtitle={<span>by <b>{event.description}</b></span>}
+//                       
+//                     >
+//                     <img onClick={this.handleEventClick} src={event.img} />
+//                     </GridTile>
+//                   ))}
+//                 </GridList>
+                
+//           )})}
+
+
+
+
 
 

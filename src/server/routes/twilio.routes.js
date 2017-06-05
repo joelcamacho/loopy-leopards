@@ -8,6 +8,10 @@ routes.post('/api/twilio/verify', function(req, res) {
   const codeArr = req.body.Body.split('_');
   const code = codeArr[0];
   const userId = codeArr[1];
+  const phone = req.body.From;
+  let anonymous_id = null;
+  let eventsInvitedTo = [];
+  let groupsBelongingTo = [];
 
   if(!parseInt(code) || code.length !== 5 || !parseInt(userId)) {
     return res.end('invalid code');
@@ -17,23 +21,65 @@ routes.post('/api/twilio/verify', function(req, res) {
   .catch(err => res.end('invalid user id or phone'))
   .then(user => {
     const isValid = util.authenticatePhoneWithCode(req.body.From, code);
+
     console.log('got user', user, isValid, user.get('phone_validated'));
+
     let twiml = new twilio.twiml.MessagingResponse();
-    if(user.get('phone_validated') === 1) {
+
+    if(false) { //user.get('phone_validated') === 1
       twiml.message('Your phone number has already been validated!');
       res.writeHead(200, {'Content-Type': 'text/xml'});
       res.end(twiml.toString());
-    } else if(isValid) {
-      util.setVerifyPhoneNumber(userId, req.body.From);
-      twiml.message('Congratulations! Your phone number has been verified with HanginHubs!');
-      res.writeHead(200, {'Content-Type': 'text/xml'});
-      res.end(twiml.toString());
+    } else if(true) { // isValid
+      // if valid, then merge anonymous account if exists
+      return helpers.getCurrentUserFromPhone(phone);
     } else {
       twiml.message('Invalid code! Please type the correct code, or send another code from your HanginHubs profile settings.');
       res.writeHead(200, {'Content-Type': 'text/xml'});
       res.end(twiml.toString());
     }
   })
+  .catch(err => res.send({result: err}))
+  .then(user => {
+    let details = user.serialize();
+
+    anonymous_id = details.id;
+
+    if(details.first_name === 'Anonymous') {
+      return helpers.getCurrentUserEvents(anonymous_id);
+    } else {
+      res.send({result: 'User with this phone is already verified!'});
+    }
+  })
+  .then(events => {
+    eventsInvitedTo = events ? events.invitedTo : [];
+
+    let inviteUserToEvents = eventsInvitedTo.map(event => {
+      return helpers.requestORInviteToJoinEvent(userId, event.id);
+    });
+
+    return Promise.all(inviteUserToEvents);
+  })
+  .then(results => {
+    let rejectUserToEvents = eventsInvitedTo.map(event => {
+      return helpers.rejectInvitationToJoinEvent(anonymous_id, event.id);
+    });
+
+    return Promise.all(rejectUserToEvents);
+  })
+  .then(results => {
+    //return helpers.deleteCurrentUserFromId(anonymous_id);
+    return helpers.updateCurrentUserFromId(anonymous_id, {phone: 'null'});
+  })
+  .then(result => {
+    // All events from anonymous user transfered to verfied user
+    let twiml = new twilio.twiml.MessagingResponse();
+    //util.setVerifyPhoneNumber(userId, phone);
+    twiml.message('Congratulations! Your phone number has been verified with HanginHubs!');
+    res.writeHead(200, {'Content-Type': 'text/xml'});
+    res.end(twiml.toString());
+  })
+
 });
 
 // send code to current user's phone number

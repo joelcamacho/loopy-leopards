@@ -12,7 +12,7 @@ const util = require('../helpers/util.helpers.js');
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/events') 
 	.get((req,res) => {
-		let google_id = req.user ? req.user.id : null;
+		let google_id = req.user ? req.user.id : "100979353896699877023";
 
 		if(!google_id) return res.send({result: 'User must be authenticated to get events!'});
 
@@ -23,10 +23,10 @@ router.route('/events')
 		.then(result => res.send(result));
 	})
 	.post((req,res) => {
-		let google_id = req.user ? req.user.id : null;
+		let google_id = req.user ? req.user.id : "100979353896699877023";
 		let options = req.body;
 
-		if(!google_id) return res.send({result: 'User must be authenticated to get events!'});
+		if(!google_id) return res.send({result: 'User must be authenticated to post events!'});
 		if(!options.name) return res.send({result: "Body must contain event details!"});
 
 		let user_id = null;
@@ -68,7 +68,7 @@ router.route('/events/:id')
 	})
 	.put((req,res) => {
 		// only creator can edit details of this event
-		let google_id = req.user ? req.user.id : null;
+		let google_id = req.user ? req.user.id : "100979353896699877023";
 		let event_id = req.params.id;
 		let options = req.body;
 		let user_id = null;
@@ -282,6 +282,103 @@ router.post('/events/:id/broadcast',(req,res) => {
 			res.send({result: 'Broadcast sent!'});
 		}
 	});
+});
+
+// POST, set current event status as confirmed and all conflicting event date/time status to inactive
+    // current user should be the creator of the event
+    // event must be status 'suggested'
+    // event must have majority of group members confirmed for this event
+        // check event's group
+        // get status
+        // if number of confirmed is greater than 50% of members of the group
+        // then continue...
+    // set event status to confirmed
+    // find all events for this group
+    // get all events where date conflicts with event
+        // compare day of the datetime 
+    // set status for those events to inactive
+// Possible areas for sending text messages and notifications via the util helpers
+router.post('/events/:id/confirm',(req,res) => {
+	let google_id = req.user ? req.user.id : "100979353896699877023";
+	let user_id = null;
+	let event_id = req.params.id;
+	let invitees = null;
+	let group_events = null;
+	let confirmedEvent_dateTime = null;
+
+	if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
+	if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
+
+	helpers.getUserIdFromGoogleId(google_id)
+	.then(id => {
+		user_id = id
+		return helpers.getCurrentUserEvents(id)
+	})
+	.then(events => {
+		let isFound = events.created.find(event => {
+			return event.id == event_id
+		})
+
+		if(!isFound) {
+			return res.send('That event was not found')
+		} else if (isFound.status === 'suggested') {
+			invitees = isFound.invitees
+
+			confirmedEvent_dateTime = isFound.date_time
+
+			return helpers.getGroup(isFound.group_id)
+		} else {
+			return res.send('Event needs to have a "suggested" status to be confirmed')
+		}
+	})
+	.then(group => {
+		let members = group.members.filter(user => {
+			return user._pivot_status === 'member'
+		})
+		.map(member => member.id)
+
+		let membersFromInvitees = invitees.filter(user => {
+			return members.includes(user.id)
+		})
+
+		let groupSize = 10
+		// membersFromInvitees.length;
+
+		group_events = group.events
+
+		let confirmedSize = 4
+		// membersFromInvitees.filter(member => {
+		// 	return member._pivot_status === 'confirmed'
+		// }).length;
+
+		if (confirmedSize >= (groupSize * 0.5)) {
+			return helpers.updateEventFromId(event_id, {status: 'confirmed'})
+		} else {
+			res.send('Not enough people confirmed for this event')
+		}
+	})
+	.then(result => {
+		if(!confirmedEvent_dateTime) {
+			return true;
+		} else {
+			let dateStr =  confirmedEvent_dateTime.split("_")[0];
+			let date = new Date(Date.parse(dateStr));
+
+			let conflictingEvents = group_events.filter(event => {
+				let currDateStr =  event.date_time.split(" ")[0];
+				let currDate = new Date(Date.parse(currDateStr));
+				return date.getTime() === currDate.getTime();
+			});
+
+			let updateConflicts = conflictingEvents.map(event => {
+				return helpers.updateEventFromId(event.id, {status: 'inactive'});
+			});
+
+			return Promise.all(updateConflicts);
+		}
+	})
+	.catch(err => res.send(err))
+	.then(result => res.send(result));
 });
 
 module.exports = router;

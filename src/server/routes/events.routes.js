@@ -13,8 +13,7 @@ const util = require('../helpers/util.helpers.js');
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/events') 
 	.get((req,res) => {
-// ***************** WORKING *******************
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 
 		if(!google_id) return res.send({result: 'User must be authenticated to get events!'});
 
@@ -25,8 +24,7 @@ router.route('/events')
 		.then(result => res.send(result));
 	})
 	.post((req,res) => {
-// ***************** WORKING *******************
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let options = req.body;
 
 		if(!google_id) return res.send({result: 'User must be authenticated to get events!'});
@@ -61,7 +59,6 @@ router.route('/events')
 // DELETE, delete an event from the database
 router.route('/events/:id')
 	.get((req,res) => {
-// ***************** WORKING *******************
 		if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
 
 		let event_id = req.params.id;
@@ -71,9 +68,8 @@ router.route('/events/:id')
 		.then(result => res.send(result));
 	})
 	.put((req,res) => {
-// ***************** WORKING *******************
 		// only creator can edit details of this event
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let event_id = req.params.id;
 		let options = req.body;
 		let user_id = null;
@@ -125,7 +121,6 @@ router.route('/events/:id')
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/events/:id/invitations')
 	.get((req,res) => {
-// ***************** WORKING *******************
 		if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
 
 		let event_id = req.params.id;
@@ -137,8 +132,7 @@ router.route('/events/:id/invitations')
 		});
 	})
 	.post((req,res) => {
-// ***************** WORKING *******************
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let event_id = req.params.id;
 		let phone = req.body.phone;
 		let user_id = null;
@@ -186,8 +180,7 @@ router.route('/events/:id/invitations')
 		.then(result => res.send({result: result}));
 	})
 	.put((req,res) => {
-// ***************** WORKING *******************
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let event_id = req.params.id;
 		let user_id = null;
 		let invitees = [];
@@ -198,7 +191,7 @@ router.route('/events/:id/invitations')
 		helpers.getUserIdFromGoogleId(google_id)
 		.catch(err => res.send({result: err}))
 		.then(id => {
-			user_id = id;
+			user_id = 2;
 			return helpers.getEventFromId(event_id);
 		})
 		.catch(err => res.send({result: err}))
@@ -221,8 +214,7 @@ router.route('/events/:id/invitations')
 		.then(result => res.send({result: result}));
 	})
 	.delete((req,res) => {
-// ***************** WORKING *******************
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let event_id = req.params.id;
 		let user_id = null;
 		let invitees = [];
@@ -256,9 +248,54 @@ router.route('/events/:id/invitations')
 		.then(result => res.send({result: result}));
 	});
 
+// POST, broadcast a message to all members of the event that are 'confirmed' (status 'confirmed')
+	// should check to see if user is the creator of the event
+	// should get a list of all members of the event 
+	// should get a list of members that are 'confirmed' 
+	// should send text messages and notifications via the util helpers to those members
+router.post('/events/:id/broadcast',(req,res) => {
+	let google_id = req.user ? req.user.id : null;
+	let user_id = null;
+	let event_id = req.params.id;
+	let options = req.body;
+	let invitees = [];
+
+	if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
+	if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
+	if(!options.body) return res.send({result: 'Body must contain broadcast details! {title, body}'});
+
+	helpers.getUserIdFromGoogleId(google_id)
+	.catch(err => res.send({result: err}))
+	.then(id => {
+		user_id = id;
+		return helpers.getEventFromId(event_id);
+	})
+	.catch(err => res.send({result: err}))
+	.then(event => {
+		invitees = event.serialize().invitees;
+		let confirmedInvitees = invitees.filter(user => user._pivot_status === 'confirmed');
+
+		if(event.serialize().creator_id !== user_id) {
+			res.send({result: 'User is not creator of this event!'});
+		} else {
+			util.pushToUsers(confirmedInvitees, options);
+			util.sendEventAnnouncement(event.serialize(), confirmedInvitees, options.body);
+			res.send({result: 'Broadcast sent!'});
+		}
+	});
+});
+
+module.exports = router;
 
 
 
+/**********************************************
+*
+* Voting for Events isn't necessary, we can
+* use confirmed and unconfirmed status to det-
+* ermine the votes...
+* 
+**********************************************/
 
 // POST, vote for an event
 	// should to see if current user is a member of the event
@@ -354,70 +391,3 @@ router.route('/events/:id/invitations')
 // 	.then(result => res.send({result: result}));
 // });
 
-// POST, broadcast a message to all members of the event that are 'going' (status 'going')
-	// should check to see if user is the creator of the event
-	// should check to see if user is the creator of the group
-	// should get a list of all members of the event 
-	// should get a list of members that are 'going' 
-	// should send text messages and notifications via the util helpers to those members
-router.post('/events/:id/broadcast',(req,res) => {
-	if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to invite others to events!'});
-	if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
-	if(!req.body) return res.send({result: 'Body must contain broadcast details!'});
-
-	let user_id = req.user.id;
-	let event_id = req.params.id;
-	let event_details = null;
-	let members = null;
-	let creator = null;
-	let options = req.body;
-
-	helpers.getEventFromId(event_id)
-	.catch(err => res.send({result: err}))
-	.then(event => {
-		event_details = event;
-		return helpers.getGroup(event.group_id)
-	})
-	.catch(err => res.send({result: err}))
-	.then(group => {
-		let found = false;
-
-		creator = group.creator;
-		members = group.members.filter(user => user.status === 'confirmed');
-
-		if(group.creator.id === user_id) found = true;
-
-		group.members.forEach(user => {
-			if(user.id === user_id) found = true;
-		});
-
-		if(found) {
-			return helpers.getAllUsers();
-		} else {
-			res.send({result: 'User is not a member of this group or event!'});
-		}
-	})
-	.catch(err => res.send({result: err}))
-	.then(users => {
-		let profile = users.find(user => user.id === user_id);
-
-		if(profile === undefined) {
-			return res.send({result: 'User is not a member of this event!'});
-		} else {
-			return profile;
-		}
-	})
-	.then(user => {
-		if(user) {
-			members.push(user);
-
-			util.pushToUsers(members, options);
-			util.sendEventAnnouncement(event_details, members, options.body);
-			res.send({result: 'Successful broadcast'});
-		} else {
-			res.send({result: 'Failed broadcast'});
-		}
-	})
-});
-
-module.exports = router;

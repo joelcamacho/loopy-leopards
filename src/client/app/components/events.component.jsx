@@ -146,6 +146,7 @@ export default class EventsPageComponent extends React.Component {
       googleMapOpen: false,
       directionButton: true,
       directionButtonShowOrHide: true,
+      directionDetails: {},
     }
 
     this.handleVote = this.handleVote.bind(this);
@@ -221,12 +222,12 @@ export default class EventsPageComponent extends React.Component {
     let directionsDisplay;
     let originAddress;
     let that;
+    let directionDetails;
+
     that = this
     that.setState({directionButton: true})
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
-
-    
 
     if (navigator.geolocation) { 
         navigator.geolocation.getCurrentPosition(function (position) { 
@@ -269,11 +270,35 @@ export default class EventsPageComponent extends React.Component {
             that.setState({directionButtonShowOrHide: false});
             return currentAddress;
           })
+          .then(currentAddress => {
+
+            let init = {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({origin: currentAddress, destination: event.address, mode: 'DRIVING'})
+            }
+            fetch('/api/directionData', init)
+            .then(res => res.json())
+            .catch(err => console.log("can not save event data: ", err))
+            .then(res => {
+              directionDetails = {};
+              console.log("Hello!!!!!", res.routes[0].legs[0])
+              console.log("Time: ", res.routes[0].legs[0].duration.text)
+              console.log("distance: ", res.routes[0].legs[0].distance.text)
+              directionDetails.transportation = 'Driving';
+              directionDetails.distance = res.routes[0].legs[0].distance.text;
+              directionDetails.time = res.routes[0].legs[0].duration.text;
+              that.setState({directionDetails: directionDetails});
+            })
+          })
         }
       )
     }
   }
-
 
 
 
@@ -422,16 +447,16 @@ export default class EventsPageComponent extends React.Component {
             <p>Current Address: </p>
           </div>
           <div>
-            <p>Derection Address: </p>
+            <p>Derection Address: {this.state.eventDetails.address}</p>
           </div>
           <div>
-            <p>Transportation: </p>
+            <p>Transportation: {this.state.directionDetails.transportation}</p>
           </div>
           <div>
-            <p>Distance: </p>
+            <p>Distance: {this.state.directionDetails.distance}</p>
           </div>
           <div>
-            <p>Time: </p>
+            <p>Time: {this.state.directionDetails.time}</p>
           </div>
         </div>
         <div id="map" style={styles.googleMapStyle}></div>

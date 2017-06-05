@@ -104,11 +104,11 @@ exports.authenticatePhoneWithCode = (phone, code) => {
 }
 
 const _sendEventInvitation = (user, message) => {
-  _sendMessageToPhone(user.phone, message);
+  if(!!user.phone) _sendMessageToPhone(user.phone, message);
 }
 
 exports.sendEventInvitation = (user, message) => {
-  _sendMessageToPhone(user.phone, message);
+  if(!!user.phone) _sendMessageToPhone(user.phone, message);
 }
 
 exports.sendEventInvitations = (event, users) => {

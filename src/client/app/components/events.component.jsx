@@ -300,6 +300,9 @@ export default class EventsPageComponent extends React.Component {
     }
   }
 
+  handleTransportation (transportation) {
+    console.log("Hello World!!!")
+  }
 
 
   // handleEventClick () {
@@ -465,12 +468,14 @@ export default class EventsPageComponent extends React.Component {
         <div id="map" style={styles.googleMapStyle}></div>
         <br/>
         {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails)}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="TRANSIT" fullWidth="true" onTouchTap={() => this.handleTransportation('TRANSIT')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="DRIVING" fullWidth="true" onTouchTap={() => this.handleTransportation('DRIVING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="BICYCLING" fullWidth="true" onTouchTap={() => this.handleTransportation('BICYCLING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="WALKING" fullWidth="true" onTouchTap={() => this.handleTransportation('WALKING')}/>) : null}
       </Dialog>
     </div>);
   }
 }
-
-
 
 
 

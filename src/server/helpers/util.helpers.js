@@ -19,10 +19,10 @@ const client = twilio(apiKeys.twilioAccountSid, apiKeys.twilioAuthToken);
 const _pushToUserFromId = (id, options = {}) => {
   const key = apiKeys.fcmServerKey;
   const notification = {
-    'title': options.title || 'Kimmy J Master',
-    'body': options.body || 'I will take over the world! Tomorrow...',
-    'icon': options.icon || 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg',
-    'click_action': options.click_action || 'http://localhost:3000'
+    'title': options.title || 'Hangin\'Hubs',
+    'body': options.body || 'This is the default notification',
+    'icon': options.icon || 'https://www.iconfinder.com/data/icons/basic-application-vol-1/128/Material_Design-15-512.png',
+    'click_action': options.click_action || 'http://www.google.com'
   };
   return new Promise(function (resolve, reject) {
     helpers.getCurrentUserTokenFromId(id)
@@ -50,7 +50,7 @@ exports.pushToUserFromId = (id, options = {}) => {
 }
 
 // Send notifications a group of users
-exports.pushToUsers = (users, options = {}) => {
+exports.pushToUsers = (users = [], options = {}) => {
   users.forEach(user => {
     _pushToUserFromId(user.id, options)
   })
@@ -81,6 +81,21 @@ exports.updateUserTokenFromId = (id, token) => {
 // sendEventAnnouncement(tempEvent, tempUsers, 'Just Joking, the event has been cancelled');
 
 const _sendMessageToPhone = (phone, message, callback = (res) => res) => {
+  client.messages.create({ 
+    to: phone, 
+    from: apiKeys.twilioFromNumber, 
+    body: message, 
+  }, function(err, res) { 
+    if(err) {
+      console.log(err);
+    } else {
+      console.log(res.sid);
+      callback(res);
+    }
+  });
+}
+
+exports.sendMessageToPhone = (phone, message, callback = (res) => res) => {
   client.messages.create({ 
     to: phone, 
     from: apiKeys.twilioFromNumber, 

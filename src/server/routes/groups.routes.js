@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const helpers = require('../helpers/db.helpers.js')
+const util = require('../helpers/util.helpers.js');
 
 // group specific helpers 
 const findMember = (groups) => {
@@ -30,6 +31,7 @@ router.route('/groups')
 		let groupName = req.body.name || null;
 		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
+		let failed = false;
 
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
@@ -41,6 +43,7 @@ router.route('/groups')
 			let isMember = findMember(groups);
 
 			if(!!isMember) {
+				failed = true;
 				res.send({result: 'To create a new group, please leave your current group'})
 			} else {
 				if(groupName) {
@@ -49,13 +52,23 @@ router.route('/groups')
 						let exists = groups.find(group => group.name === groupName);
 
 						if(!!exists) {
+							failed = true;
 							res.send({ result: 'Sorry, that group name already exists'});
 						} else {
 							return helpers.createNewGroup(user_id, options)
 						}
 					})
 					.catch(err => res.send({result: err}))
-					.then(result => res.send({result: result}))
+					.then(result => {
+						// SEND NOTIFICATION TO MEMBERS OF THIS GROUP .aka the creator
+						if(!failed) {
+								util.pushToUserFromId(user_id, {
+								body: 'Congratulations on creating a group! You can now invite your friends to your group in the groups page.'
+							});
+						}
+
+						res.send({result: result});
+					})
 				}
 			}
 		})
@@ -104,23 +117,44 @@ router.route('/group')
 	.delete((req,res) => {
 		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
+		let user_name = null;
+		let members = [];
+		let group_details = null;
 
-		helpers.getUserIdFromGoogleId(google_id)
-		.then(id => {
-			user_id = id;
+		helpers.getCurrentUserFromGoogleId(google_id)
+		.then(user => {
+			user_id = user.serialize().id;
+			user_name = user.serialize().first_name;
 			return helpers.getCurrentUserGroup(user_id);
 		})
 		.then(group => {
-			let isMember = findMember(group.groupsBelongingTo.serialize());
+			let details = group.groupsBelongingTo.serialize();
 
-			if(!!isMember) {
-				return helpers.leaveGroup(user_id, isMember.id)
+			group_details = findMember(details);
+
+			console.log(details, group_details);
+
+			if(!!group_details) {
+				return helpers.leaveGroup(user_id, group_details.id)
 			} else {
 				res.send({result: 'User is not a member of a group!'});
 			}
 		})
-		.then(result => res.json(result))
 		.catch(err => res.send(err))
+		.then(result => {
+			return helpers.getGroup(group_details.id);
+		})
+		.catch(err => res.send(err))
+		.then(result => {
+			let message = user_name +' has left ' + result.serialize().name + '...';
+
+			// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
+			util.pushToUsers(result.serialize().members, {
+				body: message
+			});
+
+			res.send({result: 'You have left the group!'});
+		})
 	})
 
 // GET all group invitations for the current user
@@ -173,6 +207,7 @@ router.route('/group/invitations')
 		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
 		let group_id = null;
+		let group_details = null;
 
 		if(!phone) return res.send('Must include a phone number')
 		if(!google_id) return res.send('Must be authenticated');
@@ -183,29 +218,26 @@ router.route('/group/invitations')
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(group => {
-			let isMember = findMember(group.groupsBelongingTo.serialize());
-
-			if(!!isMember) {
-				group_id = isMember.id;
+			group_details = findMember(group.groupsBelongingTo.serialize());
+			if(!!group_details) {
+				group_id = group_details.id;
 			} else {
 				return res.send('The current user is not in a group');
 			}
 			
 			return helpers.getCurrentUserFromPhone(phone);
 		})
-		.then(user => {
-			if(!!user) {
-				// if guest user exists
-				return user;
-			} else {
-				// if guest user is not in db
-				return helpers.createNewUser({
-					first_name: "Anonymous",
-					phone: phone
-				});
-			}
+		.catch(err => {
+			return helpers.createNewUser({
+				first_name: "Anonymous",
+				phone: phone
+			});
 		})
+		.then(user => user)
 		.then(user => {
+			// SEND TEXT MESSAGE TO PHONE
+			util.sendMessageToPhone(phone, 'You have been invited to join ' + group_details.name + ' on Hanginhubs. Please log in to join the group and start hanging out!');
+
 			return helpers.sendInvitationToJoinGroup(user.serialize().id, group_id);
 		})
 		.catch(err => res.send(err))
@@ -215,30 +247,52 @@ router.route('/group/invitations')
 		let google_id = req.user ? req.user.id : null;
 		let group_id = req.body.group_id;
 		let user_id = null;
+		let user_name = null;
+		let members = [];
+		let group_details = null;
+		let failed = false;
 
 		if(!google_id) return res.send('User must be authenticated');
 		if(!group_id) return res.send('Body must contain group_id field');
 
-		helpers.getUserIdFromGoogleId(google_id)
-		.then(id => {
-			user_id = id;
+		helpers.getCurrentUserFromGoogleId(google_id)
+		.then(user => {
+			user_id = user.serialize().id;
+			user_name = user.serialize().first_name;
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {
-			let result = groups.groupsBelongingTo;
-			result = result.map(group => group.serialize());
-			result = result.filter(group => group._pivot_status === 'invited');
+			let result = groups.groupsBelongingTo.serialize();
+			invitees = result.filter(group => group._pivot_status === 'invited');
 
-			let exist = result.find(group => group.id == group_id);
+			let exist = invitees.find(group => group.id == group_id);
 
 			if(!exist) {
+				failed = true;
 				return res.send('Invalid group_id');
 			} else {
 				return helpers.joinGroup(user_id, exist.id);
 			}
 		})
-		.catch(err => res.send(err))
-		.then(result => res.send(result));
+		.catch(err => {
+			failed = true;
+			res.send(err);
+		})
+		.then(result => {
+			return helpers.getGroup(group_id);
+		})
+		.then(result => {
+			if(!failed) {
+				let message = user_name +' has joined ' + result.serialize().name + '!';
+
+				// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
+				util.pushToUsers(result.serialize().members, {
+					body: message
+				});
+			
+				res.send({result: 'You have joined the group!'});
+			}
+		})
 	})
 	.delete((req,res) => {
 		let google_id = req.user ? req.user.id : null;
@@ -250,7 +304,7 @@ router.route('/group/invitations')
 
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
-			user_id = id;
+			user_id = 1;
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {
@@ -330,34 +384,58 @@ router.route('/group/requests')
 		let name = req.body.name;
 		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
+		let user_name = null;
 		let group_id = null;
+		let group_details = {};
+		let failed = false;
 
 		if(!name) return res.send('Must include a name')
 		if(!google_id) return res.send('Must be authenticated');
 
-		helpers.getUserIdFromGoogleId(google_id)
-		.then(id => {
-			user_id = id;
+		helpers.getCurrentUserFromGoogleId(google_id)
+		.then(user => {
+			user_id = user.serialize().id;
+			user_name = user.serialize().first_name;
 			return helpers.getGroupByName(name);
 		})
 		.then(group => {			
-			if(!group) res.send('This group doesn\'t exist');
-			else {
-				return helpers.sendRequestToJoinGroup(user_id, group.serialize().id);
+			if(!group) {
+				failed = true;
+				res.send('This group doesn\'t exist')
+			} else {
+				group_details = group.serialize();
+				return helpers.sendRequestToJoinGroup(user_id, group_details.id);
 			}
 		})
-		.catch(err => res.send(err))
-		.then(result => res.send(result));
+		.catch(err => {
+			failed = true;
+			res.send(err)
+		})
+		.then(result => {
+
+			if(!failed) {
+				let message = user_name +' has requested to join your group!';
+
+				// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
+				util.pushToUsers(group_details.members, {
+					body: message
+				});
+			}
+			
+			res.send(result);
+		});
 	})
 	.put((req,res) => {
 		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
+		let user_name = null;
 		let group_id = null;
 		let guest_id = req.body.guest_id;
+		let failed = false;
 
-		helpers.getUserIdFromGoogleId(google_id)
-		.then(id => {
-			user_id = id;
+		helpers.getCurrentUserFromGoogleId(google_id)
+		.then(user => {
+			user_id = user.serialize().id;
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {
@@ -367,6 +445,7 @@ router.route('/group/requests')
 				group_id = isMember.id;
 				return helpers.getCurrentUserGroup(guest_id)
 			} else {
+				failed = true;
 				res.send({result: 'You are not in a group!'});
 			}
 		})
@@ -375,19 +454,35 @@ router.route('/group/requests')
 			result = result.map(group => group.serialize());
 			result = result.filter(group => group._pivot_status === 'requested');
 
-
 			let exists = result.find(group => group.id === group_id);
 
 			if(!exists) {
+				failed = true;
 				res.send('This user wasn\'t invited');
 			} else {
 				return helpers.joinGroup(guest_id, exists.id);
 			}
 		})
+		.catch(err => res.send(err))
 		.then(result => {
-			res.send(result);
+			return helpers.getCurrentUserFromId(guest_id);
 		})
-		.catch(err => res.send(err));
+		.then(result => {
+			user_name = result.serialize().first_name;
+			return helpers.getGroup(group_id);
+		})
+		.then(result => {
+			if(!failed) {
+				let message = user_name +' has joined ' + result.serialize().name + '!';
+
+				// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
+				util.pushToUsers(result.serialize().members, {
+					body: message
+				});
+			
+				res.send({result: 'You have joined the group!'});
+			}
+		})
 	})
 	.delete((req,res) => {
 		let google_id = req.user ? req.user.id : null;

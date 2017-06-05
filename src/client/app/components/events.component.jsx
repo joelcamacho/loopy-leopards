@@ -144,6 +144,8 @@ export default class EventsPageComponent extends React.Component {
       open: false,
       eventDetails: {},
       googleMapOpen: false,
+      directionButton: true,
+      directionButtonShowOrHide: true,
     }
 
     this.handleVote = this.handleVote.bind(this);
@@ -152,6 +154,7 @@ export default class EventsPageComponent extends React.Component {
     this.handleClose = this.handleClose.bind(this);
     this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
     this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
+    this.handleGetDirection = this.handleGetDirection.bind(this);
   }
 
   handleOpen (event)  {
@@ -202,22 +205,28 @@ export default class EventsPageComponent extends React.Component {
           content: event.name,
         }); 
         infoWindow.open(map, marker); 
+        this.setState({directionButton: false})
     })
     this.setState({googleMapOpen: true});
   }
 
   handleGoogleMapClose () {
+    this.setState({directionButtonShowOrHide: true});
     this.setState({googleMapOpen: false});
   }
 
-  handleGetDirection(event) {
+  handleGetDirection (event) {
     let currentAddress;
     let directionsService;
     let directionsDisplay;
     let originAddress;
-
+    let that;
+    that = this
+    that.setState({directionButton: true})
     directionsService = new google.maps.DirectionsService();
     directionsDisplay = new google.maps.DirectionsRenderer();
+
+    
 
     if (navigator.geolocation) { 
         navigator.geolocation.getCurrentPosition(function (position) { 
@@ -257,6 +266,7 @@ export default class EventsPageComponent extends React.Component {
                 directionsDisplay.setDirections(response);
               }
             });
+            that.setState({directionButtonShowOrHide: false});
             return currentAddress;
           })
         }
@@ -407,9 +417,26 @@ export default class EventsPageComponent extends React.Component {
         autoScrollBodyContent={true}
       >
         <br/>
+        <div>
+          <div>
+            <p>Current Address: </p>
+          </div>
+          <div>
+            <p>Derection Address: </p>
+          </div>
+          <div>
+            <p>Transportation: </p>
+          </div>
+          <div>
+            <p>Distance: </p>
+          </div>
+          <div>
+            <p>Time: </p>
+          </div>
+        </div>
         <div id="map" style={styles.googleMapStyle}></div>
         <br/>
-        <RaisedButton label="Derection" onTouchTap={() => this.handleGetDirection(this.state.eventDetails)} />
+        {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails)}/>) : null}
       </Dialog>
     </div>);
   }

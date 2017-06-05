@@ -9,6 +9,7 @@ import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
+import RaisedButton from 'material-ui/RaisedButton';
 
 const styles = {
   headline: {
@@ -28,6 +29,14 @@ const styles = {
     width: 727,
     overflowY: 'auto',
   },
+  customContentStyle: {
+    width: '100%',
+    maxWidth: 'none',
+  },
+  googleMapStyle: {
+    width: '720px',
+    height: '450px',
+  }
 };
 
 const fakeEvents = [
@@ -134,12 +143,15 @@ export default class EventsPageComponent extends React.Component {
       eventsDays: [],
       open: false,
       eventDetails: {},
+      googleMapOpen: false,
     }
 
     this.handleVote = this.handleVote.bind(this);
-    this.handleEventClick = this.handleEventClick.bind(this);
+    // this.handleEventClick = this.handleEventClick.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
     this.handleClose = this.handleClose.bind(this);
+    this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
+    this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
   }
 
   handleOpen (event)  {
@@ -160,10 +172,87 @@ export default class EventsPageComponent extends React.Component {
     this.setState({open: false});
   };
 
-
-  handleEventClick () {
-    console.log("Hello World!")
+  handleGoogleMapOpen (event) {
+    let init = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({address: event.address})
+    }
+    fetch('/api/latlngMap', init)
+    .then(res => res.json())
+    .catch(err => console.log("can not get latlng code: ", err))
+    .then(res => {
+      const coords = res.results[0].geometry.location;
+      //const latlng = new google.maps.LatLng(coords.latitude, coords.longitude); 
+        const myOptions = { 
+          zoom: 14, 
+          center: coords,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+        }; 
+        const map = new google.maps.Map(document.getElementById("map"), myOptions); 
+        const marker = new google.maps.Marker({ 
+          position: coords, 
+          map: map,
+        }); 
+        const infoWindow = new google.maps.InfoWindow({ 
+          content: event.name,
+        }); 
+        infoWindow.open(map, marker); 
+    })
+    // if (navigator.geolocation) { 
+    //   navigator.geolocation.getCurrentPosition(function (position) { 
+    //     const coords = position.coords; 
+    //     const latlng = new google.maps.LatLng(coords.latitude, coords.longitude); 
+    //     const myOptions = { 
+    //       zoom: 14, 
+    //       center: latlng,
+    //       mapTypeId: google.maps.MapTypeId.ROADMAP,
+    //     }; 
+    //     const map = new google.maps.Map(document.getElementById("map"), myOptions); 
+    //     const marker = new google.maps.Marker({ 
+    //       position: latlng, 
+    //       map: map,
+    //     }); 
+    //     const infoWindow = new google.maps.InfoWindow({ 
+    //       content: event.name,
+    //     }); 
+    //     infoWindow.open(map, marker); 
+    //   }, 
+    //   function (error) { 
+    //     switch (error.code) { 
+    //     case 1: 
+    //       alert("current location rejected"); 
+    //       break; 
+    //     case 2: 
+    //       alert("can not get current location"); 
+    //       break; 
+    //     case 3: 
+    //       alert("timeout"); 
+    //       break; 
+    //     default: 
+    //       alert("unknow err"); 
+    //     break; 
+    //     } 
+    //   }); 
+    // }
+    this.setState({googleMapOpen: true});
   }
+
+  handleGoogleMapClose () {
+    this.setState({googleMapOpen: false});
+  }
+
+
+
+
+
+  // handleEventClick () {
+  //   console.log("Hello World!")
+  // }
 
   handleVote (event) {
     let newUserEvents = []
@@ -284,19 +373,31 @@ export default class EventsPageComponent extends React.Component {
         {this.state.eventDetails.img !== '' ? (<img src={this.state.eventDetails.img} alt="eventImg"/>) : null}
         {this.state.eventDetails.name !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.name}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.description.length > 100 ? this.state.eventDetails.description.slice(0,100) + '...' : this.state.eventDetails.description }{this.state.eventDetails.url ? (<a href={this.state.eventDetails.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
-        {this.state.eventDetails.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.address}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.address}</p><RaisedButton label="Map Open" onTouchTap={() => this.handleGoogleMapOpen(this.state.eventDetails)} /></div><br/><Divider/></List>) : null}
         {this.state.eventDetails.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.city}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.state}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.phone}</p></div><Divider/></List>) : null}
-        {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Group:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
           
+      </Dialog>
+      <Dialog
+        title="The Location Of Your Event"
+        actions={<FlatButton label="Cancle" primary={true} onTouchTap={this.handleGoogleMapClose} />}
+        modal={false}
+        open={this.state.googleMapOpen}
+        onRequestClose={this.handleGoogleMapClose}
+        autoScrollBodyContent={true}
+      >
+        <br/>
+        <div id="map" style={styles.googleMapStyle}></div>
+        
       </Dialog>
     </div>);
   }
 }
 
-
+// <RaisedButton label="Derection" onTouchTap={() => this.handleGetDirection(this.state.eventDetails)} />
 
 
 

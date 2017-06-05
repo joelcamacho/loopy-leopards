@@ -110,140 +110,155 @@ router.route('/events/:id')
 	// 	.then(result => res.send({result: result}));
 	// });
 
+
+// GET, all invitees to the event
 // POST, invite user to event
 	// should check all users to see if phone number exists
 	// should create a new user entry 'Anonymous' if phonenumber does not exist
-	// if exists, invite person to event (create new entry in join table and set status to 'invited')
-// Possible areas for sending text messages and notifications via the util helpers
-router.post('/events/:id/invite',(req,res) => {
-// ***************** WORKING *******************
-	let google_id = req.user ? req.user.id : '105464304823044640566';
-	let event_id = req.params.id;
-	let phone = req.body.phone;
-	let user_id = null;
-	let invitees = [];
-
-	if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
-	if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
-	if(!phone) return res.send({result: 'Body must contain phone field!'});
-
-	helpers.getUserIdFromGoogleId(google_id)
-	.catch(err => res.send({result: err}))
-	.then(id => {
-		user_id = id;
-		return helpers.getEventFromId(event_id);
-	})
-	.catch(err => res.send({result: err}))
-	.then(event => {
-		invitees = event.serialize().invitees;
-		
-		let isInvitee = invitees.find(user => user.id === user_id);
-
-		if(!isInvitee) {
-			res.send({result: 'User is not a part of the event!'});
-		} else {
-			return helpers.getAllUsers();
-		}
-	})
-	.then(users => {
-		let allUsers = users.serialize();
-
-		let userFromPhone = allUsers.find(user => user.phone === phone);
-
-		if(userFromPhone) {
-			return userFromPhone;
-		} else {
-			let options = {first_name: 'Anonymous', phone: phone}
-			return helpers.createNewUser(options);
-		}
-	})
-	.catch(err => res.send(err))
-	.then(user => {
-		return helpers.requestORInviteToJoinEvent(user.id, event_id);
-	})
-	.catch(err => res.send({result: err}))
-	.then(result => res.send({result: result}));
-});
-
-// POST, accept an existing invitation to event
+	// if exists, invite person to event (create new entry in join table and set status to 'confirmed')
+// PUT, accept an existing invitation to event
 	// should check to see if user / event vote join table has an entry for this user and the event
-	// if exists and the status is currently 'invited', then set status to 'going'
-// Possible areas for sending text messages and notifications via the util helpers
-router.post('/events/:id/accept',(req,res) => {
-// ***************** WORKING *******************
-	let google_id = req.user ? req.user.id : '105464304823044640566';
-	let event_id = req.params.id;
-	let user_id = null;
-	let invitees = [];
-
-	if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
-	if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
-
-	helpers.getUserIdFromGoogleId(google_id)
-	.catch(err => res.send({result: err}))
-	.then(id => {
-		user_id = id;
-		return helpers.getEventFromId(event_id);
-	})
-	.catch(err => res.send({result: err}))
-	.then(event => {
-		invitees = event.serialize().invitees;
-
-		let isInvitee = invitees.find(user => user.id === user_id);
-
-		if(!isInvitee) {
-			res.send({result: 'User is not invited to this event!'});
-		} else {
-			if (isInvitee._pivot_status === 'unconfirmed') {
-				return helpers.acceptInvitationToJoinEvent(user_id, event_id);
-			} else {
-				res.send({result: 'User has already been confirmed!'})
-			}
-		}
-	})
-	.catch(err => res.send({result: err}))
-	.then(result => res.send({result: result}));
-});
-
-// POST, reject an existing invitation to event
+	// if exists and the status is currently 'unconfirmed', then set status to 'confirmed'
+// DELETE, reject an existing invitation to event
 	// should check to see if user / event vote join table has an entry for this user and the event
 	// if exists and the status is currently 'invited', then remove the entry from the user / event join table
 // Possible areas for sending text messages and notifications via the util helpers
-router.post('/events/:id/reject',(req,res) => {
+router.route('/events/:id/invitations')
+	.get((req,res) => {
 // ***************** WORKING *******************
-	let google_id = req.user ? req.user.id : '105464304823044640566';
-	let event_id = req.params.id;
-	let user_id = null;
-	let invitees = [];
+		if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
 
-	if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
-	if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
+		let event_id = req.params.id;
 
-	helpers.getUserIdFromGoogleId(google_id)
-	.catch(err => res.send({result: err}))
-	.then(id => {
-		user_id = id;
-		return helpers.getEventFromId(event_id);
+		helpers.getEventFromId(event_id)
+		.catch(err => res.send({result: err}))
+		.then(result => {
+			res.send(result.serialize().invitees)
+		});
 	})
-	.catch(err => res.send({result: err}))
-	.then(event => {
-		invitees = event.serialize().invitees;
+	.post((req,res) => {
+// ***************** WORKING *******************
+		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let event_id = req.params.id;
+		let phone = req.body.phone;
+		let user_id = null;
+		let invitees = [];
 
-		let isInvitee = invitees.find(user => user.id === user_id);
+		if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
+		if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
+		if(!phone) return res.send({result: 'Body must contain phone field!'});
 
-		if(!isInvitee) {
-			res.send({result: 'User is not invited to this event!'});
-		} else {
-			if (isInvitee._pivot_status === 'unconfirmed') {
-				return helpers.rejectInvitationToJoinEvent(user_id, event_id);
+		helpers.getUserIdFromGoogleId(google_id)
+		.catch(err => res.send({result: err}))
+		.then(id => {
+			user_id = id;
+			return helpers.getEventFromId(event_id);
+		})
+		.catch(err => res.send({result: err}))
+		.then(event => {
+			invitees = event.serialize().invitees;
+			
+			let isInvitee = invitees.find(user => user.id === user_id);
+
+			if(!isInvitee) {
+				res.send({result: 'User is not a part of the event!'});
 			} else {
-				res.send({result: 'User has already been confirmed!'})
+				return helpers.getAllUsers();
 			}
-		}
+		})
+		.then(users => {
+			let allUsers = users.serialize();
+
+			let userFromPhone = allUsers.find(user => user.phone === phone);
+
+			if(userFromPhone) {
+				return userFromPhone;
+			} else {
+				let options = {first_name: 'Anonymous', phone: phone}
+				return helpers.createNewUser(options);
+			}
+		})
+		.catch(err => res.send(err))
+		.then(user => {
+			return helpers.requestORInviteToJoinEvent(user.id, event_id);
+		})
+		.catch(err => res.send({result: err}))
+		.then(result => res.send({result: result}));
 	})
-	.catch(err => res.send({result: err}))
-	.then(result => res.send({result: result}));
-});
+	.put((req,res) => {
+// ***************** WORKING *******************
+		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let event_id = req.params.id;
+		let user_id = null;
+		let invitees = [];
+
+		if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
+		if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
+
+		helpers.getUserIdFromGoogleId(google_id)
+		.catch(err => res.send({result: err}))
+		.then(id => {
+			user_id = id;
+			return helpers.getEventFromId(event_id);
+		})
+		.catch(err => res.send({result: err}))
+		.then(event => {
+			invitees = event.serialize().invitees;
+
+			let isInvitee = invitees.find(user => user.id === user_id);
+
+			if(!isInvitee) {
+				res.send({result: 'User is not invited to this event!'});
+			} else {
+				if (isInvitee._pivot_status === 'unconfirmed') {
+					return helpers.acceptInvitationToJoinEvent(user_id, event_id);
+				} else {
+					res.send({result: 'User has already been confirmed!'})
+				}
+			}
+		})
+		.catch(err => res.send({result: err}))
+		.then(result => res.send({result: result}));
+	})
+	.delete((req,res) => {
+// ***************** WORKING *******************
+		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let event_id = req.params.id;
+		let user_id = null;
+		let invitees = [];
+
+		if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
+		if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
+
+		helpers.getUserIdFromGoogleId(google_id)
+		.catch(err => res.send({result: err}))
+		.then(id => {
+			user_id = id;
+			return helpers.getEventFromId(event_id);
+		})
+		.catch(err => res.send({result: err}))
+		.then(event => {
+			invitees = event.serialize().invitees;
+
+			let isInvitee = invitees.find(user => user.id === user_id);
+
+			if(!isInvitee) {
+				res.send({result: 'User is not invited to this event!'});
+			} else {
+				if (isInvitee._pivot_status === 'unconfirmed') {
+					return helpers.rejectInvitationToJoinEvent(user_id, event_id);
+				} else {
+					res.send({result: 'User has already been confirmed!'})
+				}
+			}
+		})
+		.catch(err => res.send({result: err}))
+		.then(result => res.send({result: result}));
+	});
+
+
+
+
 
 // POST, vote for an event
 	// should to see if current user is a member of the event
@@ -251,46 +266,46 @@ router.post('/events/:id/reject',(req,res) => {
 	// if exists, just update the voted property
 // Possible areas for sending text messages and notifications via the util helpers
 
-router.post('/events/:id/upvote', (req,res) => {
-	if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to invite others to events!'});
-	if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
+// router.post('/events/:id/upvote', (req,res) => {
+// 	if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to invite others to events!'});
+// 	if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
 
-	let user_id = req.user.id;
-	let event_id = req.params.id;
+// 	let user_id = req.user.id;
+// 	let event_id = req.params.id;
 
-	helpers.getEventFromId(event_id)
-	.catch(err => res.send({result: err}))
-	.then(event => helpers.getGroup(event.group_id))
-	.catch(err => res.send({result: err}))
-	.then(group => {
-		let found = false;
+// 	helpers.getEventFromId(event_id)
+// 	.catch(err => res.send({result: err}))
+// 	.then(event => helpers.getGroup(event.group_id))
+// 	.catch(err => res.send({result: err}))
+// 	.then(group => {
+// 		let found = false;
 
-		if(group.creator.id === user_id) found = true;
+// 		if(group.creator.id === user_id) found = true;
 
-		group.members.forEach(user => {
-			if(user.id === user_id) found = true;
-		});
+// 		group.members.forEach(user => {
+// 			if(user.id === user_id) found = true;
+// 		});
 
-		if(found) {
-			return helpers.getAllUsers();
-		} else {
-			res.send({result: 'User is not a member of this group or event!'});
-		}
-	})
-	.catch(err => res.send({result: err}))
-	.then(users => {
-		let profile = users.find(user => user.id === user_id);
+// 		if(found) {
+// 			return helpers.getAllUsers();
+// 		} else {
+// 			res.send({result: 'User is not a member of this group or event!'});
+// 		}
+// 	})
+// 	.catch(err => res.send({result: err}))
+// 	.then(users => {
+// 		let profile = users.find(user => user.id === user_id);
 
-		if(profile === undefined) {
-			return res.send({result: 'User is not a member of this event!'});
-		} else {
-			return profile;
-		}
-	})
-	.then(user => helpers.voteForEvent(user.id, event_id))
-	.catch(err => res.send({result: err}))
-	.then(result => res.send({result: result}));
-});
+// 		if(profile === undefined) {
+// 			return res.send({result: 'User is not a member of this event!'});
+// 		} else {
+// 			return profile;
+// 		}
+// 	})
+// 	.then(user => helpers.voteForEvent(user.id, event_id))
+// 	.catch(err => res.send({result: err}))
+// 	.then(result => res.send({result: result}));
+// });
 
 // POST, remove vote for an event
 	// should to see if current user is a member of the event
@@ -298,46 +313,46 @@ router.post('/events/:id/upvote', (req,res) => {
 	// if exists, just update the voted property
 // Possible areas for sending text messages and notifications via the util helpers
 
-router.post('/events/:id/downvote', (req,res) => {
-	if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to invite others to events!'});
-	if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
+// router.post('/events/:id/downvote', (req,res) => {
+// 	if(!req.user || !req.user.id) return res.send({result: 'User must be authenticated to invite others to events!'});
+// 	if(!req.params.id) return res.send({result: 'Params must contain id, /api/events/:id'});
 
-	let user_id = req.user.id;
-	let event_id = req.params.id;
+// 	let user_id = req.user.id;
+// 	let event_id = req.params.id;
 
-	helpers.getEventFromId(event_id)
-	.catch(err => res.send({result: err}))
-	.then(event => helpers.getGroup(event.group_id))
-	.catch(err => res.send({result: err}))
-	.then(group => {
-		let found = false;
+// 	helpers.getEventFromId(event_id)
+// 	.catch(err => res.send({result: err}))
+// 	.then(event => helpers.getGroup(event.group_id))
+// 	.catch(err => res.send({result: err}))
+// 	.then(group => {
+// 		let found = false;
 
-		if(group.creator.id === user_id) found = true;
+// 		if(group.creator.id === user_id) found = true;
 
-		group.members.forEach(user => {
-			if(user.id === user_id) found = true;
-		});
+// 		group.members.forEach(user => {
+// 			if(user.id === user_id) found = true;
+// 		});
 
-		if(found) {
-			return helpers.getAllUsers();
-		} else {
-			res.send({result: 'User is not a member of this group or event!'});
-		}
-	})
-	.catch(err => res.send({result: err}))
-	.then(users => {
-		let profile = users.find(user => user.id === user_id);
+// 		if(found) {
+// 			return helpers.getAllUsers();
+// 		} else {
+// 			res.send({result: 'User is not a member of this group or event!'});
+// 		}
+// 	})
+// 	.catch(err => res.send({result: err}))
+// 	.then(users => {
+// 		let profile = users.find(user => user.id === user_id);
 
-		if(profile === undefined) {
-			return res.send({result: 'User is not a member of this event!'});
-		} else {
-			return profile;
-		}
-	})
-	.then(user => helpers.unvoteForEvent(user.id, event_id))
-	.catch(err => res.send({result: err}))
-	.then(result => res.send({result: result}));
-});
+// 		if(profile === undefined) {
+// 			return res.send({result: 'User is not a member of this event!'});
+// 		} else {
+// 			return profile;
+// 		}
+// 	})
+// 	.then(user => helpers.unvoteForEvent(user.id, event_id))
+// 	.catch(err => res.send({result: err}))
+// 	.then(result => res.send({result: result}));
+// });
 
 // POST, broadcast a message to all members of the event that are 'going' (status 'going')
 	// should check to see if user is the creator of the event

@@ -32,25 +32,20 @@ const Event = bookshelf.Model.extend({
 		})
 	},
 
-	attachInvitees: function(invitees, status) {
-
+	attachInvitees: function(id, status) {
 		return this.getInfo()
 		.then((event) => {
 			if(event) {
-				return event.related('invitees').attach(invitees)
+				return event.related('invitees').attach(id)
 			} else {
 				throw new Error('That event doesn\'t exist')
 			}
 		})
 		.then((invitees) => {
-			if (invitees) {
-				return invitees.updatePivot({status: status})
-			} else {
-				throw new Error('Could not add invitee to event')
-			}
+			return this.related('invitees').updatePivot({status:'unconfirmed'}, {query: {where: {user_id: id}}})
 		})
 		.catch((err) => {
-			throw new Error('Something went wrong, please try again')
+			throw new Error(err);
 		})
 	},
 

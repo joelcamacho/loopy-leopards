@@ -12,7 +12,7 @@ const util = require('../helpers/util.helpers.js');
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/events') 
 	.get((req,res) => {
-		let google_id = req.user ? req.user.id : "100979353896699877023";
+		let google_id = req.user ? req.user.id : '105464304823044640566';
 
 		if(!google_id) return res.send({result: 'User must be authenticated to get events!'});
 
@@ -23,7 +23,7 @@ router.route('/events')
 		.then(result => res.send(result));
 	})
 	.post((req,res) => {
-		let google_id = req.user ? req.user.id : "100979353896699877023";
+		let google_id = req.user ? req.user.id : '105464304823044640566';
 		let options = req.body;
 
 		if(!google_id) return res.send({result: 'User must be authenticated to post events!'});
@@ -68,7 +68,7 @@ router.route('/events/:id')
 	})
 	.put((req,res) => {
 		// only creator can edit details of this event
-		let google_id = req.user ? req.user.id : "100979353896699877023";
+		let google_id = req.user ? req.user.id : null;
 		let event_id = req.params.id;
 		let options = req.body;
 		let user_id = null;
@@ -179,7 +179,7 @@ router.route('/events/:id/invitations')
 		.then(result => res.send({result: result}));
 	})
 	.put((req,res) => {
-		let google_id = req.user ? req.user.id : null;
+		let google_id = req.user ? req.user.id : '105464304823044640566';
 		let event_id = req.params.id;
 		let user_id = null;
 		let invitees = [];
@@ -190,7 +190,7 @@ router.route('/events/:id/invitations')
 		helpers.getUserIdFromGoogleId(google_id)
 		.catch(err => res.send({result: err}))
 		.then(id => {
-			user_id = 2;
+			user_id = id;
 			return helpers.getEventFromId(event_id);
 		})
 		.catch(err => res.send({result: err}))
@@ -299,7 +299,7 @@ router.post('/events/:id/broadcast',(req,res) => {
     // set status for those events to inactive
 // Possible areas for sending text messages and notifications via the util helpers
 router.post('/events/:id/confirm',(req,res) => {
-	let google_id = req.user ? req.user.id : "100979353896699877023";
+	let google_id = req.user ? req.user.id : '105464304823044640566';
 	let user_id = null;
 	let event_id = req.params.id;
 	let invitees = null;
@@ -322,9 +322,9 @@ router.post('/events/:id/confirm',(req,res) => {
 		if(!isFound) {
 			return res.send('That event was not found')
 		} else if (isFound.status === 'suggested') {
-			invitees = isFound.invitees
+			invitees = isFound.invitees;
 
-			confirmedEvent_dateTime = isFound.date_time
+			confirmedEvent_dateTime = isFound.date_time;
 
 			return helpers.getGroup(isFound.group_id)
 		} else {
@@ -332,8 +332,8 @@ router.post('/events/:id/confirm',(req,res) => {
 		}
 	})
 	.then(group => {
-		let members = group.members.filter(user => {
-			return user._pivot_status === 'member'
+		let members = group.serialize().members.filter(user => {
+			return user._pivot_status === 'member';
 		})
 		.map(member => member.id)
 
@@ -341,15 +341,13 @@ router.post('/events/:id/confirm',(req,res) => {
 			return members.includes(user.id)
 		})
 
-		let groupSize = 10
-		// membersFromInvitees.length;
+		let groupSize = membersFromInvitees.length;
 
-		group_events = group.events
+		group_events = group.serialize().events;
 
-		let confirmedSize = 4
-		// membersFromInvitees.filter(member => {
-		// 	return member._pivot_status === 'confirmed'
-		// }).length;
+		let confirmedSize = membersFromInvitees.filter(member => {
+			return member._pivot_status === 'confirmed'
+		}).length;
 
 		if (confirmedSize >= (groupSize * 0.5)) {
 			return helpers.updateEventFromId(event_id, {status: 'confirmed'})
@@ -361,13 +359,13 @@ router.post('/events/:id/confirm',(req,res) => {
 		if(!confirmedEvent_dateTime) {
 			return true;
 		} else {
-			let dateStr =  confirmedEvent_dateTime.split("_")[0];
-			let date = new Date(Date.parse(dateStr));
+			let date = new Date(Date.parse(confirmedEvent_dateTime)).toJSON().slice(0,10);
 
 			let conflictingEvents = group_events.filter(event => {
-				let currDateStr =  event.date_time.split(" ")[0];
-				let currDate = new Date(Date.parse(currDateStr));
-				return date.getTime() === currDate.getTime();
+				if(!event.date_time) return false;
+				if(event.id == event_id) return false;
+				let currDate = new Date(Date.parse(event.date_time)).toJSON().slice(0,10)
+				return date.toString() === currDate.toString();
 			});
 
 			let updateConflicts = conflictingEvents.map(event => {

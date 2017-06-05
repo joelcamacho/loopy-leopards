@@ -147,6 +147,7 @@ export default class EventsPageComponent extends React.Component {
       directionButton: true,
       directionButtonShowOrHide: true,
       directionDetails: {},
+      displaydirectionDetails: false,
     }
 
     this.handleVote = this.handleVote.bind(this);
@@ -191,22 +192,21 @@ export default class EventsPageComponent extends React.Component {
     .catch(err => console.log("can not get latlng code: ", err))
     .then(res => {
       const coords = res.results[0].geometry.location;
-      //const latlng = new google.maps.LatLng(coords.latitude, coords.longitude); 
-        const myOptions = { 
-          zoom: 14, 
-          center: coords,
-          mapTypeId: google.maps.MapTypeId.ROADMAP,
-        }; 
-        const map = new google.maps.Map(document.getElementById("map"), myOptions); 
-        const marker = new google.maps.Marker({ 
-          position: coords, 
-          map: map,
-        }); 
-        const infoWindow = new google.maps.InfoWindow({ 
-          content: event.name,
-        }); 
-        infoWindow.open(map, marker); 
-        this.setState({directionButton: false})
+      const myOptions = { 
+        zoom: 14, 
+        center: coords,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+      }; 
+      const map = new google.maps.Map(document.getElementById("map"), myOptions); 
+      const marker = new google.maps.Marker({ 
+        position: coords, 
+        map: map,
+      }); 
+      const infoWindow = new google.maps.InfoWindow({ 
+        content: event.name,
+      }); 
+      infoWindow.open(map, marker); 
+      this.setState({directionButton: false})
     })
     this.setState({googleMapOpen: true});
   }
@@ -214,6 +214,7 @@ export default class EventsPageComponent extends React.Component {
   handleGoogleMapClose () {
     this.setState({directionButtonShowOrHide: true});
     this.setState({googleMapOpen: false});
+    this.setState({displaydirectionDetails: false});
   }
 
   handleGetDirection (event) {
@@ -286,13 +287,12 @@ export default class EventsPageComponent extends React.Component {
             .catch(err => console.log("can not save event data: ", err))
             .then(res => {
               directionDetails = {};
-              console.log("Hello!!!!!", res.routes[0].legs[0])
-              console.log("Time: ", res.routes[0].legs[0].duration.text)
-              console.log("distance: ", res.routes[0].legs[0].distance.text)
               directionDetails.transportation = 'Driving';
               directionDetails.distance = res.routes[0].legs[0].distance.text;
               directionDetails.time = res.routes[0].legs[0].duration.text;
+              directionDetails.currentAddress = currentAddress;
               that.setState({directionDetails: directionDetails});
+              that.setState({displaydirectionDetails: true});
             })
           })
         }
@@ -442,23 +442,26 @@ export default class EventsPageComponent extends React.Component {
         autoScrollBodyContent={true}
       >
         <br/>
-        <div>
-          <div>
-            <p>Current Address: </p>
-          </div>
-          <div>
-            <p>Derection Address: {this.state.eventDetails.address}</p>
-          </div>
-          <div>
-            <p>Transportation: {this.state.directionDetails.transportation}</p>
-          </div>
-          <div>
-            <p>Distance: {this.state.directionDetails.distance}</p>
-          </div>
-          <div>
-            <p>Time: {this.state.directionDetails.time}</p>
-          </div>
-        </div>
+        { this.state.displaydirectionDetails ? 
+          (<div>
+            <div>
+              <p>Current Address: {this.state.directionDetails.currentAddress}</p>
+            </div>
+            <div>
+              <p>Derection Address: {this.state.eventDetails.address}</p>
+            </div>
+            <div>
+              <p>Transportation: {this.state.directionDetails.transportation}</p>
+            </div>
+            <div>
+              <p>Distance: {this.state.directionDetails.distance}</p>
+            </div>
+            <div>
+              <p>Time: {this.state.directionDetails.time}</p>
+            </div>
+          </div>)
+          : null
+        }
         <div id="map" style={styles.googleMapStyle}></div>
         <br/>
         {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails)}/>) : null}

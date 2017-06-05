@@ -213,7 +213,7 @@ export default class SearchPageComponent extends React.Component {
                 }
               )
             }
-            fetch('/api/directionData', init)
+            fetch('/api/addressMap', init)
             .then(res => res.json())
             .catch(err => console.log("can not save event data: ", err))
             .then(res => {

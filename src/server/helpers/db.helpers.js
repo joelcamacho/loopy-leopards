@@ -68,6 +68,20 @@ exports.getCurrentUserFromId = id => {
   });  
 };
 
+// Get Current User's Information from phone
+exports.getCurrentUserFromPhone = phone => {
+  return new Promise(function (resolve, reject) {
+    new User({phone: phone}).fetch()
+      .then((user) => {
+        if(!!user) {
+          resolve(user);
+        } else {
+          reject('invalid phone');
+        }
+      });
+  });  
+};
+
 // Get Current User's Token From Google Id
 exports.getCurrentUserTokenFromGoogleId = google_id => {
   return new Promise(function (resolve, reject) {
@@ -253,6 +267,23 @@ exports.getGroup = (group_id) => {
         resolve(group);
       } else {
         reject('Could not find group: ' + group_id);
+      }
+    })
+    .catch((err) => {
+      reject('Something went wrong, please try again');
+    });
+  });
+};
+
+// Get specific group information
+exports.getGroupByName = (name) => {
+  return new Promise(function (resolve, reject) {
+    Group.where({name:name}).getInfo()
+    .then((group) => {
+      if(group) {
+        resolve(group);
+      } else {
+        reject('Could not find group: ' + name);
       }
     })
     .catch((err) => {

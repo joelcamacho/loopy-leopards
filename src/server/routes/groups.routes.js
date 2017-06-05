@@ -1,16 +1,10 @@
 const router = require('express').Router();
-
-// TODO: Remove all database access
-const Group = require('../db/models/group.js');
-const User = require('../db/models/user.js');
-const Event = require('../db/models/event.js');
-const bookshelf = require('../db/models/db.js');
-
-// TODO: Remove all Tags stuff
-const Tag = require('../db/models/tag.js');
-
-// TODO: Import helper methods
 const helpers = require('../helpers/db.helpers.js')
+
+// group specific helpers 
+const findMember = (groups) => {
+	return groups.find(group => group._pivot_status === 'member');
+}
 
 // No User Context needed
 // GET all groups (no id or group_id needed)
@@ -40,10 +34,13 @@ router.route('/groups')
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
 			user_id = id;
-			return User.where({id:id}).groupsBelongingTo()
+			return helpers.getCurrentUserGroup(user_id);
 		})
-		.then(groups => {
-			if(groups.serialize().length > 0) {
+		.then(result => {
+			let groups = result.groupsBelongingTo.serialize();
+			let isMember = findMember(groups);
+
+			if(!!isMember) {
 				res.send({result: 'To create a new group, please leave your current group'})
 			} else {
 				if(groupName) {
@@ -73,8 +70,8 @@ router.route('/groups')
 	// should contain a list of invitations from members to join to the group
 router.route('/groups/:id')
 	.get((req,res) => {
-		let groupId = req.params.id
-		Group.where({id:groupId}).getInfo()
+		let group_id = req.params.id
+		helpers.getGroup(group_id)
 		.then((group) => {
 			res.status(200).json(group)
 		})
@@ -114,7 +111,13 @@ router.route('/group')
 			return helpers.getCurrentUserGroup(user_id);
 		})
 		.then(group => {
-			return helpers.leaveGroup(user_id, group.groupsBelongingTo.serialize()[0].id)
+			let isMember = findMember(group.groupsBelongingTo.serialize());
+
+			if(!!isMember) {
+				return helpers.leaveGroup(user_id, isMember.id)
+			} else {
+				res.send({result: 'User is not a member of a group!'});
+			}
 		})
 		.then(result => res.json(result))
 		.catch(err => res.send(err))
@@ -180,14 +183,17 @@ router.route('/group/invitations')
 			return helpers.getCurrentUserGroup(id)
 		})
 		.then(group => {
-			group_id = group.groupsBelongingTo.serialize()[0] ? group.groupsBelongingTo.serialize()[0].id : null;
+			let isMember = findMember(group.groupsBelongingTo.serialize());
 
-			if(!group) return res.send('The current user is not in a group');
+			if(!!isMember) {
+				group_id = isMember.id;
+			} else {
+				return res.send('The current user is not in a group');
+			}
 			
-			return User.where({phone: phone}).fetch();
+			return helpers.getCurrentUserFromPhone(phone);
 		})
 		.then(user => {
-
 			if(!!user) {
 				// if guest user exists
 				return user;
@@ -305,9 +311,11 @@ router.route('/group/requests')
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {
-			if(!!groups.groupsBelongingTo.serialize()[0]) {
-				group_id = groups.groupsBelongingTo.serialize()[0].id;
-				return Group.where({id: group_id}).getInfo();
+			let isMember = findMember(groups.groupsBelongingTo.serialize());
+
+			if(!!isMember) {
+				group_id = isMember.id;
+				return helpers.group_id(group_id);
 			} else {
 				res.send({result: 'You are not in a group!'});
 			}
@@ -330,7 +338,7 @@ router.route('/group/requests')
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
 			user_id = id;
-			return Group.where({name: name}).fetch()
+			return helpers.getGroupByName(name);
 		})
 		.then(group => {			
 			if(!group) res.send('This group doesn\'t exist');
@@ -353,8 +361,10 @@ router.route('/group/requests')
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {
-			if(!!groups.groupsBelongingTo.serialize()[0]) {
-				group_id = groups.groupsBelongingTo.serialize()[0].id;
+			let isMember = findMember(groups.groupsBelongingTo.serialize());
+
+			if(!!isMember) {
+				group_id = isMember.id;
 				return helpers.getCurrentUserGroup(guest_id)
 			} else {
 				res.send({result: 'You are not in a group!'});
@@ -391,8 +401,10 @@ router.route('/group/requests')
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {
-			if(!!groups.groupsBelongingTo.serialize()[0]) {
-				group_id = groups.groupsBelongingTo.serialize()[0].id;
+			let isMember = findMember(groups.groupsBelongingTo.serialize());
+
+			if(!!isMember) {
+				group_id = isMember.id;
 				return helpers.getCurrentUserGroup(guest_id)
 			} else {
 				res.send({result: 'You are not in a group!'});

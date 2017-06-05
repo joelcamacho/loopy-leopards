@@ -217,7 +217,7 @@ export default class EventsPageComponent extends React.Component {
     this.setState({displaydirectionDetails: false});
   }
 
-  handleGetDirection (event) {
+  handleGetDirection (event, mode) {
     let currentAddress;
     let directionsService;
     let directionsDisplay;
@@ -258,10 +258,11 @@ export default class EventsPageComponent extends React.Component {
             return currentAddress;
           })
           .then(function(currentAddress) {
+            var way = google.maps.TravelMode[mode];
             var request = {
               origin: currentAddress,
               destination: event.address,
-              travelMode: google.maps.TravelMode.DRIVING
+              travelMode: way,
             };
             directionsService.route(request, function(response, status) {
               if(status === 'OK') {
@@ -280,14 +281,14 @@ export default class EventsPageComponent extends React.Component {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({origin: currentAddress, destination: event.address, mode: 'DRIVING'})
+              body: JSON.stringify({origin: currentAddress, destination: event.address, mode: mode})
             }
             fetch('/api/directionData', init)
             .then(res => res.json())
             .catch(err => console.log("can not save event data: ", err))
             .then(res => {
               directionDetails = {};
-              directionDetails.transportation = 'Driving';
+              directionDetails.transportation = mode;
               directionDetails.distance = res.routes[0].legs[0].distance.text;
               directionDetails.time = res.routes[0].legs[0].duration.text;
               directionDetails.currentAddress = currentAddress;
@@ -300,9 +301,9 @@ export default class EventsPageComponent extends React.Component {
     }
   }
 
-  handleTransportation (transportation) {
-    console.log("Hello World!!!")
-  }
+  // handleTransportation (transportation) {
+  //   console.log("Hello World!!!")
+  // }
 
 
   // handleEventClick () {
@@ -448,10 +449,10 @@ export default class EventsPageComponent extends React.Component {
         { this.state.displaydirectionDetails ? 
           (<div>
             <div>
-              <p>Current Address: {this.state.directionDetails.currentAddress}</p>
+              <p>Current Address(A): {this.state.directionDetails.currentAddress}</p>
             </div>
             <div>
-              <p>Derection Address: {this.state.eventDetails.address}</p>
+              <p>Derection Address(B): {this.state.eventDetails.address}</p>
             </div>
             <div>
               <p>Transportation: {this.state.directionDetails.transportation}</p>
@@ -467,11 +468,11 @@ export default class EventsPageComponent extends React.Component {
         }
         <div id="map" style={styles.googleMapStyle}></div>
         <br/>
-        {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails)}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton label="TRANSIT" fullWidth="true" onTouchTap={() => this.handleTransportation('TRANSIT')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton label="DRIVING" fullWidth="true" onTouchTap={() => this.handleTransportation('DRIVING')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton label="BICYCLING" fullWidth="true" onTouchTap={() => this.handleTransportation('BICYCLING')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton label="WALKING" fullWidth="true" onTouchTap={() => this.handleTransportation('WALKING')}/>) : null}
+        {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="TRANSIT" fullWidth="true" onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'TRANSIT')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="DRIVING" fullWidth="true" onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="BICYCLING" fullWidth="true" onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'BICYCLING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="WALKING" fullWidth="true" onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'WALKING')}/>) : null}
       </Dialog>
     </div>);
   }

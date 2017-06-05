@@ -180,7 +180,7 @@ router.route('/group/invitations')
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
 			user_id = id;
-			return helpers.getCurrentUserGroup(id)
+			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(group => {
 			let isMember = findMember(group.groupsBelongingTo.serialize());
@@ -229,7 +229,7 @@ router.route('/group/invitations')
 			result = result.map(group => group.serialize());
 			result = result.filter(group => group._pivot_status === 'invited');
 
-			let exist = result.find(group => group.id === group_id);
+			let exist = result.find(group => group.id == group_id);
 
 			if(!exist) {
 				return res.send('Invalid group_id');

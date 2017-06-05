@@ -12,7 +12,7 @@ const util = require('../helpers/util.helpers.js');
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/events') 
 	.get((req,res) => {
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 
 		if(!google_id) return res.send({result: 'User must be authenticated to get events!'});
 
@@ -23,7 +23,7 @@ router.route('/events')
 		.then(result => res.send(result));
 	})
 	.post((req,res) => {
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let options = req.body;
 
 		if(!google_id) return res.send({result: 'User must be authenticated to post events!'});
@@ -179,7 +179,7 @@ router.route('/events/:id/invitations')
 		.then(result => res.send({result: result}));
 	})
 	.put((req,res) => {
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let event_id = req.params.id;
 		let user_id = null;
 		let invitees = [];
@@ -299,7 +299,7 @@ router.post('/events/:id/broadcast',(req,res) => {
     // set status for those events to inactive
 // Possible areas for sending text messages and notifications via the util helpers
 router.post('/events/:id/confirm',(req,res) => {
-	let google_id = req.user ? req.user.id : '105464304823044640566';
+	let google_id = req.user ? req.user.id : null;
 	let user_id = null;
 	let event_id = req.params.id;
 	let invitees = null;

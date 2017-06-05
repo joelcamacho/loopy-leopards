@@ -75,9 +75,7 @@ const Group = bookshelf.Model.extend({
 		})
 	},
 
-	acceptRequestORInvitation: function(user) {
-		console.log(user);
-		
+	acceptRequestORInvitation: function(user) {		
 		return this.getInfo()
 		.then((members) => {
 			console.log(members);

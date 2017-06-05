@@ -113,7 +113,7 @@ exports.createNewUser = options => {
       if(err.code === "ER_DUP_ENTRY") {
         reject('Uh-oh. It looks like that phone number is already in our system!');
       } else {
-        reject('Something went wrong, please try again');
+        reject(err);
       }
     });
   });
@@ -410,25 +410,51 @@ exports.rejectRequestToJoinGroup = (id, group_id) => {
 
 // Create a new event and set owner and event options obj and group
 exports.createNewEvent = (id, group_id, options) => {
-  let data = {}
-  Object.assign(options, {creator_id: id});
+  let details = {};
+  let members = [];
+
+  Object.assign(options, {
+    creator_id: id,
+    group_id, group_id
+  });
 
   return new Promise(function (resolve, reject) {
-    new Event(options).save(null, null, null, {require:true})
-    .catch((err) => {
-      reject('Sorry, could not save your event, please try again!')
-    })    
-    .then((event) => {
-      data.event = event
-      return event.related('invitees').attach(id)
-    })
-    .catch((err) => {
-      reject('Sorry, could not save you as an invitee of this event')
-    })
-    .then(() => {
-      resolve(data);
-    })
-  })
+    if(!group_id) {
+      new Event(options).save(null, null, null, {require:true})
+      .catch((err) => {
+        reject('Sorry, could not save your event, please try again!')
+      })
+      .then((event) => {
+        details = event;
+        return event.related('invitees').attach(id);
+      })
+      .catch((err) => {
+        reject('Sorry, could not save you as an invitee of this event')
+      })
+      .then(() => {
+        resolve(details);
+      })
+    } else {
+      Group.where({id: group_id}).getInfo()
+      .then(group => {
+        members = group.serialize().members.map(user => user.id);
+        return new Event(options).save(null, null, null, {require:true})
+      })
+      .catch((err) => {
+        reject('Sorry, could not save your event, please try again!')
+      })
+      .then((event) => {
+        details = event;
+        return event.related('invitees').attach(members);
+      })
+      .catch((err) => {
+        reject('Sorry, could not save you as an invitee of this event')
+      })
+      .then(() => {
+        resolve(details);
+      })
+    }
+  });
 };
 
 exports.getCurrentUserEvents = (id) => {
@@ -462,9 +488,11 @@ exports.getCurrentUserEvents = (id) => {
 // Get specific events given event id
 exports.getEventFromId = (event_id) => {
   return new Promise(function (resolve, reject) {
-    Event.where({id:event_id}).fetch()
+    Event.where({id:event_id}).getInfo()
     .catch((err) => reject(err))
-    .then((event) => resolve(event))
+    .then((event) => {
+      resolve(event);
+    })
   });
 };
 
@@ -525,13 +553,17 @@ exports.rejectInvitationToJoinEvent = (id, event_id) => {
 // Accept Invitation to join event given event id and user id
 exports.acceptInvitationToJoinEvent = (id, event_id) => {
   return new Promise(function (resolve, reject) {
-    Event.where({id:event_id}).acceptRequestOrInvitation(id)
+    new Event({id: event_id}).fetch()
     .then((result) => {
-      resolve(result);
+      return result.acceptRequestORInvitation(id)
     })
-    .catch((err) => {
-      reject('Something went wrong, please try again');
-    });
+    .catch(err => {
+      reject(err);
+    })
+    .then(result => {
+      resolve('Success! User has confirmed invite to event');
+    })
+
   });
 };
 

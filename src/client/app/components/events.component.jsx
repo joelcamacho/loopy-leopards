@@ -203,42 +203,6 @@ export default class EventsPageComponent extends React.Component {
         }); 
         infoWindow.open(map, marker); 
     })
-    // if (navigator.geolocation) { 
-    //   navigator.geolocation.getCurrentPosition(function (position) { 
-    //     const coords = position.coords; 
-    //     const latlng = new google.maps.LatLng(coords.latitude, coords.longitude); 
-    //     const myOptions = { 
-    //       zoom: 14, 
-    //       center: latlng,
-    //       mapTypeId: google.maps.MapTypeId.ROADMAP,
-    //     }; 
-    //     const map = new google.maps.Map(document.getElementById("map"), myOptions); 
-    //     const marker = new google.maps.Marker({ 
-    //       position: latlng, 
-    //       map: map,
-    //     }); 
-    //     const infoWindow = new google.maps.InfoWindow({ 
-    //       content: event.name,
-    //     }); 
-    //     infoWindow.open(map, marker); 
-    //   }, 
-    //   function (error) { 
-    //     switch (error.code) { 
-    //     case 1: 
-    //       alert("current location rejected"); 
-    //       break; 
-    //     case 2: 
-    //       alert("can not get current location"); 
-    //       break; 
-    //     case 3: 
-    //       alert("timeout"); 
-    //       break; 
-    //     default: 
-    //       alert("unknow err"); 
-    //     break; 
-    //     } 
-    //   }); 
-    // }
     this.setState({googleMapOpen: true});
   }
 
@@ -246,6 +210,59 @@ export default class EventsPageComponent extends React.Component {
     this.setState({googleMapOpen: false});
   }
 
+  handleGetDirection(event) {
+    let currentAddress;
+    let directionsService;
+    let directionsDisplay;
+    let originAddress;
+
+    directionsService = new google.maps.DirectionsService();
+    directionsDisplay = new google.maps.DirectionsRenderer();
+
+    if (navigator.geolocation) { 
+        navigator.geolocation.getCurrentPosition(function (position) { 
+          var coords = position.coords;
+          const latlng = new google.maps.LatLng(coords.latitude, coords.longitude);  
+          let init = {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({latlngCode: {lat: coords.latitude, lng: coords.longitude}})
+          }
+          fetch('/api/addressMap', init)
+          .then(res => res.json())
+          .catch(err => console.log("can not save event data: ", err))
+          .then(res => {
+            currentAddress = res.results[0].formatted_address;
+            var mapOptions = {
+              zoom: 7,
+              mapTypeId: google.maps.MapTypeId.ROADMAP,
+              center: latlng
+            }
+            const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            directionsDisplay.setMap(map);
+            return currentAddress;
+          })
+          .then(function(currentAddress) {
+            var request = {
+              origin: currentAddress,
+              destination: event.address,
+              travelMode: google.maps.TravelMode.DRIVING
+            };
+            directionsService.route(request, function(response, status) {
+              if(status === 'OK') {
+                directionsDisplay.setDirections(response);
+              }
+            });
+            return currentAddress;
+          })
+        }
+      )
+    }
+  }
 
 
 
@@ -391,13 +408,14 @@ export default class EventsPageComponent extends React.Component {
       >
         <br/>
         <div id="map" style={styles.googleMapStyle}></div>
-        
+        <br/>
+        <RaisedButton label="Derection" onTouchTap={() => this.handleGetDirection(this.state.eventDetails)} />
       </Dialog>
     </div>);
   }
 }
 
-// <RaisedButton label="Derection" onTouchTap={() => this.handleGetDirection(this.state.eventDetails)} />
+
 
 
 

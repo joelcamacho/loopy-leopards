@@ -147,7 +147,7 @@ exports.deleteCurrentUserFromId = (id, options) => {
   return new Promise(function (resolve, reject) {
     new User({id: id}).destroy()
     .then(user => resolve('Sorry to see you go, ' + user.get('name')))
-    .catch(err => reject('Could not close account'));
+    .catch(err => reject(err));
   });
 };
 

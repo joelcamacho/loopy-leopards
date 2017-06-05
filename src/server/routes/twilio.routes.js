@@ -26,11 +26,11 @@ routes.post('/api/twilio/verify', function(req, res) {
 
     let twiml = new twilio.twiml.MessagingResponse();
 
-    if(false) { //user.get('phone_validated') === 1
+    if(user.get('phone_validated') === 1) { //user.get('phone_validated') === 1
       twiml.message('Your phone number has already been validated!');
       res.writeHead(200, {'Content-Type': 'text/xml'});
       res.end(twiml.toString());
-    } else if(true) { // isValid
+    } else if(isValid) { // isValid
       // if valid, then merge anonymous account if exists
       return helpers.getCurrentUserFromPhone(phone);
     } else {
@@ -39,7 +39,13 @@ routes.post('/api/twilio/verify', function(req, res) {
       res.end(twiml.toString());
     }
   })
-  .catch(err => res.send({result: err}))
+  .catch(err => {
+    let twiml = new twilio.twiml.MessagingResponse();
+    util.setVerifyPhoneNumber(userId, phone);
+    twiml.message('Congratulations! Your phone number has been verified with HanginHubs!');
+    res.writeHead(200, {'Content-Type': 'text/xml'});
+    res.end(twiml.toString());
+  })
   .then(user => {
     let details = user.serialize();
 
@@ -74,7 +80,7 @@ routes.post('/api/twilio/verify', function(req, res) {
   .then(result => {
     // All events from anonymous user transfered to verfied user
     let twiml = new twilio.twiml.MessagingResponse();
-    //util.setVerifyPhoneNumber(userId, phone);
+    util.setVerifyPhoneNumber(userId, phone);
     twiml.message('Congratulations! Your phone number has been verified with HanginHubs!');
     res.writeHead(200, {'Content-Type': 'text/xml'});
     res.end(twiml.toString());

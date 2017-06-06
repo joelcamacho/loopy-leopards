@@ -4,7 +4,7 @@ const rp = require('request-promise');
 
 routes.post('/api/addressMap', (req, res) => {
   let code = req.body.latlngCode.lat+','+req.body.latlngCode.lng;
-  console.log('code: ', code)
+
 	const options = {
 	    uri: "https://maps.googleapis.com/maps/api/geocode/json?",
 	    qs: {
@@ -26,8 +26,6 @@ routes.post('/api/addressMap', (req, res) => {
 });
 
 routes.post('/api/latlngMap', function(req, res) {
-
-  console.log('I get the address from client!!!', req.body.address);
   let address = req.body.address;
 
   const options = {
@@ -49,9 +47,7 @@ routes.post('/api/latlngMap', function(req, res) {
   })
 });
 
-routes.post('/api/directionData', function(req, res) {
-  console.log('I get the DATAAAAAAAAAAAAAAAAA from client!!!', req.body.origin);
-  
+routes.post('/api/directionData', function(req, res) {  
   let origin = req.body.origin;
   let destination = req.body.destination;
   let mode = req.body.mode.toLowerCase();

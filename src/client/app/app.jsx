@@ -30,6 +30,7 @@ import AboutPageContainer from './containers/about.container.jsx';
 
 // import helpers
 import firebaseHelpers from './helpers/firebase.helper.jsx';
+import fetchHelpers from './helpers/fetch.helper.jsx';
 
 // import styles
 import style from './styles/main.scss';
@@ -43,8 +44,10 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     // firebaseHelpers.requestPushNotificationPermissions();
+    // fetchHelpers.fetchGoogleProfile().then(res => console.log(res));
 
     this.select = (index) => this.setState({selectedIndex: index});
+
 
     this.state = {
       selectedIndex: 0,

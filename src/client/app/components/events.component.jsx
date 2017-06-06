@@ -234,8 +234,9 @@ export default class EventsPageComponent extends React.Component {
 
     if (navigator.geolocation) { 
         navigator.geolocation.getCurrentPosition(function (position) { 
+          const latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);  
+
           var coords = position.coords;
-          const latlng = new google.maps.LatLng(coords.latitude, coords.longitude);  
           let init = {
             method: 'POST',
             credentials: 'include',
@@ -250,19 +251,25 @@ export default class EventsPageComponent extends React.Component {
           .catch(err => console.log("can not save event data: ", err))
           .then(res => {
             currentAddress = res.results[0].formatted_address;
+            return currentAddress;
+          })
+          .then(function(address) {
+
+            currentAddress = address;
+
             var mapOptions = {
               zoom: 7,
               mapTypeId: google.maps.MapTypeId.ROADMAP,
               center: latlng
             }
+
             const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
             directionsDisplay.setMap(map);
-            return currentAddress;
-          })
-          .then(function(currentAddress) {
+
             var way = google.maps.TravelMode[mode];
             var request = {
-              origin: currentAddress,
+              origin: address,
               destination: event.address,
               travelMode: way,
             };
@@ -272,7 +279,7 @@ export default class EventsPageComponent extends React.Component {
               }
             });
             that.setState({directionButtonShowOrHide: false});
-            return currentAddress;
+            return address;
           })
           .then(currentAddress => {
 

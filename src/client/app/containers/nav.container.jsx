@@ -7,7 +7,8 @@ import alertsActions from '../actions/alerts.action.jsx';
 export default connect(
   function mapStateToProps(state) {
     return {
-      auth: state.auth.toJS()
+      auth: state.auth.toJS(),
+      profile: state.profile.toJS()
     };
   },
   function mapDispatchToProps(dispatch) {

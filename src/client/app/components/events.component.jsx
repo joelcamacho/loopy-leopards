@@ -168,7 +168,6 @@ export default class EventsPageComponent extends React.Component {
   }
 
   handleOpen (event)  {
-    console.log(event);
     let init = {
       method: 'POST',
       credentials: 'include',
@@ -182,7 +181,6 @@ export default class EventsPageComponent extends React.Component {
     .then(res => res.json())
     .catch(err => console.log('can not get data from darkSky: ', err ))
     .then(res => {
-      console.log("Weather: ", res);
       let icon = '' 
       res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
       this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
@@ -340,7 +338,6 @@ export default class EventsPageComponent extends React.Component {
 
   handleVote (event) {
     let newUserEvents = []
-    console.log(event.voteStatus)
     if (!event.voteStatus) {
       ++event.vote_count;
       event.voteStatus = true;
@@ -383,18 +380,12 @@ export default class EventsPageComponent extends React.Component {
       rObj.events = res.filter(event => event.date === date);
       return rObj;
     })
-    console.log("eventsDays: ", eventsDays)
     this.setState({eventsDays: eventsDays})
   }
 
   render() {
-    //console.log("!!!!!!!", this.state.eventDays);
     let date = new Date();
     let today = date.toLocaleDateString();
-    //console.log(today)
-    console.log("description: ", this.state.eventDetails.date_Time)
-
-
     return (
       <div>
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>

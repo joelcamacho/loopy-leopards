@@ -48,6 +48,25 @@ routes.post('/api/eventbrite', (req, res) => {
     });
 });
 
+routes.post('/api/eventbriteAddress', (req, res) => {
+  const venue_id = req.query.venue_id;
+  const options = {
+      uri: `https://www.eventbriteapi.com/v3/venues/${venue_id}?`,
+      qs: {
+          token: apiKeys.eventbriteAccessToken,
+      }
+  };
+
+  rp.get(options)
+    .then((body) => {
+      res.status(200).send(body) 
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).send(error);
+    });
+});
+
 module.exports = routes;
 
 

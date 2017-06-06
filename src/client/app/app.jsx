@@ -30,6 +30,7 @@ import AboutPageContainer from './containers/about.container.jsx';
 
 // import helpers
 import firebaseHelpers from './helpers/firebase.helper.jsx';
+import fetchHelpers from './helpers/fetch.helper.jsx';
 
 // import styles
 import style from './styles/main.scss';

@@ -104,6 +104,8 @@ router.route('/group')
 		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
 
+		if(!google_id) return res.send({result: 'Must be authenticated'});
+
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
 			user_id = id;
@@ -120,6 +122,8 @@ router.route('/group')
 		let user_name = null;
 		let members = [];
 		let group_details = null;
+
+		if(!google_id) return res.send({result: 'Must be authenticated'});
 
 		helpers.getCurrentUserFromGoogleId(google_id)
 		.then(user => {
@@ -188,6 +192,8 @@ router.route('/group/invitations')
 	.get((req,res) => {
 		let data = {},
 		google_id = req.user ? req.user.id : null;
+		
+		if(!google_id) return res.send({result: 'Must be authenticated'});
 
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {

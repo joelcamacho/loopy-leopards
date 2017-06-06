@@ -44,8 +44,10 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     // firebaseHelpers.requestPushNotificationPermissions();
+    // fetchHelpers.fetchGoogleProfile().then(res => console.log(res));
 
     this.select = (index) => this.setState({selectedIndex: index});
+
 
     this.state = {
       selectedIndex: 0,

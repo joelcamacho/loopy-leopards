@@ -29,6 +29,7 @@ routes.get('/auth/google/callback',
     userData.first_name = req.user.name.givenName;
     userData.last_name = req.user.name.familyName;
     userData.google_id = req.user.id;
+    userData.photo = req.user.photos[0].value;
     
     console.log(userData);
 

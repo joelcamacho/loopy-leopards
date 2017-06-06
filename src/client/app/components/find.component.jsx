@@ -99,18 +99,7 @@ export default class SearchPageComponent extends React.Component {
     ///////////////////////////////////////////////////////
 
     /////////////Get data from Eventbrite API//////////////
-    let init = {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      query: JSON.stringify({location: userLocation, q: userSearchEvent})
-    }
-    fetch('/api/eventbrite', init)
-      .then(res => res.json())
-      .catch(error => console.log("Can not received data from Eventbrite Api: ", error))
+    helpers.fetchEventbriteData(userLocation, userSearchEvent)
       .then(res => {
         pickupEvents(res.events);
         console.log("pickup 20 events from eventbrite: ", eventsArray);
@@ -134,24 +123,8 @@ export default class SearchPageComponent extends React.Component {
     ///////////////////////////////////////////////////////
 
     //////////////////Get data from Yelp API///////////////
-      .then(res => {
-        let params = {
-          location: userLocation,
-          terms: userSearchEvent
-        };
-        let esc = encodeURIComponent
-        let query = Object.keys(params)
-                     .map(k => esc(k) + '=' + esc(params[k]))
-                     .join('&');
-        let url = '/api/yelp?' + query;
-        return fetch(url);
-      })
-      .then(res => res.json())
-      .catch(error => {
-        console.log("Can not received data from Yelp Api: ", error);
-      })
+      .then(res => helpers.fetchYelpData(userLocation, userSearchEvent))
       .then(res =>{
-        //console.log('received data from Yelo api: ', res);
         randomNumbers = [];
         eventsArray = [];
         pickupEvents(res.businesses);

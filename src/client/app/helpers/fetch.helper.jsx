@@ -32,13 +32,10 @@ const helpers = {
 
   // Yelp helpers
   fetchYelpData: (location, terms) => {
+    let params = {location: location, terms: terms};
     let esc = encodeURIComponent;
     let query = Object.keys(params).map(k => esc(k) + '=' + esc(params[k])).join('&');
     let url = '/api/yelp?' + query;
-    let params = {
-      location: location,
-      terms: terms
-    };
 
     return fetch(url)
       .then(res => res.json())

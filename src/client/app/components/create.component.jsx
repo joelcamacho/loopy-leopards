@@ -36,6 +36,7 @@ export default class CreatePageComponent extends React.Component {
       clickUserStatus: false,
       invitedUsers: [],
       userGroupData: [],
+      currentEvent: {},
     };
 
     this.handleOpen =this.handleOpen.bind(this);
@@ -148,6 +149,20 @@ export default class CreatePageComponent extends React.Component {
       })
       this.setState({userGroupData: userGroup});
     })
+
+    if (this.props.event.venue_id) {
+      helpers.fetchEventbriteAddress(this.props.event.venue_id)
+      .then(res => {
+        let currentEvent = this.props.event;
+        currentEvent.address = res.address.localized_address_display;
+        currentEvent.city = res.address.city;
+        currentEvent.latitude = res.latitude;
+        currentEvent.longitude = res.longitude;
+        this.setState({currentEvent: currentEvent});
+      })
+    } else {
+      this.setState({currentEvent: this.props.event});
+    }
   }
 
   handleSearchbar (event, userInput) {
@@ -206,68 +221,29 @@ export default class CreatePageComponent extends React.Component {
   }
 
   handleConfirm () {
-    let init = {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(
-        {
-          img: this.props.event.img,
-          name: this.props.event.title || this.state.titleTestValue,
-          date_Time: this.props.event.date_time,
-          time: this.state.value12,
-          date: this.state.controlledDate,
-          description: this.props.event.description.slice(0,250) || this.state.descriptionTestValue,
-          address: this.props.event.address || this.state.addressTestValue,
-          city: this.props.event.city || this.state.cityTestValue,
-          state: this.props.event.state || this.state.stateTestValue,
-          phone: this.props.event.phone || this.state.phoneTestValue,
-          latitude: this.props.event.latitude,
-          longitude: this.props.event.longitude,
-          comments: this.state.commentTestValue,
-          url: this.props.event.url,
-          creator_id: this.props.profile.id,
-        }
-      )
-    }
-    fetch('/api/events', init)
-    .then(res => res.json())
-    .catch(err => console.log("can not save event data: ", err))
-    .then(res => {
-      let usersArray = this.state.invitedUsers.map(user => {
-        let rObj = {};
-        rObj.first_name = user.name.split(" ")[0];
-        rObj.phone = user.phone;
-        return rObj;
-      })
-      let init = {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body:JSON.stringify(
-          {
-            invitees: usersArray
-          }
-        )
-      }
-      let url = '/api/events/' + res.event.id + '/invite';
-      fetch(url, init)
-      .then(res => res.json())
-      .catch(err => console.log("can not save users: ", err))
-      .then(res => this.props.setStateBackToDefault({}))
-    })
+    let event;
+    event = {
+              img: this.props.event.img,
+              date_Time: this.props.event.date_time,
+              time: this.state.value12,
+              date: this.state.controlledDate,
+              description: this.props.event.description.slice(0,250) || this.state.descriptionTestValue,
+              address: this.props.event.address || this.state.addressTestValue,
+              city: this.props.event.city || this.state.cityTestValue,
+              state: this.props.event.state || this.state.stateTestValue,
+              phone: this.props.event.phone || this.state.phoneTestValue,
+              latitude: this.props.event.latitude,
+              longitude: this.props.event.longitude,
+              comments: this.state.commentTestValue,
+              url: this.props.event.url,
+            }
+    helpers.fetchCreateNewEvent(this.props.event.title || this.state.titleTestValue, event)
+    this.props.setStateBackToDefault({});
   }
 
   render() {
     const { event } = this.props;
     const { users } = this.props;
-    //console.log('event: ',event)
     ///////////////////////////Dialog/////////////////////////
     const actions = [
       <FlatButton
@@ -295,71 +271,16 @@ export default class CreatePageComponent extends React.Component {
     return (
       <div className="createContainer">
         <Paper className="container">
-          {event.img !== '' ? (<img src={event.img} alt="eventImg"/>) : (<div><br/><h1>Create Your Own Event</h1><Divider/></div>)}
-          {event.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.title}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Title" onChange={this.handleTitleTestValue}/><br/></div>)}
-          {event.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.description.length > 100 ? event.description.slice(0,100) + '...' : event.description }{event.url ? (<a href={event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Description" onChange={this.handleDescriptionTestValue}/><br/></div>)}
-          {event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.address}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Address" onChange={this.handleAddressTestValue}/><br/></div>)}
-          {event.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.city}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="City" onChange={this.handleCityTestValue}/><br/></div>)}
-          {event.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.state}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="State" onChange={this.handleStateTestValue}/><br/></div>)}
-          {event.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.phone}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Your phone number" onChange={this.handlePhoneTestValue}/><br/></div>)}
-          {event.date_time !== undefined ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{event.date_time}</p></div><Divider/></List>) : null}
+          {this.state.currentEvent.img !== '' ? (<img src={this.state.currentEvent.img} alt="eventImg"/>) : (<div><br/><h1>Create Your Own Event</h1><Divider/></div>)}
+          {this.state.currentEvent.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.title}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Title" onChange={this.handleTitleTestValue}/><br/></div>)}
+          {this.state.currentEvent.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.description.length > 100 ? this.state.currentEvent.description.slice(0,100) + '...' : this.state.currentEvent.description }{this.state.currentEvent.url ? (<a href={this.state.currentEvent.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Description" onChange={this.handleDescriptionTestValue}/><br/></div>)}
+          {this.state.currentEvent.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.address}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Address" onChange={this.handleAddressTestValue}/><br/></div>)}
+          {this.state.currentEvent.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.city}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="City" onChange={this.handleCityTestValue}/><br/></div>)}
+          {this.state.currentEvent.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.state}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="State" onChange={this.handleStateTestValue}/><br/></div>)}
+          {this.state.currentEvent.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.phone}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Your phone number" onChange={this.handlePhoneTestValue}/><br/></div>)}
+          {this.state.currentEvent.date_time !== undefined ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.date_time}</p></div><Divider/></List>) : null}
           <List>
-          <div>
-          <Subheader>Invite Friends</Subheader>
-          <div style={styles.wrapper}>
-            {
-              this.state.invitedUsers.map(user => (
-                <Chip
-                  key={user.name} 
-                  style={styles.chip}
-                  onRequestDelete={() => this.handleDeleteChip(user.name)}
-                >
-                  <Avatar src={!!user.photo ? user.photo : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />
-                  {user.name}
-                </Chip>
-              ))
-            }
-          </div>
-          <RaisedButton label="Invite" onTouchTap={this.handleOpen} />
-            
-            <Dialog
-              title="Invite your friends"
-              actions={actions}
-              modal={false}
-              open={this.state.open}
-              onRequestClose={this.handleClose}
-              autoScrollBodyContent={true}
-            >
-              <TextField
-                hintText="Hint Text"
-                floatingLabelText="Search"
-                onChange={this.handleSearchbar}
-              />
-
-              <List>
-                <Subheader> Current Members </Subheader>
-                {
-                  !!users.size ? 
-                  this.state.userGroupData.map((obj, ind) => (<ListItem
-                  key={obj.phone }
-                  primaryText={obj.name }
-                  leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                  rightIcon={this.state.userStatus[ind].rightIconDisplay}
-                  onClick={() => this.handleClickUser(obj)}
-                />)) :
-                  users.map((obj, ind) => (<ListItem
-                  key={!!obj.phone ? obj.phone : this.group.list.phone }
-                  primaryText={!!obj.name ? obj.name : this.group.list.name }
-                  leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                  rightIcon={this.getIndex(obj.name)}
-                  onClick={() => this.handleClickUser(obj)}
-                />))
-                }
-              </List>
-            </Dialog>
-          </div>
           <br/>
-          <Divider/>
           </List>
           <List>
           <div>

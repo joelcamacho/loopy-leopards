@@ -241,6 +241,7 @@ export default class SearchPageComponent extends React.Component {
                 <div>
                   <Link to='/create'>
                     <CardMedia
+                      key={event.title}
                       expandable={true}
                       overlay={<CardTitle title={event.title}/>}
                       onClick={() => this.handleClickedEvent(event)}

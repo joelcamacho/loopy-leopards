@@ -30,6 +30,25 @@ const helpers = {
       })
   },
 
+  fetchEventbriteAddress: (venue_id) => {
+    let options = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({venue_id: venue_id})
+    }
+
+    return fetch('/api/eventbriteAddress', options)
+      .then(res => res.json())
+      .catch(error => {
+        console.log("Can not received data from Eventbrite Api: ", error)
+        return error;
+      })
+  },
+
   // Yelp helpers
   fetchYelpData: (location, terms) => {
     let params = {location: location, terms: terms};

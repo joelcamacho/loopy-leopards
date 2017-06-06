@@ -349,7 +349,6 @@ exports.sendRequestToJoinGroup = (id, group_id) => {
         reject('Cannot request to join a group if you are currently in a group')
       }
     })
-    
     .then((result) => {
       resolve(result)
     })

@@ -19,10 +19,10 @@ const client = twilio(apiKeys.twilioAccountSid, apiKeys.twilioAuthToken);
 const _pushToUserFromId = (id, options = {}) => {
   const key = apiKeys.fcmServerKey;
   const notification = {
-    'title': options.title || 'Kimmy J Master',
-    'body': options.body || 'I will take over the world! Tomorrow...',
-    'icon': options.icon || 'https://static.seekingalpha.com/uploads/2016/4/957061_14595169907724_rId15.jpg',
-    'click_action': options.click_action || 'http://localhost:3000'
+    'title': options.title || 'Hangin\'Hubs',
+    'body': options.body || 'This is the default notification',
+    'icon': options.icon || 'https://www.iconfinder.com/data/icons/basic-application-vol-1/128/Material_Design-15-512.png',
+    'click_action': options.click_action || 'http://www.google.com'
   };
   return new Promise(function (resolve, reject) {
     helpers.getCurrentUserTokenFromId(id)
@@ -50,7 +50,7 @@ exports.pushToUserFromId = (id, options = {}) => {
 }
 
 // Send notifications a group of users
-exports.pushToUsers = (users, options = {}) => {
+exports.pushToUsers = (users = [], options = {}) => {
   users.forEach(user => {
     _pushToUserFromId(user.id, options)
   })
@@ -95,6 +95,21 @@ const _sendMessageToPhone = (phone, message, callback = (res) => res) => {
   });
 }
 
+exports.sendMessageToPhone = (phone, message, callback = (res) => res) => {
+  client.messages.create({ 
+    to: phone, 
+    from: apiKeys.twilioFromNumber, 
+    body: message, 
+  }, function(err, res) { 
+    if(err) {
+      console.log(err);
+    } else {
+      console.log(res.sid);
+      callback(res);
+    }
+  });
+}
+
 exports.sendCodeToPhone = (phone, profile, message = "To verify your HanginHubs please reply with the following 5 numbers and \'_" + profile.id + "\': \n(e.g. 12345_12)\n") => {
   return twilioAuthService.sendCode(phone, message);
 }
@@ -111,8 +126,8 @@ exports.sendEventInvitation = (user, message) => {
   if(!!user.phone) _sendMessageToPhone(user.phone, message);
 }
 
-exports.sendEventInvitations = (event, users) => {
-  const message = `You have been invited an event on HanginHubs! Please go to the website to respond. Event Details: ${event.name} on ${event.date_time} at ${event.address}, ${event.city}, ${event.state}`;
+exports.sendEventInvitations = (users, message, event) => {
+  //const message = `You have been invited an event on HanginHubs! Please go to the website to respond. Event Details: ${event.name} on ${event.date_time} at ${event.address}, ${event.city}, ${event.state}`;
   users.forEach(user => _sendEventInvitation(user, message));
 }
 

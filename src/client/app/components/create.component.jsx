@@ -151,8 +151,6 @@ export default class CreatePageComponent extends React.Component {
       })
       this.setState({userGroupData: userGroup});
     })
-
-//////////////////////////////////////////////////////////
   }
 
   handleSearchbar (event, userInput) {

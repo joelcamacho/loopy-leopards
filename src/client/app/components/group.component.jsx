@@ -31,19 +31,17 @@ export default class GroupPageComponent extends React.Component {
     this.sendInvitation = this.sendInvitation.bind(this);
     this.acceptRequest = this.acceptRequest.bind(this);
     this.createGroup = this.createGroup.bind(this);
-
-
-
+    this.leaveGroup = this.leaveGroup.bind(this);
     this.getInvitations = this.getInvitations.bind(this);
     this.sendRequest = this.sendRequest.bind(this);
 
-    this.leaveGroup = this.leaveGroup.bind(this);
+
+
     this.acceptInvitation = this.acceptInvitation.bind(this);
 
 
     // working
     this.getGroup();
-
     this.getInvitations();
   }
 
@@ -51,6 +49,7 @@ export default class GroupPageComponent extends React.Component {
   getGroup() {
     fetchHelpers.fetchCurrentGroupData().then(res => {
       if(typeof res.result === 'string') {
+        this.props.resetGroup();
         console.log('fetchCurrentGroupData result not an object');
       } else {
         let userGroup = res.groupsBelongingTo.find(group => group._pivot_status === 'member');
@@ -77,6 +76,7 @@ export default class GroupPageComponent extends React.Component {
     fetchHelpers.fetchAcceptGroupRequest(profile)
       .then(result => {
         this.getGroup();
+        this.getInvitations();
       })
   }
 
@@ -98,62 +98,57 @@ export default class GroupPageComponent extends React.Component {
     fetchHelpers.fetchLeaveCurrentGroup()
       .then(result => {
         this.getGroup();
+        this.getInvitations();
       })
   }
 
+  // working
+  createGroup() {
+    let groupName = this.refs.createTextField.getValue();
+    this.refs.createTextField.getInputNode().value = '';
+    fetchHelpers.fetchCreateNewGroup(groupName)
+      .then(result => {
+        this.getGroup();
+        this.getInvitations();
+      })
+  }
 
-
-
+  // working
   getInvitations() {
     fetchHelpers.fetchGroupInvitationsForCurrentUser().then(res => {
       if(typeof res.result === 'string') {
+        this.props.resetInvitations();
         console.log('fetchGroupInvitationsForCurrentUser result not an object');
       } else {
-        console.log('fetchGroupInvitationsForCurrentUser', res);
+        console.log('fetchGroupInvitationsForCurrentUser and got', res);
+        this.props.updateInvitations(res);
       }
     });
   }
 
+  // working
   sendRequest() {
     let groupName = this.refs.joinTextField.getValue();
     this.refs.joinTextField.getInputNode().value = '';
-    
-    let group = this.props.group
     console.log('send request to join group from', 'current user', 'to', groupName);
-
-    // fetch post to /api/group/send/request
-    // in callback
-    // this.getGroup();
-    // this.getInvitations();
-  }
-
-  createGroup() {
-    let groupName = this.refs.createTextField.getValue();
-    this.refs.createTextField.getInputNode().value = '';
-
-    console.log('attempting to create group');
-
-    fetchHelpers.fetchCreateNewGroup(groupName)
-      .then(result => {
-        console.log('fetchCreateNewGroup', result);
-
-      })
-      .catch(err => {
-        console.log('fetchCreateNewGroup', err)
+    fetchHelpers.fetchSendGroupRequestToGroupName(groupName)
+      .then(res => {
+        console.log('fetchSendGroupRequestToGroupName', res);
+        this.getGroup();
+        this.getInvitations();
       })
   }
 
-
-  acceptInvitation(profile) {
-    console.log('accept invitation', profile);
-
-    // fetch post /api/group/invitations
-    // in callback
-    // this.getGroup();
-    // this.getInvitations();
+  // working
+  acceptInvitation(group) {
+    console.log('accept invitation', group);
+    fetchHelpers.fetchAcceptGroupInvitation(group)
+      .then(res => {
+        console.log('fetchAcceptGroupInvitation', res);
+        this.getGroup();
+        this.getInvitations();
+      })
   }
-
-
 
   render() {
     console.log(this.props.group);
@@ -241,7 +236,7 @@ export default class GroupPageComponent extends React.Component {
                         <Subheader> Join Group </Subheader>
                         <TextField ref='joinTextField' className="add" floatingLabelText="Group Name"/>
                         <br />
-                        <FlatButton onClick={() => this.sendRequest()} className="addBtn" label="Send Invite Request" />
+                        <FlatButton onClick={() => this.sendRequest()} className="addBtn" label="Send Request" />
                       </List>
                       <Divider/>
                       <List>
@@ -253,12 +248,12 @@ export default class GroupPageComponent extends React.Component {
                       <Divider/>
                       <List>
                         <Subheader> Group Invitations </Subheader>
-                        {this.props.invitations ? this.props.invitations.map(group => (<ListItem
+                        {this.props.invitations && this.props.invitations.length ? this.props.invitations.map(group => (<ListItem
                           onClick={() => this.acceptInvitation(group)}
                           key={group.name}
                           primaryText={group.name}
                           rightIcon={(<ContentAdd />)}
-                          />)) : null}
+                          />)) : (<ListItem primaryText={'No Group Invitations'}/>)}
                       </List>
                     </div>
                   </Paper>

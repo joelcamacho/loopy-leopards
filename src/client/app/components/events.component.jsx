@@ -149,6 +149,7 @@ export default class EventsPageComponent extends React.Component {
       directionDetails: {},
       displaydirectionDetails: false,
       transportationButton: false,
+      weather: '',
     }
 
     this.handleVote = this.handleVote.bind(this);
@@ -162,6 +163,31 @@ export default class EventsPageComponent extends React.Component {
 
   handleOpen (event)  {
     console.log(event);
+    let init = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({latitude: event.latitude, longitude: event.longitude,time: event.time})
+    }
+    fetch('/api/weather', init)
+    .then(res => res.json())
+    .catch(err => console.log('can not get data from darkSky: ', err ))
+    .then(res => this.setState({weather: res.currently.summary}))
+
+
+
+
+
+
+
+
+
+
+
+
     this.setState({eventDetails: event})
     this.setState({open: true});
   };
@@ -368,6 +394,8 @@ export default class EventsPageComponent extends React.Component {
     let today = date.toLocaleDateString();
     //console.log(today)
     console.log("description: ", this.state.eventDetails.date_Time)
+
+
     return (
       <div>
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
@@ -430,6 +458,7 @@ export default class EventsPageComponent extends React.Component {
       >
         <br/>
         {this.state.eventDetails.img !== '' ? (<img src={this.state.eventDetails.img} alt="eventImg"/>) : null}
+        {this.state.weather !== '' ? (<List><div><Subheader>Weather:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.name !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.name}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.description.length > 100 ? this.state.eventDetails.description.slice(0,100) + '...' : this.state.eventDetails.description }{this.state.eventDetails.url ? (<a href={this.state.eventDetails.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}

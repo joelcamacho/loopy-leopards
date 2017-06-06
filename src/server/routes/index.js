@@ -10,6 +10,7 @@ const groupRouter = require('./groups.routes.js');
 const twilioRoutes = require('./twilio.routes.js');
 const pushRoutes = require('./push.routes.js');
 const googleMapRoutes = require('./google.map.routes.js');
+const darkSkyRoutes = require('./darkSky.routes.js');
 
 // middleware to protect routes
 function ensureAuthenticated(req, res, next) {
@@ -32,6 +33,7 @@ routes.use(eventbriteRoutes);
 routes.use(twilioRoutes);
 routes.use(pushRoutes);
 routes.use(googleMapRoutes);
+routes.use(darkSkyRoutes);
 
 routes.use('/api', eventsRouters, usersRoutes, groupRouter);
 

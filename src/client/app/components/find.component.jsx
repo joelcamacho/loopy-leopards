@@ -116,6 +116,7 @@ export default class SearchPageComponent extends React.Component {
             description: event.description.text,
             date_time: event.start.local,
             url: event.url,
+            venue_id: event.venue_id,
           }
         })
         eventsbriteData = eventsbrite;

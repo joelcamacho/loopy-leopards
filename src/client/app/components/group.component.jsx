@@ -34,11 +34,7 @@ export default class GroupPageComponent extends React.Component {
     this.leaveGroup = this.leaveGroup.bind(this);
     this.getInvitations = this.getInvitations.bind(this);
     this.sendRequest = this.sendRequest.bind(this);
-
-
-
     this.acceptInvitation = this.acceptInvitation.bind(this);
-
 
     // working
     this.getGroup();
@@ -154,9 +150,13 @@ export default class GroupPageComponent extends React.Component {
     console.log(this.props.group);
     console.log(this.props.invitations);
     console.log(this.props.requests);
+    console.log(this.props.auth);
 
     return (
       <div>
+
+      {!!this.props.auth.id ? (
+
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
           
           {!!this.props.group.name ? (
@@ -176,6 +176,11 @@ export default class GroupPageComponent extends React.Component {
                           rightIcon={<span className="phone">{obj.phone}</span>}
                         />)) : null}
                       </List>
+                      <Divider/>
+                      <List>
+                        <Subheader> Leave Group </Subheader>
+                        <FlatButton onClick={() => this.leaveGroup()} className="addBtn" label="Leave Current Group" />
+                      </List>
                     </div>
                   </Paper>
                 </div>
@@ -183,7 +188,7 @@ export default class GroupPageComponent extends React.Component {
             </Tab>) : null }
 
           {!!this.props.group.name ? (
-            <Tab className="tabsItem" label="Manage" >
+            <Tab className="tabsItem" label="Manage Members" >
               <div className="tabsPage">
                   <div className="group">
                     <Paper className="container">
@@ -215,11 +220,6 @@ export default class GroupPageComponent extends React.Component {
                             rightIcon={(<ContentAdd />)}
                             />)) : (<ListItem primaryText={'No Pending Requests'}/>)}
                         </List>
-                        <Divider/>
-                        <List>
-                          <Subheader> Leave Group </Subheader>
-                          <FlatButton onClick={() => this.leaveGroup()} className="addBtn" label="Leave Current Group" />
-                        </List>
                       </div>
                     </Paper>
                   </div>
@@ -233,14 +233,14 @@ export default class GroupPageComponent extends React.Component {
                   <Paper className="container">
                     <div>
                       <List>
-                        <Subheader> Join Group </Subheader>
+                        <Subheader> Request To Join Group </Subheader>
                         <TextField ref='joinTextField' className="add" floatingLabelText="Group Name"/>
                         <br />
                         <FlatButton onClick={() => this.sendRequest()} className="addBtn" label="Send Request" />
                       </List>
                       <Divider/>
                       <List>
-                        <Subheader> Create Group </Subheader>
+                        <Subheader> Create New Group </Subheader>
                         <TextField ref='createTextField' className="add" floatingLabelText="Group Name"/>
                         <br />
                         <FlatButton onClick={() => this.createGroup()} className="addBtn" label="Create New Group" />
@@ -262,6 +262,27 @@ export default class GroupPageComponent extends React.Component {
           </Tab>
           ) : null}
         </Tabs>
+
+        ) : (
+
+         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
+
+           <Tab className="tabsItem" label="Manage Group">
+              <div className="tabsPage">
+                <div className="group">
+                    <Paper className="container">
+                      <div style={{fontSize: '30pt', padding: '30pt'}}>
+                        You must be authenticated to manage group!
+                      </div>
+                    </Paper>
+                  </div>
+              </div>
+            </Tab>
+
+
+         </Tabs>
+        )
+      }
       </div>
     );
   }

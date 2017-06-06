@@ -17,6 +17,7 @@ knex.schema.createTable('users', function(table) {
       table.boolean('registered').defaultTo(false);
       table.boolean('phone_validated').defaultTo(false);
       table.string('token').defaultTo(null);
+      table.string('photo');
     }),
 
     knex.schema.createTable('events', function(table) {

@@ -14,7 +14,8 @@ const profileInit = Map({
   longitude: null,
   phone: null,
   birthdate: null,
-  registered: null
+  registered: null,
+  photo: null
 });
 
 export default function profile(state = profileInit, action) {
@@ -22,22 +23,7 @@ export default function profile(state = profileInit, action) {
     case 'UPDATE_PROFILE':
     return state.map((v, k) => !!action.payload[k] ? action.payload[k] : v);
    	case 'RESET_PROFILE': 
-   		return Map({
-        id: null,
-        first_name: null,
-        last_name: null,
-        google_id: null,
-        email: null,
-        password: null,
-        address: null,
-        city: null,
-        state: null,
-        latitude: null,
-        longitude: null,
-        phone: null,
-        birthdate: null,
-        registered: null
-      });
+   		return profileInit;
       default:
        	return state
   }

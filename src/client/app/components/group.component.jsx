@@ -10,6 +10,9 @@ import Paper from 'material-ui/Paper';
 import FlatButton from 'material-ui/FlatButton';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
+// import helpers
+import fetchHelpers from '../helpers/fetch.helper.jsx';
+
 const styles = {
   headline: {
     fontSize: 24,
@@ -24,12 +27,12 @@ export default class GroupPageComponent extends React.Component {
     super(props);
 
     this.getGroup = this.getGroup.bind(this);
-    this.getInvitations = this.getInvitations.bind(this);
     this.sendInvitation = this.sendInvitation.bind(this);
-    this.sendRequest = this.sendRequest.bind(this);
-
-    this.leaveGroup = this.leaveGroup.bind(this);
     this.acceptRequest = this.acceptRequest.bind(this);
+    this.createGroup = this.createGroup.bind(this);
+    this.leaveGroup = this.leaveGroup.bind(this);
+    this.getInvitations = this.getInvitations.bind(this);
+    this.sendRequest = this.sendRequest.bind(this);
     this.acceptInvitation = this.acceptInvitation.bind(this);
 
     this.getGroup();
@@ -37,83 +40,113 @@ export default class GroupPageComponent extends React.Component {
   }
 
   getGroup() {
-    fetch('/api/group', {credentials: 'include'})
-      .then(res => res.json())
-      .then(res => {
-        console.log(res);
-        //this.props.updateGroup(res);
-      })
+    fetchHelpers.fetchCurrentGroupData().then(res => {
+      if(typeof res.result === 'string') {
+        this.props.resetGroup();
+        console.log('fetchCurrentGroupData result not an object');
+      } else {
+        let userGroup = res.groupsBelongingTo.find(group => group._pivot_status === 'member');
+
+        if(!userGroup) {
+          this.props.resetGroup();
+        } else {
+          fetchHelpers.fetchGroupData(userGroup)
+            .then(res => {
+              res.invitees = res.members.filter(user => user._pivot_status === 'invited');
+              res.requests = res.members.filter(user => user._pivot_status === 'requested');
+              res.members = res.members.filter(user => user._pivot_status === 'member');
+
+              this.props.updateGroup(res);
+            })
+        }
+      }
+    });
   }
 
-  getInvitations() {
-    // switch this with user endpoint /api/user
-    fetch('/api/group/invitations', {credentials: 'include'})
-      .then(res => res.json())
-      .then(res => {
-        console.log(res);
-        //this.props.updateInvitations(res);
+  acceptRequest(profile) {
+    console.log('accept request', profile);
+    fetchHelpers.fetchAcceptGroupRequest(profile)
+      .then(result => {
+        this.getGroup();
+        this.getInvitations();
       })
   }
 
   sendInvitation() {
     let phone = this.refs.inviteTextFieldPhone.getValue();
     this.refs.inviteTextFieldPhone.getInputNode().value = '';
-    
-    let group = this.props.group
+    let group = this.props.group;
     console.log('send group invitation from', group, 'to', phone);
+    fetchHelpers.fetchSendGroupInvitationToPhone(phone)
+      .then(result => {
+        this.getGroup();
+      })
+  }
 
-    // fetch post to /api/group/send/invite
-    // in callback
-    // this.getGroup();
-    // this.getInvitations();
+  leaveGroup() {
+    console.log('leave group', this.props.group);
+    fetchHelpers.fetchLeaveCurrentGroup()
+      .then(result => {
+        this.getGroup();
+        this.getInvitations();
+      })
+  }
+
+  createGroup() {
+    let groupName = this.refs.createTextField.getValue();
+    this.refs.createTextField.getInputNode().value = '';
+    fetchHelpers.fetchCreateNewGroup(groupName)
+      .then(result => {
+        this.getGroup();
+        this.getInvitations();
+      })
+  }
+
+  getInvitations() {
+    fetchHelpers.fetchGroupInvitationsForCurrentUser().then(res => {
+      if(typeof res.result === 'string') {
+        this.props.resetInvitations();
+        console.log('fetchGroupInvitationsForCurrentUser result not an object');
+      } else {
+        console.log('fetchGroupInvitationsForCurrentUser and got', res);
+        this.props.updateInvitations(res);
+      }
+    });
   }
 
   sendRequest() {
     let groupName = this.refs.joinTextField.getValue();
     this.refs.joinTextField.getInputNode().value = '';
-    
-    let group = this.props.group
     console.log('send request to join group from', 'current user', 'to', groupName);
-
-    // fetch post to /api/group/send/request
-    // in callback
-    // this.getGroup();
-    // this.getInvitations();
+    fetchHelpers.fetchSendGroupRequestToGroupName(groupName)
+      .then(res => {
+        console.log('fetchSendGroupRequestToGroupName', res);
+        this.getGroup();
+        this.getInvitations();
+      })
   }
 
-  leaveGroup() {
-    console.log('leave group', this.props.group);
-
-    // fetch delete to /api/group
-    // in callback
-    // this.getGroup();
-    // this.getInvitations();
-  }
-
-  acceptInvitation(profile) {
-    console.log('accept invitation', profile);
-
-    // fetch post /api/group/invitations
-    // in callback
-    // this.getGroup();
-    // this.getInvitations();
-  }
-
-  acceptRequest(profile) {
-    console.log('accept request', profile);
-
-    // fetch post /api/group/request
-    // in callback
-    // this.getGroup();
-    // this.getInvitations();
+  acceptInvitation(group) {
+    console.log('accept invitation', group);
+    fetchHelpers.fetchAcceptGroupInvitation(group)
+      .then(res => {
+        console.log('fetchAcceptGroupInvitation', res);
+        this.getGroup();
+        this.getInvitations();
+      })
   }
 
   render() {
     console.log(this.props.group);
     console.log(this.props.invitations);
+    console.log(this.props.requests);
+    console.log(this.props.auth);
 
     return (
       <div>
+
+      {!!this.props.auth.id ? (
+
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
           
           {!!this.props.group.name ? (
@@ -127,11 +160,16 @@ export default class GroupPageComponent extends React.Component {
                       <List>
                         <Subheader> Current Members </Subheader>
                         {this.props.group.members ? this.props.group.members.map(obj => (<ListItem
-                          key={obj.phone}
-                          primaryText={obj.name}
+                          key={!obj.phone ? 'Not Verified' : obj.phone}
+                          primaryText={obj.first_name}
                           leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
                           rightIcon={<span className="phone">{obj.phone}</span>}
                         />)) : null}
+                      </List>
+                      <Divider/>
+                      <List>
+                        <Subheader> Leave Group </Subheader>
+                        <FlatButton onClick={() => this.leaveGroup()} className="addBtn" label="Leave Current Group" />
                       </List>
                     </div>
                   </Paper>
@@ -140,7 +178,7 @@ export default class GroupPageComponent extends React.Component {
             </Tab>) : null }
 
           {!!this.props.group.name ? (
-            <Tab className="tabsItem" label="Invite" >
+            <Tab className="tabsItem" label="Manage Members" >
               <div className="tabsPage">
                   <div className="group">
                     <Paper className="container">
@@ -153,56 +191,59 @@ export default class GroupPageComponent extends React.Component {
                         </List>
                         <Divider/>
                         <List>
-                          <Subheader> Pending Invitation Requests </Subheader>
-                          {this.props.group.invited ? this.props.group.invited.map(obj => (<ListItem
+                          <Subheader> Pending Invitations </Subheader>
+                          {this.props.group.invitees && this.props.group.invitees.length > 0 ? this.props.group.invitees.map(obj => (<ListItem
+                            key={!obj.phone ? 'Not Verified' : obj.phone}
+                            primaryText={obj.first_name}
+                            leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
+                            rightIcon={<span className="phone">{obj.phone}</span>}
+                            />)) : (<ListItem primaryText={'No Pending Invitations'} />)}
+                        </List>
+                        <Divider/>
+                        <List>
+                          <Subheader> Pending Requests </Subheader>
+                          {this.props.group.requests && this.props.group.requests.length > 0 ? this.props.group.requests.map(obj => (<ListItem
                             onClick={() => this.acceptRequest(obj)}
-                            key={obj.phone}
-                            primaryText={obj.name}
+                            key={!obj.phone ? 'Not Verified' : obj.phone}
+                            primaryText={obj.first_name}
                             leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
                             rightIcon={(<ContentAdd />)}
-                            />)) : null}
+                            />)) : (<ListItem primaryText={'No Pending Requests'}/>)}
                         </List>
                       </div>
                     </Paper>
                   </div>
               </div>
             </Tab>) : null }
-
-          {!!this.props.group.name ? (  <Tab className="tabsItem" label="Manage">
-              <div className="tabsPage">
-                <div className="group">
-                    <Paper className="container">
-                        <div>
-                          <List>
-                            <FlatButton onClick={() => this.leaveGroup()} className="addBtn" label="Leave Current Group" />
-                          </List>
-                        </div>
-                    </Paper>
-                  </div>
-              </div>
-            </Tab>) : null }
           
           {!this.props.group.name ? ( 
-            <Tab className="tabsItem" label="Join Group">
+            <Tab className="tabsItem" label="Join or Create Group">
             <div className="tabsPage">
               <div className="group">
                   <Paper className="container">
                     <div>
                       <List>
-                        <Subheader> Join Group </Subheader>
+                        <Subheader> Request To Join Group </Subheader>
                         <TextField ref='joinTextField' className="add" floatingLabelText="Group Name"/>
                         <br />
-                        <FlatButton onClick={() => this.sendRequest()} className="addBtn" label="Send Invite Request" />
+                        <FlatButton onClick={() => this.sendRequest()} className="addBtn" label="Send Request" />
+                      </List>
+                      <Divider/>
+                      <List>
+                        <Subheader> Create New Group </Subheader>
+                        <TextField ref='createTextField' className="add" floatingLabelText="Group Name"/>
+                        <br />
+                        <FlatButton onClick={() => this.createGroup()} className="addBtn" label="Create New Group" />
                       </List>
                       <Divider/>
                       <List>
                         <Subheader> Group Invitations </Subheader>
-                        {this.props.invitations ? this.props.invitations.map(group => (<ListItem
+                        {this.props.invitations && this.props.invitations.length ? this.props.invitations.map(group => (<ListItem
                           onClick={() => this.acceptInvitation(group)}
                           key={group.name}
                           primaryText={group.name}
                           rightIcon={(<ContentAdd />)}
-                          />)) : null}
+                          />)) : (<ListItem primaryText={'No Group Invitations'}/>)}
                       </List>
                     </div>
                   </Paper>
@@ -211,6 +252,27 @@ export default class GroupPageComponent extends React.Component {
           </Tab>
           ) : null}
         </Tabs>
+
+        ) : (
+
+         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
+
+           <Tab className="tabsItem" label="Manage Group">
+              <div className="tabsPage">
+                <div className="group">
+                    <Paper className="container">
+                      <div style={{fontSize: '30pt', padding: '30pt'}}>
+                        You must be authenticated to manage group!
+                      </div>
+                    </Paper>
+                  </div>
+              </div>
+            </Tab>
+
+
+         </Tabs>
+        )
+      }
       </div>
     );
   }

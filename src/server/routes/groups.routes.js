@@ -208,7 +208,7 @@ router.route('/group/invitations')
 	})
 	.post((req,res) => {	
 		let phone = req.body.phone;
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
 		let group_id = null;
 		let group_details = null;
@@ -218,7 +218,7 @@ router.route('/group/invitations')
 
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
-			user_id = 2;
+			user_id = id;
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(group => {

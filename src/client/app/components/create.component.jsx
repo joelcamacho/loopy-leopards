@@ -16,6 +16,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Chip from 'material-ui/Chip';
 import firebaseHelpers from '../helpers/firebase.helper.jsx';
+import helpers from '../helpers/fetch.helper.jsx';
 
 export default class CreatePageComponent extends React.Component {
   constructor(props) {
@@ -123,11 +124,7 @@ export default class CreatePageComponent extends React.Component {
   componentDidMount() {
     let currentUserFirstName = this.props.profile.first_name || "";
     let currentUserLastName = this.props.profile.last_name || "";
-    fetch('/api/users', {credentials: 'include'})
-    .then(res => res.json())
-    .catch(error => {
-      console.log("Can not received users data from database: ", error);
-    })
+    helpers.fetchUserData()
     .then(res => {
       let userStatusArray = []
       res.forEach(user => {

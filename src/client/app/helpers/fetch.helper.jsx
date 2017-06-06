@@ -168,7 +168,7 @@ const helpers = {
 
   // User helpers
   fetchUserData: () => {
-    return fetch('/api/user', {credentials: 'include'})
+    return fetch('/api/users', {credentials: 'include'})
       .then(res => res.json())
       .catch(err => {
         console.log("can not fetch user data: ", err);

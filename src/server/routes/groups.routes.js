@@ -302,7 +302,7 @@ router.route('/group/invitations')
 
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
-			user_id = 1;
+			user_id = id;
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {

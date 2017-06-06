@@ -23,7 +23,7 @@ router.route('/events')
 		.then(result => res.send(result));
 	})
 	.post((req,res) => {
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let options = req.body;
 		let user_id = null;
 		let group_id = null;
@@ -87,7 +87,7 @@ router.route('/events/:id')
 	})
 	.put((req,res) => {
 		// only creator can edit details of this event
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let event_id = req.params.id;
 		let options = req.body;
 		let user_id = null;
@@ -170,7 +170,7 @@ router.route('/events/:id/invitations')
 		});
 	})
 	.post((req,res) => {
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let event_id = req.params.id;
 		let phone = req.body.phone;
 		let user_id = null;
@@ -226,7 +226,7 @@ router.route('/events/:id/invitations')
 		});
 	})
 	.put((req,res) => {
-		let google_id = req.user ? req.user.id : '105464304823044640566';
+		let google_id = req.user ? req.user.id : null;
 		let event_id = req.params.id;
 		let user_id = null;
 		let user_name = null;
@@ -239,7 +239,7 @@ router.route('/events/:id/invitations')
 
 		helpers.getCurrentUserFromGoogleId(google_id)
 		.then(user => {
-			user_id = 7;
+			user_id = user.serialize().id;
 			user_name = user.serialize().first_name;
 			return helpers.getEventFromId(event_id);
 		})
@@ -365,7 +365,7 @@ router.post('/events/:id/broadcast',(req,res) => {
     // set status for those events to inactive
 // Possible areas for sending text messages and notifications via the util helpers
 router.post('/events/:id/confirm',(req,res) => {
-	let google_id = req.user ? req.user.id : '105464304823044640566';
+	let google_id = req.user ? req.user.id : null;
 	let user_id = null;
 	let user_name = null;
 	let event_id = req.params.id;

@@ -49,7 +49,7 @@ routes.post('/api/eventbrite', (req, res) => {
 });
 
 routes.post('/api/eventbriteAddress', (req, res) => {
-  const venue_id = req.query.venue_id;
+  const venue_id = req.body.venue_id;
   const options = {
       uri: `https://www.eventbriteapi.com/v3/venues/${venue_id}?`,
       qs: {

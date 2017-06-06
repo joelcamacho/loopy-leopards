@@ -4,6 +4,7 @@ import { HashRouter, Router, Link } from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import helpers from '../helpers/fetch.helper.jsx';
 
 export default class SearchPageComponent extends React.Component {
   constructor(props) {
@@ -199,38 +200,17 @@ export default class SearchPageComponent extends React.Component {
     if (!that.state.toggleCheckBox) {
       if (navigator.geolocation) { 
           navigator.geolocation.getCurrentPosition(function (position) { 
-            var coords = position.coords; 
-            let init = {
-              method: 'POST',
-              credentials: 'include',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(
-                {
-                  latlngCode: {lat: coords.latitude, lng: coords.longitude},
-                }
-              )
-            }
-            fetch('/api/addressMap', init)
-            .then(res => res.json())
-            .catch(err => console.log("can not save event data: ", err))
+            helpers.fetchAddressFromCoordinates(position)
             .then(res => {
               that.setState({searchButton: false});
-              that.setState({userLocation: res.results[0].formatted_address});
-            })
-          }
-        )
-      }
+              that.setState({userLocation: res});
+            })})}
       that.setState({toggleCheckBox: true});
     } else {
       that.setState({userLocation: 'Please enter your location'});
       that.setState({toggleCheckBox: false});
       that.setState({searchButton: false});
-    }
-  }
-
+    }}
 
   render() {
     const { events } = this.props;

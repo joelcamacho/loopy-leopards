@@ -26,7 +26,6 @@ export default class GroupPageComponent extends React.Component {
   constructor(props) {
     super(props);
 
-    // working
     this.getGroup = this.getGroup.bind(this);
     this.sendInvitation = this.sendInvitation.bind(this);
     this.acceptRequest = this.acceptRequest.bind(this);
@@ -36,12 +35,10 @@ export default class GroupPageComponent extends React.Component {
     this.sendRequest = this.sendRequest.bind(this);
     this.acceptInvitation = this.acceptInvitation.bind(this);
 
-    // working
     this.getGroup();
     this.getInvitations();
   }
 
-  // working
   getGroup() {
     fetchHelpers.fetchCurrentGroupData().then(res => {
       if(typeof res.result === 'string') {
@@ -66,7 +63,6 @@ export default class GroupPageComponent extends React.Component {
     });
   }
 
-  // working
   acceptRequest(profile) {
     console.log('accept request', profile);
     fetchHelpers.fetchAcceptGroupRequest(profile)
@@ -76,7 +72,6 @@ export default class GroupPageComponent extends React.Component {
       })
   }
 
-  // working
   sendInvitation() {
     let phone = this.refs.inviteTextFieldPhone.getValue();
     this.refs.inviteTextFieldPhone.getInputNode().value = '';
@@ -88,7 +83,6 @@ export default class GroupPageComponent extends React.Component {
       })
   }
 
-  // working
   leaveGroup() {
     console.log('leave group', this.props.group);
     fetchHelpers.fetchLeaveCurrentGroup()
@@ -98,7 +92,6 @@ export default class GroupPageComponent extends React.Component {
       })
   }
 
-  // working
   createGroup() {
     let groupName = this.refs.createTextField.getValue();
     this.refs.createTextField.getInputNode().value = '';
@@ -109,7 +102,6 @@ export default class GroupPageComponent extends React.Component {
       })
   }
 
-  // working
   getInvitations() {
     fetchHelpers.fetchGroupInvitationsForCurrentUser().then(res => {
       if(typeof res.result === 'string') {
@@ -122,7 +114,6 @@ export default class GroupPageComponent extends React.Component {
     });
   }
 
-  // working
   sendRequest() {
     let groupName = this.refs.joinTextField.getValue();
     this.refs.joinTextField.getInputNode().value = '';
@@ -135,7 +126,6 @@ export default class GroupPageComponent extends React.Component {
       })
   }
 
-  // working
   acceptInvitation(group) {
     console.log('accept invitation', group);
     fetchHelpers.fetchAcceptGroupInvitation(group)

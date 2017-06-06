@@ -132,8 +132,6 @@ router.route('/group')
 
 			group_details = findMember(details);
 
-			console.log(details, group_details);
-
 			if(!!group_details) {
 				return helpers.leaveGroup(user_id, group_details.id)
 			} else {

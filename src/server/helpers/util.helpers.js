@@ -126,8 +126,8 @@ exports.sendEventInvitation = (user, message) => {
   if(!!user.phone) _sendMessageToPhone(user.phone, message);
 }
 
-exports.sendEventInvitations = (event, users) => {
-  const message = `You have been invited an event on HanginHubs! Please go to the website to respond. Event Details: ${event.name} on ${event.date_time} at ${event.address}, ${event.city}, ${event.state}`;
+exports.sendEventInvitations = (users, message, event) => {
+  //const message = `You have been invited an event on HanginHubs! Please go to the website to respond. Event Details: ${event.name} on ${event.date_time} at ${event.address}, ${event.city}, ${event.state}`;
   users.forEach(user => _sendEventInvitation(user, message));
 }
 

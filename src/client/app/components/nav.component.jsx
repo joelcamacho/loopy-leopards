@@ -15,6 +15,9 @@ import Snackbar from 'material-ui/Snackbar';
 import firebaseHelpers from '../helpers/firebase.helper.jsx';
 import fetchHelpers from '../helpers/fetch.helper.jsx';
 
+// import components
+import BottomNav from '../components/bottomNav.component.jsx';
+
 export default class NavComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -109,10 +112,14 @@ export default class NavComponent extends React.Component {
           />
         </div>
         
-        <div style={{marginTop: '48pt', backgroundColor: 'lightblue'}}>
-          {this.props.children}
+        <div className="childrenContainer">
+          <div className="childrenPadding">
+            {this.props.children}
+          </div>
         </div>
 
+        <BottomNav />
+        
         <Snackbar
           open={this.state.open}
           message={this.state.message}

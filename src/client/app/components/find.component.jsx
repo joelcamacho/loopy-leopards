@@ -1,5 +1,5 @@
 import React from 'react';
-import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import { HashRouter, Router, Link } from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
@@ -234,6 +234,7 @@ export default class SearchPageComponent extends React.Component {
 
   render() {
     const { events } = this.props;
+
     const styles = {
       position: {
         marginLeft: 16,
@@ -241,102 +242,105 @@ export default class SearchPageComponent extends React.Component {
       position_searchButton: {
         marginBottom: 16,
         marginLeft: 16,
-      },
-      img: {
-        height: 200,
-        width: 500,
       }
     }; 
 
     return (
       <div>
-        <Card expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
-          <CardHeader
-            actAsExpander={true}
-          />
-          <TextField
-            id="text-field-controlled"
-            value={this.state.userLocation}
-            onChange={this.handleAddressTextFieldChange}
-            style={styles.position}
-            multiLine={true}
-          />
-          <Checkbox
-            label="Current Location"
-            style={styles.position}
-            onCheck={() => this.handleGetCurrentLocation(event)}
-            checked={this.state.toggleCheckBox}
-          />
-          <TextField
-            hintText="Hint Text"
-            floatingLabelText="Search"
-            onChange={this.handleSearchTextFieldChange}
-            style={styles.position}
-          />
-          <br/>
-          <FlatButton 
+        <div className="find">
+          <Card className="findPaper" expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
+            <CardHeader
+              actAsExpander={true}
+            />
+            <TextField
+              id="text-field-controlled"
+              value={this.state.userLocation}
+              onChange={this.handleAddressTextFieldChange}
+              style={styles.position}
+              multiLine={true}
+            />
+            <Checkbox
+              label="Current Location"
+              style={{marginLeft: '16', maxWidth: '80%'}}
+              onCheck={() => this.handleGetCurrentLocation(event)}
+              checked={this.state.toggleCheckBox}
+            />
+            <TextField
+              hintText="Hint Text"
+              floatingLabelText="Search"
+              onChange={this.handleSearchTextFieldChange}
+              style={styles.position}
+            />
+            <br/>
+            <RaisedButton
+              primary={true} 
+              className="findBtn"
               label="Search" 
               onTouchTap={this.handleSearchResult} 
               style={styles.position_searchButton}
               disabled={this.state.searchButton}
-          />
-          <br/>
-          {
-            events.slice(2, 20).map(event => {
-              return (
-                <div>
-                  <Link to='/create'>
-                    <CardMedia
-                      expandable={true}
-                      overlay={<CardTitle title={event.title}/>}
-                      onClick={() => this.handleClickedEvent(event)}
-                    >
-                      <img style={styles.img} src={event.img}/>
-                    </CardMedia>
-                    <br/>
-                  </Link>
-                </div>
-              )
-            })
-          }
-          <br/>
-          {
-            this.state.events.slice(20).map(event => {
-              return (
-                <div>
-                  <Link to='/create'>
-                    <CardMedia
-                      expandable={true}
-                      overlay={<CardTitle title={event.title}/>}
-                      onClick={() => this.handleClickedEvent(event)}
-                    >
-                      <img style={styles.img} src={event.img}/>
-                    </CardMedia>
-                    <br/>
+            />
+          </Card>
+
+          <div className="findResults">
+            {
+              events.slice(2, 20).map(event => {
+                return (
+                  <div className='findCard'>
+                    <Link to='/create'>
+                      <CardMedia
+                        expandable={true}
+                        overlay={<CardTitle title={event.title}/>}
+                        onClick={() => this.handleClickedEvent(event)}
+                      >
+                        <img className='findMedia' src={event.img}/>
+                      </CardMedia>
                     </Link>
-                </div>
-              )
-            })
-          }
-          <FlatButton 
-            expandable={true}
-            label="Show more" 
-            onTouchTap={this.handleMoreSearchResult} 
-            style={styles.position_searchButton}
-            disabled={this.state.showMoreButton}
-          />
-          <FlatButton
-            expandable={true} 
-            label="Top" 
-            onTouchTap={this.handleBackToTop} 
-            style={styles.position_searchButton}
-          />
-          <br/>
-          <br/>
-          <br/>
-          <br/>
-          <br/>
-        </Card>
+                  </div>
+                )
+              })
+            }
+            <br/>
+            {
+              this.state.events.slice(20).map(event => {
+                return (
+                  <div className='findCard'>
+                    <Link to='/create'>
+                      <CardMedia
+                        expandable={true}
+                        overlay={<CardTitle title={event.title}/>}
+                        onClick={() => this.handleClickedEvent(event)}
+                      >
+                        <img className='findMedia' src={event.img}/>
+                      </CardMedia>
+                      </Link>
+                  </div>
+                )
+              })
+            }
+            </div>
+            <br/>
+            <RaisedButton
+              primary={true} 
+              className='findShowBtn'
+              expandable={true}
+              label="Show more" 
+              onTouchTap={this.handleMoreSearchResult} 
+              style={styles.position_searchButton}
+              disabled={this.state.showMoreButton}
+            />
+            <br/>
+            <RaisedButton
+              primary={true}
+              className='findShowBtn'
+              expandable={true} 
+              label="Top" 
+              onTouchTap={this.handleBackToTop} 
+              style={styles.position_searchButton}
+            />
+            <br/>
+
+        </div>
       </div>
     ); 
   }
@@ -355,8 +359,7 @@ export default class SearchPageComponent extends React.Component {
 // handleReduce () {
 //   this.setState({expanded: false});
 // };
-//<FlatButton label="Reduce" onTouchTap={this.handleReduce} />
-
+//<RaisedButton label="Reduce" onTouchTap={this.handleReduce} />
 // <CardTitle title="Card title" subtitle="Card subtitle" expandable={true} />
 // <CardText expandable={true}>
 //   Lorem ipsum dolor sit amet, consectetur adipiscing elit.

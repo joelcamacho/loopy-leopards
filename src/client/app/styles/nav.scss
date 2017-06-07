@@ -1,22 +1,6 @@
-// $container-width: 100%;
-
-// .nav {
-//   width: ($container-width / 4);
-  
-//   div {
-//     background-color: red;
-//   }
-
-//   a {
-//     &:hover {
-//       background-color: white;
-//     }
-//   }
-// }
-
 .nav {
   position: fixed;
-  width: 100%;
+  width: 100vw;
   min-height: 50pt;
   top: 0;
   z-index: 10;
@@ -49,6 +33,20 @@
 
 }
 
+.childrenContainer {
+  background-color: lightblue;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+
+}
+
+.childrenPadding {
+  padding: 60pt 10pt 70pt 10pt;
+
+}
+
 .navLink {
   text-decoration: none !important;
 }
@@ -57,11 +55,12 @@
   display: flex;
   align-items: center;
   position: fixed;
-  width: 100%;
+  width: 100vw;
   bottom: 0;
   flex-direction: column;
   z-index: 10;
 }
+
 .bottomNav {
   padding: 5pt 0pt;
   text-align: center;

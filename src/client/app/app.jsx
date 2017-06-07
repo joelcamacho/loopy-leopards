@@ -14,8 +14,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 // import reducers
 import reducer from './reducers/index.jsx';
 
-// import components
-import BottomNav from './components/bottomNav.component.jsx';
+
 
 // import containers
 import NavContainer from './containers/nav.container.jsx';
@@ -76,7 +75,6 @@ class App extends React.Component {
               </NavContainer>
             </div>
           </Provider>
-          <BottomNav />
         </div>
       </MuiThemeProvider>
     )

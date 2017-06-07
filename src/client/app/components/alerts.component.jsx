@@ -2,6 +2,7 @@ import React from 'react';
 import Paper from 'material-ui/Paper';
 import ClearIcon from 'material-ui/svg-icons/content/clear';
 import { Image } from 'material-ui-image';
+import RaisedButton from 'material-ui/RaisedButton';
 
 export default class AlertsPageComponent extends React.Component {
   constructor(props) {
@@ -33,7 +34,17 @@ export default class AlertsPageComponent extends React.Component {
               })}
               {this.props.alerts.length === 0 ? (<Paper className="alertsItemNone"> No Notifications </Paper>) : null}
           </div>) 
-          : (<Paper className="alertsItemNone"> Please Sign In To See Notifications </Paper>)
+          : (<Paper className="alertsItemNone"> 
+              <div> Please Sign In With Google To See Notifications </div>
+              <br />
+              <a className="add" href="/#/profile">
+                <RaisedButton
+                  className="add"
+                  label="Go To Profile"
+                  primary={true}
+                />
+              </a>
+            </Paper>)
         }
         </div>
       </div>

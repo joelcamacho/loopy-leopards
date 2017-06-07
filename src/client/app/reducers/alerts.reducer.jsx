@@ -23,7 +23,7 @@ const alertsInit = fromJS([
 
 const emptyInit = fromJS([]);
 
-export default function alerts(state = alertsInit, action) {
+export default function alerts(state = emptyInit, action) {
   switch (action.type) {
     case 'ADD_ALERT':
       return state.push(fromJS(action.payload));

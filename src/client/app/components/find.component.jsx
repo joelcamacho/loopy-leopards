@@ -219,6 +219,7 @@ export default class SearchPageComponent extends React.Component {
             />
             <br/>
             <RaisedButton
+              labelColor="white"
               backgroundColor="#009688"
               className="findBtn"
               label="Search" 
@@ -274,6 +275,7 @@ export default class SearchPageComponent extends React.Component {
               <div>
                 <br/>
                 <RaisedButton
+                  labelColor="white"
                   backgroundColor="#009688"
                   className='findShowBtn'
                   label="Show more" 
@@ -282,6 +284,7 @@ export default class SearchPageComponent extends React.Component {
                 />
                 <br/>
                 <RaisedButton
+                  labelColor="white"
                   backgroundColor="#009688"
                   className='findShowBtn'
                   label="Top" 

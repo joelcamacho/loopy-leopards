@@ -160,7 +160,7 @@ export default class GroupPageComponent extends React.Component {
                       <Divider/>
                       <List>
                         <Subheader> Leave Group </Subheader>
-                        <RaisedButton backgroundColor="#009688" onClick={() => this.leaveGroup()} className="addBtn" label="Leave Current Group" />
+                        <RaisedButton labelColor="white" backgroundColor="#009688" onClick={() => this.leaveGroup()} className="addBtn" label="Leave Current Group" />
                       </List>
                     </div>
                   </Paper>
@@ -178,7 +178,7 @@ export default class GroupPageComponent extends React.Component {
                           <Subheader> Invite Friends </Subheader>
                           <TextField ref='inviteTextFieldPhone' className="add"  floatingLabelText="Phone Number"/>
                           <br />
-                          <RaisedButton backgroundColor="#009688" onClick={() => this.sendInvitation()} className="addBtn" label="Send Invitation" />
+                          <RaisedButton labelColor="white" backgroundColor="#009688" onClick={() => this.sendInvitation()} className="addBtn" label="Send Invitation" />
                         </List>
                         <Divider/>
                         <List>
@@ -217,14 +217,14 @@ export default class GroupPageComponent extends React.Component {
                         <Subheader> Request To Join Group </Subheader>
                         <TextField ref='joinTextField' className="add" floatingLabelText="Group Name"/>
                         <br />
-                        <RaisedButton backgroundColor="#009688" onClick={() => this.sendRequest()} className="addBtn" label="Send Request" />
+                        <RaisedButton labelColor="white" backgroundColor="#009688" onClick={() => this.sendRequest()} className="addBtn" label="Send Request" />
                       </List>
                       <Divider/>
                       <List>
                         <Subheader> Create New Group </Subheader>
                         <TextField ref='createTextField' className="add" floatingLabelText="Group Name"/>
                         <br />
-                        <RaisedButton backgroundColor="#009688" onClick={() => this.createGroup()} className="addBtn" label="Create New Group" />
+                        <RaisedButton labelColor="white" backgroundColor="#009688" onClick={() => this.createGroup()} className="addBtn" label="Create New Group" />
                       </List>
                       <Divider/>
                       <List>
@@ -253,6 +253,7 @@ export default class GroupPageComponent extends React.Component {
                   <br />
                   <a className="add" href="/#/profile">
                     <RaisedButton
+                      labelColor="white"
                       backgroundColor="#009688"
                       className="add"
                       label="Go To Profile"

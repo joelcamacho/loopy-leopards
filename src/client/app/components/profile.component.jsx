@@ -17,7 +17,6 @@ import firebaseHelpers from '../helpers/firebase.helper.jsx';
 import fetchHelpers from '../helpers/fetch.helper.jsx';
 
 
-
 export default class ProfilePageComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -141,11 +140,12 @@ export default class ProfilePageComponent extends React.Component {
               </div>
             </Tab>
 
-            <Tab className="tabsItem" label="User Settings" >
+            <Tab className="tabsItem" label="Settings" >
               <div className="tabsPage">
 
                 <Card className="profileCard">
                   <CardHeader
+                    style={{width: "95%"}}
                     title="Push Notifications"
                     subtitle="Enable or Disable Push Notifications to Current Device"
                     avatar={<ActionAnnouncement />}
@@ -154,18 +154,21 @@ export default class ProfilePageComponent extends React.Component {
                   <Divider />
                   <CardText>
                     <RaisedButton
+                      labelColor="white"
                       backgroundColor="#009688"
                       className="notifyBtn"
                       label="Allow Notifications"
                       onTouchTap={firebaseHelpers.requestPushNotificationPermissions}
                     />
                     <RaisedButton
+                      labelColor="white"
                       backgroundColor="#009688"
                       className="notifyBtn"
                       label="Block Notifications"
                       onTouchTap={firebaseHelpers.sendUnregisterToServer}
                     />
                     <RaisedButton
+                      labelColor="white"
                       backgroundColor="#009688"
                       className="notifyBtn"
                       label="Send A Test Notification"
@@ -176,6 +179,7 @@ export default class ProfilePageComponent extends React.Component {
 
                 <Card className="profileCard">
                   <CardHeader
+                    style={{width: "95%"}}
                     title="SMS / Text Messages"
                     subtitle="Verify your phone number and get all your event and group invitations"
                     avatar={<CommunicationPhone />}
@@ -212,6 +216,7 @@ export default class ProfilePageComponent extends React.Component {
                               ref='phoneTextField'
                               floatingLabelText="Phone Number"/>
                             <RaisedButton
+                              labelColor="white"
                               backgroundColor="#009688"
                               className="notifyBtn"
                               label="Send Verification Code"
@@ -241,7 +246,7 @@ export default class ProfilePageComponent extends React.Component {
         ) : (
           <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
             
-            <Tab className="tabsItem" label="Profile Details" >
+            <Tab className="tabsItem" label="Details" >
               <div className="tabsPage">
                 <div className="profile">
                   <Paper className="container">
@@ -253,7 +258,7 @@ export default class ProfilePageComponent extends React.Component {
                     <div> 
                       <p> Please log in to view details and manage groups and events </p>
                       <a href='/auth/google'> 
-                        <RaisedButton backgroundColor="#009688" className="notifyBtn" label="Log in with google"/>
+                        <RaisedButton labelColor="white" backgroundColor="#009688" className="notifyBtn" label="Log in with google"/>
                       </a>  
                     </div>
                   </Paper>

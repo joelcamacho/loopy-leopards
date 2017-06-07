@@ -40,6 +40,7 @@ export default class AlertsPageComponent extends React.Component {
               <a style={{width: '100%'}}href="/#/profile">
                 <RaisedButton
                   backgroundColor="#009688"
+                  labelColor="white"
                   className="alertBtn"
                   label="Go To Profile"
                 />

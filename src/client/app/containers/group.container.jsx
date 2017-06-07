@@ -7,7 +7,8 @@ export default connect(
   function mapStateToProps(state) {
     return {
       group: state.group.toJS(),
-      invitations: state.invitations.toJS()
+      invitations: state.invitations.toJS(),
+      auth: state.auth.toJS()
     };
   },
   function mapDispatchToProps(dispatch) {

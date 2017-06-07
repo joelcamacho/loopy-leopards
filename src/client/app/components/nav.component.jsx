@@ -9,39 +9,70 @@ import IconButton from 'material-ui/IconButton';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
+import Snackbar from 'material-ui/Snackbar';
 
 // import helpers
 import firebaseHelpers from '../helpers/firebase.helper.jsx';
+import fetchHelpers from '../helpers/fetch.helper.jsx';
 
 export default class NavComponent extends React.Component {
   constructor(props) {
     super(props);
-    this.checkLoggedIn = this.checkLoggedIn.bind(this);
-    this.checkLoggedIn();
-  }
 
-  checkLoggedIn() {
-    fetch('/user', {credentials: 'include'})
-      .then(res => res.json())
+    this.handleTouchTap = this.handleTouchTap.bind(this);
+    this.handleRequestClose = this.handleRequestClose.bind(this);
+
+    this.state = {
+      open: false,
+      message: "Event added to your calendar"
+    };
+
+    fetchHelpers.fetchGoogleProfile()
       .then(res => {
-        // might need to check res.result and update photo
+        console.log('fetchGoogleProfile', res);
         if(typeof res.result === 'string') {
           this.props.resetUser();
           this.props.resetProfile();
-          return;
+          return null;
+        } else {
+          this.props.updateUser(res.result);
+          return fetchHelpers.fetchUserData();
         }
-        console.log(res.result);
-        res.result.photo = res.result.photos[0].value;
-        this.props.updateUser(res.result);
-        firebaseHelpers.requestPushNotificationPermissions();
-        firebaseHelpers.setMessageReceivedHandler((alert) => {
-          this.props.addAlert(alert);
-        })
       })
+      .then(res => {
+        console.log('got back profile', res);
+        if(!!res) {
+          this.props.updateProfile(res);
+
+          firebaseHelpers.requestPushNotificationPermissions();
+
+          firebaseHelpers.setMessageReceivedHandler((alert) => {
+            this.props.addAlert(alert);
+            this.handleTouchTap(alert.body);
+          })
+        }
+      })
+
   }
+
+  handleTouchTap(message) {
+    this.setState({
+      open: true,
+      message: message
+    });
+  };
+
+  handleRequestClose() {
+    this.setState({
+      open: false,
+      message: ''
+    });
+  };
 
   render() {
     console.log(this.props.auth);
+    console.log(this.props.profile);
+
     return (
       <div>
         <div className="nav">
@@ -55,7 +86,7 @@ export default class NavComponent extends React.Component {
                 this.props.auth.id !== null ? 
                 (<div>
                   <a href="/#/profile">
-                    <Image imageStyle={{borderRadius: '50%'}} style={{backgroundColor: 'clear', marginTop: '3pt', right: '40pt', position: 'absolute', height: '30pt', width: '30pt'}} src={this.props.auth ? this.props.auth.photo : ''}/>
+                    <Image imageStyle={{borderRadius: '50%'}} style={{backgroundColor: 'clear', marginTop: '3pt', right: '40pt', position: 'absolute', height: '30pt', width: '30pt'}} src={this.props.profile ? this.props.profile.photo : ''}/>
                   </a>
                   <IconMenu iconStyle={{ fill: 'white' }} iconButtonElement={<IconButton><MoreVertIcon/></IconButton>}
                   targetOrigin={{horizontal: 'right', vertical: 'top'}}
@@ -77,9 +108,17 @@ export default class NavComponent extends React.Component {
               }
           />
         </div>
+        
         <div style={{marginTop: '48pt', backgroundColor: 'lightblue'}}>
           {this.props.children}
         </div>
+
+        <Snackbar
+          open={this.state.open}
+          message={this.state.message}
+          autoHideDuration={3000}
+          onRequestClose={this.handleRequestClose}
+        />
       </div>
     );
   }

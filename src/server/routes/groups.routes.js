@@ -104,6 +104,8 @@ router.route('/group')
 		let google_id = req.user ? req.user.id : null;
 		let user_id = null;
 
+		if(!google_id) return res.send({result: 'Must be authenticated'});
+
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
 			user_id = id;
@@ -112,7 +114,7 @@ router.route('/group')
 		.then(result => {
 			res.send(result)
 		})
-		.catch(err => res.send(err))
+		.catch(err => res.send({result: err}))
 	})
 	.delete((req,res) => {
 		let google_id = req.user ? req.user.id : null;
@@ -120,6 +122,8 @@ router.route('/group')
 		let user_name = null;
 		let members = [];
 		let group_details = null;
+
+		if(!google_id) return res.send({result: 'Must be authenticated'});
 
 		helpers.getCurrentUserFromGoogleId(google_id)
 		.then(user => {
@@ -138,11 +142,11 @@ router.route('/group')
 				res.send({result: 'User is not a member of a group!'});
 			}
 		})
-		.catch(err => res.send(err))
+		.catch(err => res.send({result: err}))
 		.then(result => {
 			return helpers.getGroup(group_details.id);
 		})
-		.catch(err => res.send(err))
+		.catch(err => res.send({result: err}))
 		.then(result => {
 			let message = user_name +' has left ' + result.serialize().name + '...';
 
@@ -189,6 +193,8 @@ router.route('/group/invitations')
 		let data = {},
 		google_id = req.user ? req.user.id : null;
 
+		if(!google_id) return res.send({result: 'Must be authenticated'});
+
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
 			return helpers.getCurrentUserGroup(id)
@@ -207,8 +213,8 @@ router.route('/group/invitations')
 		let group_id = null;
 		let group_details = null;
 
-		if(!phone) return res.send('Must include a phone number')
-		if(!google_id) return res.send('Must be authenticated');
+		if(!phone) return res.send({result: 'Must include a phone number'})
+		if(!google_id) return res.send({result: 'Must be authenticated'});
 
 		helpers.getUserIdFromGoogleId(google_id)
 		.then(id => {
@@ -238,7 +244,7 @@ router.route('/group/invitations')
 
 			return helpers.sendInvitationToJoinGroup(user.serialize().id, group_id);
 		})
-		.catch(err => res.send(err))
+		.catch(err => res.send({result: err}))
 		.then(result => res.send(result));
 	})
 	.put((req,res) => {
@@ -274,7 +280,7 @@ router.route('/group/invitations')
 		})
 		.catch(err => {
 			failed = true;
-			res.send(err);
+			res.send({result: err});
 		})
 		.then(result => {
 			return helpers.getGroup(group_id);
@@ -318,7 +324,7 @@ router.route('/group/invitations')
 				return helpers.rejectInvitationToJoinGroup(user_id, exist.id);
 			}
 		})
-		.catch(err => res.send(err))
+		.catch(err => res.send({result: err}))
 		.then(result => res.send(result));
 	})
 
@@ -387,8 +393,8 @@ router.route('/group/requests')
 		let group_details = {};
 		let failed = false;
 
-		if(!name) return res.send('Must include a name')
-		if(!google_id) return res.send('Must be authenticated');
+		if(!name) return res.send({result: 'Must include a name'})
+		if(!google_id) return res.send({result: 'Must be authenticated'});
 
 		helpers.getCurrentUserFromGoogleId(google_id)
 		.then(user => {
@@ -407,7 +413,7 @@ router.route('/group/requests')
 		})
 		.catch(err => {
 			failed = true;
-			res.send(err)
+			res.send({result: err})
 		})
 		.then(result => {
 
@@ -420,7 +426,7 @@ router.route('/group/requests')
 				});
 			}
 			
-			res.send(result);
+			res.send({result: result});
 		});
 	})
 	.put((req,res) => {
@@ -461,7 +467,7 @@ router.route('/group/requests')
 				return helpers.joinGroup(guest_id, exists.id);
 			}
 		})
-		.catch(err => res.send(err))
+		.catch(err => res.send({result: err}))
 		.then(result => {
 			return helpers.getCurrentUserFromId(guest_id);
 		})
@@ -520,7 +526,7 @@ router.route('/group/requests')
 		.then(result => {
 			res.send(result);
 		})
-		.catch(err => res.send(err));
+		.catch(err => res.send({result: err}));
 	})
 
 module.exports = router

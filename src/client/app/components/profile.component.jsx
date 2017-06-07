@@ -8,6 +8,7 @@ import TextField from 'material-ui/TextField';
 
 // import helpers
 import firebaseHelpers from '../helpers/firebase.helper.jsx';
+import fetchHelpers from '../helpers/fetch.helper.jsx';
 
 export default class ProfilePageComponent extends React.Component {
   constructor(props) {
@@ -17,80 +18,45 @@ export default class ProfilePageComponent extends React.Component {
       open: false,
     };
 
-    this.handleOpen = () => {
-      this.setState({open: true});
-    };
-
-    this.handleClose = () => {
-      this.setState({open: false});
-    };
-
-    this.fetchAuthData = this.fetchAuthData.bind(this);
-    this.fetchProfileData = this.fetchProfileData.bind(this);
+    this.fetchUserData = this.fetchUserData.bind(this);
     this.sendPhoneVerificationCode = this.sendPhoneVerificationCode.bind(this);
 
-    this.fetchAuthData();
+    this.handleOpen = this.handleOpen.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+
+    this.fetchUserData();
   }
 
-  fetchAuthData() {
-    fetch('/user', {credentials: 'include'})
-      .then(res => res.json())
-      .then(res => {
-        // might need to check res.result and update photo
-        console.log(res.result);
-        if(typeof res.result === 'string') return;
-        this.props.updateUser(res.result);
-        return res.result.id;
-      })
-      .then(id => {
-        id ? this.fetchProfileData(id) : null;
-      })
+  handleOpen() {
+    this.setState({open: true});
   }
 
-  fetchProfileData(id) {
-    //this.sendAuthPhone();
-    //this.test();
-    return fetch('/api/user', {credentials: 'include'})
-      .then(res => res.json())
+  handleClose() {
+    this.setState({open: false});
+  }
+
+  fetchUserData() {
+    return fetchHelpers.fetchGoogleProfile()
       .then(res => {
-        // might need to check res.result and update photo
+        console.log('fetchGoogleProfile', res);
+        if(typeof res.result === 'string') {
+          this.props.resetUser();
+          this.props.resetProfile();
+          return null;
+        } else {
+          this.props.updateUser(res.result);
+          return fetchHelpers.fetchUserData();
+        }
+      })
+      .then(res => {
         console.log('got back profile', res);
-        this.props.updateProfile(res);
+        if(!!res) this.props.updateProfile(res);
       })
-  }
-
-  sendAuthPhone() {
-    // var phone = '+16466411017';
-    var phone = '+19734879888';
-    
-    return fetch('/api/twilio/phone', { method: 'POST', 
-      body: JSON.stringify({phone:phone}),
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },});
   }
 
   sendPhoneVerificationCode() {
     var phone = this.refs.phoneTextField.getValue();
-    return fetch('/api/twilio/phone', { method: 'POST', 
-      body: JSON.stringify({phone:phone}),
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },});
-  }
-
-  test() {
-    return fetch('/api/user', { method: 'PUT', 
-      body: JSON.stringify({first_name:'Billy'}),
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },});
+    return fetchHelpers.fetchSendVerifyCodeToPhone(phone);
   }
 
   render() {
@@ -108,25 +74,17 @@ export default class ProfilePageComponent extends React.Component {
         keyboardFocused={true}
         onTouchTap={() => {
           this.handleClose();
+
           // send update request
           var profileUpdate = { 
-            phone: this.props.profile.phone,
             address: !this.refs.addressTextField.getValue() ? this.props.profile.address : this.refs.addressTextField.getValue(),
             city: !this.refs.cityTextField.getValue() ? this.props.profile.city : this.refs.cityTextField.getValue(),
             state: !this.refs.stateTextField.getValue() ? this.props.profile.state : this.refs.stateTextField.getValue(),
             birthdate: !this.refs.birthdateTextField.getValue() ? this.props.profile.birthdate : this.refs.birthdateTextField.getValue(),
           }
 
-          fetch("/api/users/" + this.props.profile.id,
-          {
-              method: "PUT",
-              body: JSON.stringify(profileUpdate),
-              credentials: 'include',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-          }).then((res) => this.fetchAuthData())
+          fetchHelpers.fetchUpdateUserData(profileUpdate)
+          .then((res) => this.fetchUserData());
 
         }}
       />,
@@ -152,12 +110,16 @@ export default class ProfilePageComponent extends React.Component {
           primary={true}
           onTouchTap={firebaseHelpers.sendTestPushNotification}
         />
-        <TextField ref='phoneTextField' floatingLabelText="Phone Number"/>
-        <FlatButton
-          label="Send Phone Verification Code"
-          primary={true}
-          onTouchTap={this.sendPhoneVerificationCode}
-        />
+        { !this.props.profile.phone ? (
+          <div>
+            <TextField ref='phoneTextField' floatingLabelText="Phone Number"/>
+            <FlatButton
+              label="Send Phone Verification Code"
+              primary={true}
+              onTouchTap={this.sendPhoneVerificationCode}
+            />
+          </div>) : null}
+
       </div>
     ) : (<div> 
       <p> Please log in </p>
@@ -176,7 +138,7 @@ export default class ProfilePageComponent extends React.Component {
             <Image 
             imageStyle={{borderRadius: '50%'}} 
             style={{backgroundColor: 'clear', height: '250px', width: '250px', margin: '25px 50px'}}
-            src={this.props.auth.photo ? this.props.auth.photo : 'https://openclipart.org/download/247319/abstract-user-flat-3.svg'}/>
+            src={this.props.profile.photo ? this.props.profile.photo : 'https://openclipart.org/download/247319/abstract-user-flat-3.svg'}/>
             <h3> {this.props.profile.id ? this.props.profile.first_name + ' ' + this.props.profile.last_name : 'Anonymous User'} </h3>
             {profileComponent}
           </Paper>

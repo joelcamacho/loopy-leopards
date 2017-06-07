@@ -1,6 +1,4 @@
 .group {
-  font-size: 50px;
-
   .container {
 
     .phone {
@@ -10,6 +8,16 @@
       right: -10pt !important;
     }
   }
+}
+
+.groupAuth {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 30pt 20pt;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
 }
 
 .tabsContainer {

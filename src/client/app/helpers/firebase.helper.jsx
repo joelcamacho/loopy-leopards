@@ -18,7 +18,6 @@ const sendTokenToServer = (token) => {
     .then(res => res.json())
     .then(res => {
       console.log(res);
-      helpers.sendTestPushNotification();
     });
 };
 

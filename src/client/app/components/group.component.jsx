@@ -245,23 +245,22 @@ export default class GroupPageComponent extends React.Component {
         </Tabs>
 
         ) : (
-
-         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
-
-           <Tab className="tabsItem" label="Manage Group">
-              <div className="tabsPage">
-                <div className="group">
-                    <Paper className="container">
-                      <div style={{fontSize: '30pt', padding: '30pt'}}>
-                        You must be authenticated to manage group!
-                      </div>
-                    </Paper>
-                  </div>
+          <div className="alertsContainer">
+            <h2 className="alertsTitle"> Group </h2>
+            <div className="group">
+                <Paper className="groupAuth">
+                  <div> Please Sign In With Google To Manage Your Groups </div>
+                  <br />
+                  <a className="add" href="/#/profile">
+                    <RaisedButton
+                      className="add"
+                      label="Go To Profile"
+                      primary={true}
+                    />
+                  </a>
+                  </Paper>
               </div>
-            </Tab>
-
-
-         </Tabs>
+          </div>
         )
       }
       </div>

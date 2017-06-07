@@ -391,6 +391,9 @@ export default class EventsPageComponent extends React.Component {
   }
 
   render() {
+    //console.log("!!!!!!!", this.state.eventDays);
+    console.log('PROPS',this.props)
+
     let date = new Date();
     let today = date.toLocaleDateString();
     return (

@@ -1,27 +1,63 @@
 
-
 .aboutContainer {
-  padding: 20 20pt 50pt 20pt;
-  min-height: 85vh;
+  padding: 20 40pt 50pt 40pt;
 }
 
-.aboutTitle {
-  font-size: 50pt;
+.aboutHeader {
+  font-size: 35pt;
   font-weight: 300;
+  margin-top: 40pt;
 }
 
-.aboutItem {
+.aboutCard {
   min-height: 100px;
-  margin: 20px;
+  padding: 10pt;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  word-wrap: break-word;
+  margin-top: 20pt;
 }
 
-.aboutTechStack {
-  min-height: 100px;
-  margin: 20px;
+.aboutDeveloper {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-bottom: 20pt;
+  align-content: center;
+}
+
+.imageContainer {
+  height: 25vw;
+  min-height: 150px;
+  width: 100%;
+  max-width: 250px;
+  max-height: 250px;
+}
+
+.aboutDevContainer {
+  margin-left: 10vw;
+  width: 40vw;
+  word-wrap: break-word;
+}
+
+.devHeader {
+  font-size: 15pt;
+  font-weight: 600;
+  margin-top: 10pt;
+  margin-bottom: 5pt;
+}
+
+
+@media screen and (max-width: 800px) {
+  .imageContainer {
+    max-width: 150px;
+    margin: auto;
+  }
+
+  .aboutDevContainer {
+    margin-left: 0;
+    width: 100%;
+  }
+
 }

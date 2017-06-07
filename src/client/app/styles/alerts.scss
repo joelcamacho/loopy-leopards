@@ -9,6 +9,7 @@
   font-size: 35pt;
   font-weight: 300;
   margin: 20px;
+  color: #D7CCC8;
 }
 
 .alertsItem {
@@ -73,4 +74,9 @@
 .alertBody {
   width: 100%;
   margin: 0;
+}
+
+.alertBtn {
+  width: 94% !important;
+  margin: 10pt 3% !important;
 }

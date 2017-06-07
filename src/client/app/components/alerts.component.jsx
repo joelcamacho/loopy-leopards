@@ -37,11 +37,11 @@ export default class AlertsPageComponent extends React.Component {
           : (<Paper className="alertsItemNone"> 
               <div> Please Sign In With Google To See Notifications </div>
               <br />
-              <a className="add" href="/#/profile">
+              <a style={{width: '100%'}}href="/#/profile">
                 <RaisedButton
-                  className="add"
+                  backgroundColor="#009688"
+                  className="alertBtn"
                   label="Go To Profile"
-                  primary={true}
                 />
               </a>
             </Paper>)

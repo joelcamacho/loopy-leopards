@@ -219,7 +219,7 @@ export default class SearchPageComponent extends React.Component {
             />
             <br/>
             <RaisedButton
-              primary={true} 
+              backgroundColor="#009688"
               className="findBtn"
               label="Search" 
               onTouchTap={this.handleSearchResult} 
@@ -228,7 +228,7 @@ export default class SearchPageComponent extends React.Component {
           </Card>
 
           {this.state.searchButton ? (
-            <CircularProgress className='progress' size={120} thickness={8} />
+            <CircularProgress color="#009688" className='progress' size={120} thickness={8} />
           ) : null}
 
           <div className="findResults">
@@ -274,7 +274,7 @@ export default class SearchPageComponent extends React.Component {
               <div>
                 <br/>
                 <RaisedButton
-                  primary={true} 
+                  backgroundColor="#009688"
                   className='findShowBtn'
                   label="Show more" 
                   onTouchTap={this.handleMoreSearchResult} 
@@ -282,7 +282,7 @@ export default class SearchPageComponent extends React.Component {
                 />
                 <br/>
                 <RaisedButton
-                  primary={true}
+                  backgroundColor="#009688"
                   className='findShowBtn'
                   label="Top" 
                   onTouchTap={this.handleBackToTop} 

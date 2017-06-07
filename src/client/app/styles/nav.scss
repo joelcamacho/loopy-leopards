@@ -1,13 +1,26 @@
+$primary-color-dark:   #5D4037;
+$primary-color:        #795548;
+$primary-color-light:  #D7CCC8;
+$primary-color-text:   #FFFFFF;
+$accent-color:         #009688;
+$primary-text-color:   #212121;
+$secondary-text-color: #757575;
+$divider-color:        #BDBDBD;
+
 .nav {
   position: fixed;
   width: 100vw;
   min-height: 50pt;
   top: 0;
   z-index: 10;
-  color: white !important;
+  color: $primary-color-light !important;
+
+  .navbar {
+    background-color: $primary-color-dark !important;
+  }
 
   .homeIcon {
-    color: white !important;
+    color: $primary-color-light !important;
     height: 30pt !important;
     position: absolute;
     width: 30pt !important;
@@ -20,10 +33,10 @@
 
   .auth {
     margin-top: 5pt !important;
-    color: white !important;
+    color: $primary-color-light !important;
   }
   .authIn {
-    color: white !important;
+    color: $primary-color-light !important;
     margin-top: 5pt !important;
     margin-right: 30pt !important;
   }
@@ -34,7 +47,7 @@
 }
 
 .childrenContainer {
-  background-color: lightblue;
+  background-color: #004D40;
   min-height: 100vh;
   width: 100%;
   margin: 0;
@@ -43,7 +56,7 @@
 }
 
 .childrenPadding {
-  padding: 48pt 0 70pt 0;
+  padding: 49pt 0 70pt 0;
 
 }
 
@@ -65,13 +78,25 @@
   padding: 5pt 0pt;
   text-align: center;
   max-width: 800px;
-  background-color: lightslategrey !important;
+  background-color: $primary-color !important;
+
   .bottomNavItem {
-    background-color: black;
     max-width: 18% !important;
     min-width: 50pt !important;
+    color: $primary-color-text !important;
+    fill: $primary-color-text !important;
   }
 }
+
 .bottomNavComponent {
-  background-color: lightslategrey !important;
+  background-color: $primary-color !important;
+}
+
+.bottomNavLabel {
+  margin-top: 3pt;
+  color: $primary-color-light;
+}
+
+.bottomNavIcon {
+  fill: $primary-color-light !important;
 }

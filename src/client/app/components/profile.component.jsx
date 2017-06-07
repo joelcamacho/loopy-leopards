@@ -106,7 +106,7 @@ export default class ProfilePageComponent extends React.Component {
     return (
       <div>
         { this.props.auth.id !== null ? (
-          <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
+          <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
             
             <Tab className="tabsItem" label="Profile Details" >
               <div className="tabsPage">
@@ -154,21 +154,21 @@ export default class ProfilePageComponent extends React.Component {
                   <Divider />
                   <CardText>
                     <RaisedButton
+                      backgroundColor="#009688"
                       className="notifyBtn"
                       label="Allow Notifications"
-                      primary={true}
                       onTouchTap={firebaseHelpers.requestPushNotificationPermissions}
                     />
                     <RaisedButton
+                      backgroundColor="#009688"
                       className="notifyBtn"
                       label="Block Notifications"
-                      primary={true}
                       onTouchTap={firebaseHelpers.sendUnregisterToServer}
                     />
                     <RaisedButton
+                      backgroundColor="#009688"
                       className="notifyBtn"
                       label="Send A Test Notification"
-                      primary={true}
                       onTouchTap={firebaseHelpers.sendTestPushNotification}
                     />
                   </CardText>
@@ -212,9 +212,9 @@ export default class ProfilePageComponent extends React.Component {
                               ref='phoneTextField'
                               floatingLabelText="Phone Number"/>
                             <RaisedButton
+                              backgroundColor="#009688"
                               className="notifyBtn"
                               label="Send Verification Code"
-                              primary={true}
                               onTouchTap={this.sendPhoneVerificationCode}
                             />
                           </CardText>
@@ -239,7 +239,7 @@ export default class ProfilePageComponent extends React.Component {
 
           </Tabs>
         ) : (
-          <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
+          <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
             
             <Tab className="tabsItem" label="Profile Details" >
               <div className="tabsPage">
@@ -253,7 +253,7 @@ export default class ProfilePageComponent extends React.Component {
                     <div> 
                       <p> Please log in to view details and manage groups and events </p>
                       <a href='/auth/google'> 
-                        <RaisedButton className="notifyBtn" primary={true} label="Log in with google"/>
+                        <RaisedButton backgroundColor="#009688" className="notifyBtn" label="Log in with google"/>
                       </a>  
                     </div>
                   </Paper>

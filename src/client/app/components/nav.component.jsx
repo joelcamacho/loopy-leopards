@@ -80,6 +80,7 @@ export default class NavComponent extends React.Component {
       <div>
         <div className="nav">
           <AppBar
+            className="navbar"
             showMenuIconButton={false}
             title={<div>
               <IconHome className="homeIcon" />
@@ -121,6 +122,7 @@ export default class NavComponent extends React.Component {
         <BottomNav />
         
         <Snackbar
+          bodyStyle={{ backgroundColor: 'teal', color: 'coral' }}
           open={this.state.open}
           message={this.state.message}
           autoHideDuration={3000}

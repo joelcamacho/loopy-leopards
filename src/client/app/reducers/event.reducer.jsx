@@ -53,6 +53,9 @@ export default function event(state = eventInit.toJS(), action) {
         ],
         activeState: null
       });
+    case 'EVENT_DETAILS':
+    console.log("!!!!!!!!!!!!!!!!!!!!!!!!action: ", action.payload)
+      return Object.assign({}, eventInit.toJS(), action.payload);
     default:
       return state
   }

@@ -14,7 +14,7 @@ const rp = require('request-promise');
 
 routes.post('/api/eventbrite', (req, res) => {
   const q = req.query.q || undefined
-  const locationAddress = req.query.location || undefined
+  const locationAddress = req.query.location || 'USA'
   const locationLongitude = locationAddress ? undefined : req.query.longitude || undefined
   const locationLatitude = locationAddress ? undefined : req.query.latitude || undefined
   const locationWithin = req.query.within || undefined

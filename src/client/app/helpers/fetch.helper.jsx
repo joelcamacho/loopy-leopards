@@ -417,6 +417,7 @@ const helpers = {
   fetchCreateNewEvent: (name, details = {})  => {
     let eventDetails = Object.assign(details, {name: name});
 
+    console.log("!!!!!!!!!!!!!!!: ", eventDetails)
     let options = {
       method: 'POST',
       credentials: 'include',
@@ -428,7 +429,10 @@ const helpers = {
     };
 
     return fetch('/api/events', options)
-      .then(res => res.json())
+      .then(res => {
+        console.log(res, res.json());
+        return res.json();
+      })
       .catch(err => {
         console.log("can not create event: ", err);
         return err;

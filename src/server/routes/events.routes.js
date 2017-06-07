@@ -12,6 +12,7 @@ const util = require('../helpers/util.helpers.js');
 // Possible areas for sending text messages and notifications via the util helpers
 router.route('/events') 
 	.get((req,res) => {
+
 		let google_id = req.user ? req.user.id : null;
 
 		if(!google_id) return res.send({result: 'User must be authenticated to get events!'});
@@ -23,6 +24,7 @@ router.route('/events')
 		.then(result => res.send(result));
 	})
 	.post((req,res) => {
+		console.log(req.body)
 		let google_id = req.user ? req.user.id : null;
 		let options = req.body;
 		let user_id = null;
@@ -55,7 +57,7 @@ router.route('/events')
 				res.send({result: 'You have created an event!'});
 			}
 		})
-		.catch(err => res.send(err))
+		.catch(err => res.send({result: err}))
 		.then(result => {
 			let message = user_name +' has created an event called ' + options.name + '! Please log on to HanginHubs to vote for this event!';
 

@@ -66,33 +66,6 @@ export default class CreatePageComponent extends React.Component {
   };
 
   componentDidMount() {
-    let currentUserFirstName = this.props.profile.first_name || "";
-    let currentUserLastName = this.props.profile.last_name || "";
-    helpers.fetchUserData()
-    .then(res => {
-      let userStatusArray = []
-      res.forEach(user => {
-        if (user.first_name !== currentUserFirstName && user.last_name !== currentUserLastName) {
-          var rObj = {};
-          rObj.name = user.first_name + ' ' + user.last_name;
-          rObj.rightIconDisplay = (<ContentAdd />);
-          userStatusArray.push(rObj);
-        }
-      })
-      this.setState({userStatus: userStatusArray});
-      let userGroup = [];
-      res.forEach(user => {
-        if (user.first_name !== currentUserFirstName && user.last_name !== currentUserLastName) {
-          var rObj = {};
-          rObj.name = user.first_name + ' ' + user.last_name;
-          rObj.photo = null;
-          rObj.phone = user.phone || null;
-          userGroup.push(rObj);
-        }
-      })
-      this.setState({userGroupData: userGroup});
-    })
-
     if (this.props.event.venue_id) {
       helpers.fetchEventbriteAddress(this.props.event.venue_id)
       .then(res => {

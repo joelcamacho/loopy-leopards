@@ -27,6 +27,7 @@ import EventsPageContainer from './containers/events.container.jsx';
 import CreatePageContainer from './containers/create.container.jsx';
 import AlertsPageContainer from './containers/alerts.container.jsx';
 import AboutPageContainer from './containers/about.container.jsx';
+import EventDetailsContainer from './containers/event.details.container.jsx';
 
 // import helpers
 import firebaseHelpers from './helpers/firebase.helper.jsx';

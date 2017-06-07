@@ -28,6 +28,7 @@ export default function event(state = eventInit.toJS(), action) {
         {description: action.payload.description},
         {date_time: action.payload.date_time},
         {url: action.payload.url},
+        {venue_id: action.payload.venue_id},
       );
     case "SET_STATE_BACK_TO_DEFAULT":
       return Object.assign({}, eventInit.toJS(), action.payload);

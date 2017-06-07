@@ -4,6 +4,7 @@ import { HashRouter, Router, Link } from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import helpers from '../helpers/fetch.helper.jsx';
 
 export default class SearchPageComponent extends React.Component {
   constructor(props) {
@@ -98,18 +99,7 @@ export default class SearchPageComponent extends React.Component {
     ///////////////////////////////////////////////////////
 
     /////////////Get data from Eventbrite API//////////////
-    let init = {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      query: JSON.stringify({location: userLocation, q: userSearchEvent})
-    }
-    fetch('/api/eventbrite', init)
-      .then(res => res.json())
-      .catch(error => console.log("Can not received data from Eventbrite Api: ", error))
+    helpers.fetchEventbriteData(userLocation, userSearchEvent)
       .then(res => {
         pickupEvents(res.events);
         console.log("pickup 20 events from eventbrite: ", eventsArray);
@@ -126,6 +116,7 @@ export default class SearchPageComponent extends React.Component {
             description: event.description.text,
             date_time: event.start.local,
             url: event.url,
+            venue_id: event.venue_id,
           }
         })
         eventsbriteData = eventsbrite;
@@ -133,24 +124,8 @@ export default class SearchPageComponent extends React.Component {
     ///////////////////////////////////////////////////////
 
     //////////////////Get data from Yelp API///////////////
-      .then(res => {
-        let params = {
-          location: userLocation,
-          terms: userSearchEvent
-        };
-        let esc = encodeURIComponent
-        let query = Object.keys(params)
-                     .map(k => esc(k) + '=' + esc(params[k]))
-                     .join('&');
-        let url = '/api/yelp?' + query;
-        return fetch(url);
-      })
-      .then(res => res.json())
-      .catch(error => {
-        console.log("Can not received data from Yelp Api: ", error);
-      })
+      .then(res => helpers.fetchYelpData(userLocation, userSearchEvent))
       .then(res =>{
-        //console.log('received data from Yelo api: ', res);
         randomNumbers = [];
         eventsArray = [];
         pickupEvents(res.businesses);
@@ -199,38 +174,17 @@ export default class SearchPageComponent extends React.Component {
     if (!that.state.toggleCheckBox) {
       if (navigator.geolocation) { 
           navigator.geolocation.getCurrentPosition(function (position) { 
-            var coords = position.coords; 
-            let init = {
-              method: 'POST',
-              credentials: 'include',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(
-                {
-                  latlngCode: {lat: coords.latitude, lng: coords.longitude},
-                }
-              )
-            }
-            fetch('/api/addressMap', init)
-            .then(res => res.json())
-            .catch(err => console.log("can not save event data: ", err))
+            helpers.fetchAddressFromCoordinates(position)
             .then(res => {
               that.setState({searchButton: false});
-              that.setState({userLocation: res.results[0].formatted_address});
-            })
-          }
-        )
-      }
+              that.setState({userLocation: res});
+            })})}
       that.setState({toggleCheckBox: true});
     } else {
       that.setState({userLocation: 'Please enter your location'});
       that.setState({toggleCheckBox: false});
       that.setState({searchButton: false});
-    }
-  }
-
+    }}
 
   render() {
     const { events } = this.props;
@@ -287,6 +241,7 @@ export default class SearchPageComponent extends React.Component {
                 <div>
                   <Link to='/create'>
                     <CardMedia
+                      key={event.title}
                       expandable={true}
                       overlay={<CardTitle title={event.title}/>}
                       onClick={() => this.handleClickedEvent(event)}

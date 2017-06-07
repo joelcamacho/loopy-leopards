@@ -213,6 +213,15 @@ const helpers = {
       })
   },
 
+  fetchUsersData: () => {
+    return fetch('/api/users', {credentials: 'include'})
+      .then(res => res.json())
+      .catch(err => {
+        console.log("can not fetch users data: ", err);
+        return err;
+      })
+  },
+
   fetchUpdateUserData: (updateOptions) => {
     let options = {
       method: 'PUT',

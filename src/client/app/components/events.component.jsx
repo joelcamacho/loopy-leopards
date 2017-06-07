@@ -258,7 +258,7 @@ export default class EventsPageComponent extends React.Component {
     console.log("Props: ", this.props)
     return (
       <div>
-        <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
+        <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
         <Tab className="tabsItem" label="Schedule" >
           <div style={styles.root}>
             <h1 style={{margin:'40 20 0 0'}}>Today</h1>

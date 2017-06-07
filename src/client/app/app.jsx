@@ -9,7 +9,7 @@ import { fromJS, Map, List } from 'immutable';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import RaisedButton from 'material-ui/RaisedButton';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 // import reducers
 import reducer from './reducers/index.jsx';
@@ -37,7 +37,6 @@ import style from './styles/main.scss';
 const store = createStore(reducer);
 
 
-
 class App extends React.Component {
   constructor(props) {
     super(props);
@@ -45,7 +44,6 @@ class App extends React.Component {
     // fetchHelpers.fetchGoogleProfile().then(res => console.log(res));
 
     this.select = (index) => this.setState({selectedIndex: index});
-
 
     this.state = {
       selectedIndex: 0,

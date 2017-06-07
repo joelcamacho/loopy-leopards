@@ -25,36 +25,36 @@ export default class BottomNav extends React.Component {
                   <Link to="/search"> 
                     <BottomNavigationItem
                       className="bottomNavItem"
-                      label="Search"
-                      icon={<IconSearch />}
+                      label={<div className="bottomNavLabel"> Search </div>}
+                      icon={<IconSearch className="bottomNavIcon"/>}
                     />
                   </Link>
                   <Link to="/plans"> 
                     <BottomNavigationItem
                       className="bottomNavItem"
-                      label="Plans"
-                      icon={<IconDateRange />}
+                      label={<div className="bottomNavLabel"> Plans </div>}
+                      icon={<IconDateRange className="bottomNavIcon"/>}
                     />
                   </Link>
                   <Link to="/create"> 
                     <BottomNavigationItem
                       className="bottomNavItem"
-                      label="Create"
-                      icon={<IconAdd />}
+                      label={<div className="bottomNavLabel"> Create </div>} 
+                      icon={<IconAdd className="bottomNavIcon"/>}
                     />
                   </Link>
                   <Link to="/group"> 
                     <BottomNavigationItem
                       className="bottomNavItem"
-                      label="Group"
-                      icon={<IconGroup />}
+                      label={<div className="bottomNavLabel"> Group </div>}
+                      icon={<IconGroup className="bottomNavIcon"/>}
                     />
                   </Link>
                   <Link to="/alerts"> 
                     <BottomNavigationItem
                       className="bottomNavItem"
-                      label="Alerts"
-                      icon={<IconInbox />}
+                      label={<div className="bottomNavLabel"> Alerts </div>}
+                      icon={<IconInbox className="bottomNavIcon"/>}
                     />
                   </Link>
                 </div>

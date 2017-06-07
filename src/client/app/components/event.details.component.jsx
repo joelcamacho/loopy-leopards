@@ -68,6 +68,10 @@ export default class EventDetailsPageComponent extends React.Component {
     // this.handleVote = this.handleVote.bind(this);
     // this.handleEventClick = this.handleEventClick.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
+    this.getEventDetails = this.getEventDetails.bind(this);
+    this.acceptInvitationToEvent = this.acceptInvitationToEvent.bind(this);
+    this.rejectInvitationToEvent = this.rejectInvitationToEvent.bind(this);
+
     // this.handleClose = this.handleClose.bind(this);
     // this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
     // this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
@@ -315,7 +319,7 @@ export default class EventDetailsPageComponent extends React.Component {
         {this.state.eventDetails.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.state}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.phone}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Group:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
-          
+        <p>RSVP:</p>
         </Dialog>
   	)
   }

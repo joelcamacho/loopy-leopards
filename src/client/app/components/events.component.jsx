@@ -10,6 +10,7 @@ import TextField from 'material-ui/TextField';
 import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
+import Skycons from 'react-skycons';
 
 const styles = {
   headline: {
@@ -36,6 +37,10 @@ const styles = {
   googleMapStyle: {
     width: '720px',
     height: '450px',
+  },
+  weather: {
+    width: '150px',
+    height: '100px',
   }
 };
 
@@ -149,6 +154,8 @@ export default class EventsPageComponent extends React.Component {
       directionDetails: {},
       displaydirectionDetails: false,
       transportationButton: false,
+      weather: '',
+      temperature: '',
     }
 
     this.handleVote = this.handleVote.bind(this);
@@ -161,7 +168,23 @@ export default class EventsPageComponent extends React.Component {
   }
 
   handleOpen (event)  {
-    console.log(event);
+    let init = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({latitude: event.latitude, longitude: event.longitude,time: event.time})
+    }
+    fetch('/api/weather', init)
+    .then(res => res.json())
+    .catch(err => console.log('can not get data from darkSky: ', err ))
+    .then(res => {
+      let icon = '' 
+      res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
+      this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
+    });
     this.setState({eventDetails: event})
     this.setState({open: true});
   };
@@ -322,7 +345,6 @@ export default class EventsPageComponent extends React.Component {
 
   handleVote (event) {
     let newUserEvents = []
-    console.log(event.voteStatus)
     if (!event.voteStatus) {
       ++event.vote_count;
       event.voteStatus = true;
@@ -365,16 +387,12 @@ export default class EventsPageComponent extends React.Component {
       rObj.events = res.filter(event => event.date === date);
       return rObj;
     })
-    console.log("eventsDays: ", eventsDays)
     this.setState({eventsDays: eventsDays})
   }
 
   render() {
-    //console.log("!!!!!!!", this.state.eventDays);
     let date = new Date();
     let today = date.toLocaleDateString();
-    //console.log(today)
-    console.log("description: ", this.state.eventDetails.date_Time)
     return (
       <div>
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
@@ -395,6 +413,7 @@ export default class EventsPageComponent extends React.Component {
                   onClick={() => this.handleOpen(event)}
                 >
                   <img src={event.img} />
+
                 </GridTile>
               ))}
             </GridList>
@@ -436,7 +455,14 @@ export default class EventsPageComponent extends React.Component {
         autoScrollBodyContent={true}
       >
         <br/>
+
         {this.state.eventDetails.img !== '' ? (<img src={this.state.eventDetails.img} alt="eventImg"/>) : null}
+
+
+
+
+        
+        {this.state.weather !== '' ? (<List><div><Subheader>Weather:</Subheader><Skycons color='orange' icon={this.state.weather.icon} autoplay={true} style={styles.weather}/><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather.summary}</p><p>{this.state.weather.temperature}&#8451;</p></div><Divider/></List>) : null}
         {this.state.eventDetails.name !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.name}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.description.length > 100 ? this.state.eventDetails.description.slice(0,100) + '...' : this.state.eventDetails.description }{this.state.eventDetails.url ? (<a href={this.state.eventDetails.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
         {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}

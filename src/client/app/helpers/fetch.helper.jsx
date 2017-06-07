@@ -30,15 +30,31 @@ const helpers = {
       })
   },
 
+  fetchEventbriteAddress: (venue_id) => {
+    let options = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({venue_id: venue_id})
+    }
+
+    return fetch('/api/eventbriteAddress', options)
+      .then(res => res.json())
+      .catch(error => {
+        console.log("Can not received data from Eventbrite Api: ", error)
+        return error;
+      })
+  },
+
   // Yelp helpers
   fetchYelpData: (location, terms) => {
+    let params = {location: location, terms: terms};
     let esc = encodeURIComponent;
     let query = Object.keys(params).map(k => esc(k) + '=' + esc(params[k])).join('&');
     let url = '/api/yelp?' + query;
-    let params = {
-      location: location,
-      terms: terms
-    };
 
     return fetch(url)
       .then(res => res.json())
@@ -412,6 +428,7 @@ const helpers = {
   fetchCreateNewEvent: (name, details = {})  => {
     let eventDetails = Object.assign(details, {name: name});
 
+    console.log("!!!!!!!!!!!!!!!: ", eventDetails)
     let options = {
       method: 'POST',
       credentials: 'include',
@@ -423,7 +440,10 @@ const helpers = {
     };
 
     return fetch('/api/events', options)
-      .then(res => res.json())
+      .then(res => {
+        console.log(res, res.json());
+        return res.json();
+      })
       .catch(err => {
         console.log("can not create event: ", err);
         return err;

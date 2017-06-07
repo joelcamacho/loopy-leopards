@@ -14,7 +14,7 @@ const rp = require('request-promise');
 
 routes.post('/api/eventbrite', (req, res) => {
   const q = req.query.q || undefined
-  const locationAddress = req.query.location || undefined
+  const locationAddress = req.query.location || 'USA'
   const locationLongitude = locationAddress ? undefined : req.query.longitude || undefined
   const locationLatitude = locationAddress ? undefined : req.query.latitude || undefined
   const locationWithin = req.query.within || undefined
@@ -41,6 +41,25 @@ routes.post('/api/eventbrite', (req, res) => {
       });
 
       res.send(body) 
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).send(error);
+    });
+});
+
+routes.post('/api/eventbriteAddress', (req, res) => {
+  const venue_id = req.body.venue_id;
+  const options = {
+      uri: `https://www.eventbriteapi.com/v3/venues/${venue_id}?`,
+      qs: {
+          token: apiKeys.eventbriteAccessToken,
+      }
+  };
+
+  rp.get(options)
+    .then((body) => {
+      res.status(200).send(body) 
     })
     .catch((error) => {
       console.log(error);

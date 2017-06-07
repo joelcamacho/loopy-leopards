@@ -235,41 +235,30 @@ export default class SearchPageComponent extends React.Component {
   render() {
     const { events } = this.props;
 
-    const styles = {
-      position: {
-        marginLeft: 16,
-      },
-      position_searchButton: {
-        marginBottom: 16,
-        marginLeft: 16,
-      }
-    }; 
-
     return (
       <div>
         <div className="find">
           <Card className="findPaper" expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
-            <CardHeader
-              actAsExpander={true}
-            />
+            <CardHeader title="Search for Events and Places"/>
             <TextField
+              className='inputs'
               id="text-field-controlled"
               value={this.state.userLocation}
               onChange={this.handleAddressTextFieldChange}
-              style={styles.position}
               multiLine={true}
             />
             <Checkbox
+              className='inputs'
               label="Current Location"
               style={{marginLeft: '16', maxWidth: '80%'}}
               onCheck={() => this.handleGetCurrentLocation(event)}
               checked={this.state.toggleCheckBox}
             />
             <TextField
+              className='inputs'
               hintText="Hint Text"
               floatingLabelText="Search"
               onChange={this.handleSearchTextFieldChange}
-              style={styles.position}
             />
             <br/>
             <RaisedButton
@@ -277,7 +266,6 @@ export default class SearchPageComponent extends React.Component {
               className="findBtn"
               label="Search" 
               onTouchTap={this.handleSearchResult} 
-              style={styles.position_searchButton}
               disabled={this.state.searchButton}
             />
           </Card>
@@ -326,7 +314,6 @@ export default class SearchPageComponent extends React.Component {
               expandable={true}
               label="Show more" 
               onTouchTap={this.handleMoreSearchResult} 
-              style={styles.position_searchButton}
               disabled={this.state.showMoreButton}
             />
             <br/>
@@ -336,7 +323,6 @@ export default class SearchPageComponent extends React.Component {
               expandable={true} 
               label="Top" 
               onTouchTap={this.handleBackToTop} 
-              style={styles.position_searchButton}
             />
             <br/>
 

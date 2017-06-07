@@ -14,8 +14,6 @@ import RaisedButton from 'material-ui/RaisedButton';
 // import reducers
 import reducer from './reducers/index.jsx';
 
-
-
 // import containers
 import NavContainer from './containers/nav.container.jsx';
 import HomePageContainer from './containers/home.container.jsx';

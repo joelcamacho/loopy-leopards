@@ -253,6 +253,11 @@ export default class EventDetailsPageComponent extends React.Component {
     console.log("ThIS profile is FROM PROPS: ", this.props.profile);
     console.log('Event details', this.state.eventDetails)
 
+    let buttons =[
+    <FlatButton label="YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />,
+    <FlatButton label="NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
+    ]
+
   	// return this.props.event.creator_id === this.props.profile.id ? 
   	// (
   	// 	<Dialog
@@ -270,7 +275,7 @@ export default class EventDetailsPageComponent extends React.Component {
   	return (
   		<Dialog
   		title="Event Detail"
-          actions={<FlatButton label="RSVP" primary={true} onTouchTap={this.handleClose} />}
+          actions={buttons}
           modal={false}
           open={this.state.open}
           onRequestClose={this.handleClose}

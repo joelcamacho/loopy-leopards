@@ -88,8 +88,13 @@ export default class ProfilePageComponent extends React.Component {
             address: !this.refs.addressTextField.getValue() ? this.props.profile.address : this.refs.addressTextField.getValue(),
             city: !this.refs.cityTextField.getValue() ? this.props.profile.city : this.refs.cityTextField.getValue(),
             state: !this.refs.stateTextField.getValue() ? this.props.profile.state : this.refs.stateTextField.getValue(),
-            birthdate: !this.refs.birthdateTextField.getValue() ? this.props.profile.birthdate : this.refs.birthdateTextField.getValue(),
+            birthdate: !this.refs.birthdateTextField.getValue() ? this.props.profile.birthdate.split('T')[0] : this.refs.birthdateTextField.getValue(),
+            first_name: !this.refs.firstNameTextField.getValue() ? this.props.profile.first_name : this.refs.firstNameTextField.getValue(),
+            last_name: !this.refs.lastNameTextField.getValue() ? this.props.profile.last_name : this.refs.lastNameTextField.getValue(),
+            photo: !this.refs.photoTextField.getValue() ? this.props.profile.photo : this.refs.photoTextField.getValue(),
           }
+
+          console.log('attempting to update profile', profileUpdate);
 
           fetchHelpers.fetchUpdateUserData(profileUpdate)
           .then((res) => this.fetchUserData());
@@ -98,146 +103,167 @@ export default class ProfilePageComponent extends React.Component {
       />,
     ];
 
-    var profileComponent = this.props.auth.id !== null ? (
-      <div>
-        <p> {this.props.profile.phone ? this.props.profile.phone : 'No Phone Number'} </p>
-        <p> {this.props.profile.address ? this.props.profile.address + ' ' + this.props.profile.city + ' ' + this.props.profile.state : 'No Address'}</p>
-        <p> {this.props.profile.birthdate ? this.props.profile.birthdate : 'No Birthday'} </p>
-        <FlatButton
-          label="Get Notifications"
-          primary={true}
-          onTouchTap={firebaseHelpers.requestPushNotificationPermissions}
-        />
-        <FlatButton
-          label="Stop Notifications"
-          primary={true}
-          onTouchTap={firebaseHelpers.sendUnregisterToServer}
-        />
-        <FlatButton
-          label="Send Test Notifications (check console)"
-          primary={true}
-          onTouchTap={firebaseHelpers.sendTestPushNotification}
-        />
-        { !this.props.profile.phone ? (
-          <div>
-            <TextField ref='phoneTextField' floatingLabelText="Phone Number"/>
-            <FlatButton
-              label="Send Phone Verification Code"
-              primary={true}
-              onTouchTap={this.sendPhoneVerificationCode}
-            />
-          </div>) : null}
-
-      </div>
-    ) : (<div> 
-      <p> Please log in </p>
-      <a href='/auth/google'> 
-        <FlatButton label="Log in with google"/>
-      </a>  
-     </div>);
-
     return (
-      <div> 
-        <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
-          <Tab className="tabsItem" label="Profile Details" >
-            <div className="tabsPage">
-              <div className="profile">
-                <Paper className="container">
-                  <div style={{width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+      <div>
+        { this.props.auth.id !== null ? (
+          <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
+            
+            <Tab className="tabsItem" label="Profile Details" >
+              <div className="tabsPage">
+                <Card className="profileCard">
+                  <CardHeader
+                    title={this.props.profile.first_name + ' ' + this.props.profile.last_name}
+                    subtitle={this.props.profile.phone ? this.props.profile.phone : 'Please Verify Your Phone Number!!!'}
+                    avatar={this.props.profile.photo ? this.props.profile.photo : 'https://openclipart.org/download/247319/abstract-user-flat-3.svg'}
+                    showExpandableButton={false}
+                  />
+                  <Divider />
+                  <div style={{width: '100%', position: 'absolute', right: '15pt', display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
                     {this.props.profile.id ? <FlatButton onTouchTap={this.handleOpen} label="Edit"/> : null}
                   </div>
-                  <Image 
-                  imageStyle={{borderRadius: '50%'}} 
-                  style={{backgroundColor: 'clear', height: '250px', width: '250px', margin: '25px 50px'}}
-                  src={this.props.profile.photo ? this.props.profile.photo : 'https://openclipart.org/download/247319/abstract-user-flat-3.svg'}/>
-                  <h3> {this.props.profile.id ? this.props.profile.first_name + ' ' + this.props.profile.last_name : 'Anonymous User'} </h3>
-                  {profileComponent}
-                </Paper>
+                  <CardText className='profileContent'>
+                    <div className="profileHeader"> Name </div>
+                    <div> {this.props.profile.first_name + ' ' + this.props.profile.last_name} </div>
+                    
+                    <div className="profileHeader"> Phone </div>
+                    <div> {this.props.profile.phone ? this.props.profile.phone : 'Please Verify Your Phone Number in Settings!!!'} </div>
+                    
+                    <div className="profileHeader"> Address </div>
+                    <div> {this.props.profile.address ? this.props.profile.address + ' ' + this.props.profile.city + ' ' + this.props.profile.state : 'No Address'}</div>
+                    
+                    <div className="profileHeader"> Birthday </div>
+                    <div> {this.props.profile.birthdate ? this.props.profile.birthdate.split('T')[0] : 'No Birthday'} </div>
+                    
+                    <div className="profileHeader"> Photo </div>
+                    <div> {this.props.profile.photo ? this.props.profile.photo : 'No photo'} </div>
+                  </CardText>
+                </Card>
               </div>
-            </div>
-          </Tab>
-          <Tab className="tabsItem" label="User Settings" >
-            <div className="tabsPage">
+            </Tab>
 
-              <Card className="profileCard">
-                <CardHeader
-                  title="Push Notifications"
-                  subtitle="Enable or Disable Push Notifications to Current Device"
-                  avatar={<ActionAnnouncement />}
-                  showExpandableButton={false}
-                />
-                <Divider />
-                <CardText>
-                  <RaisedButton
-                    className="notifyBtn"
-                    label="Allow Notifications"
-                    primary={true}
-                    onTouchTap={firebaseHelpers.requestPushNotificationPermissions}
-                  />
-                  <RaisedButton
-                    className="notifyBtn"
-                    label="Block Notifications"
-                    primary={true}
-                    onTouchTap={firebaseHelpers.sendUnregisterToServer}
-                  />
-                  <RaisedButton
-                    className="notifyBtn"
-                    label="Send A Test Notification"
-                    primary={true}
-                    onTouchTap={firebaseHelpers.sendTestPushNotification}
-                  />
-                </CardText>
-              </Card>
+            <Tab className="tabsItem" label="User Settings" >
+              <div className="tabsPage">
 
-              <Card className="profileCard">
-                <CardHeader
-                  title="SMS / Text Messages"
-                  subtitle="Verify your phone number and get all your event and group invitations"
-                  avatar={<CommunicationPhone />}
-                  showExpandableButton={false}
-                />
-                <Divider />
-                <CardText>
-                  <CardTitle title="Verify Your Phone Number" subtitle="Instructions on verifying your phone number" />
-                  <ol>
-                    <li>
-                      <CardText>
-                        Insert your phone number into the text field below in the format +1[phone number]. (e.g "+19993338080")
-                      </CardText>
-                    </li>
-                    <li>
-                      <CardText>
-                        Press Send Verification Code Button. This will send a text message to the phone number provided
-                      </CardText>
-                    </li>
-                    <li>
-                      <CardText>
-                        Send a reply with the verification code. It should look like 5 digits _ #. (e.g 12345_21)
-                      </CardText>
-                    </li>
-                  </ol>
+                <Card className="profileCard">
+                  <CardHeader
+                    title="Push Notifications"
+                    subtitle="Enable or Disable Push Notifications to Current Device"
+                    avatar={<ActionAnnouncement />}
+                    showExpandableButton={false}
+                  />
                   <Divider />
-                   <CardTitle title="Send Verification Code" subtitle="Insert Phone Number"/>
-                   <CardText>
-                    <TextField
-                      hintText="+19993338080"
-                      className="notifyBtn"
-                      ref='phoneTextField'
-                      floatingLabelText="Phone Number"/>
+                  <CardText>
                     <RaisedButton
                       className="notifyBtn"
-                      label="Send Verification Code"
+                      label="Allow Notifications"
                       primary={true}
-                      onTouchTap={this.sendPhoneVerificationCode}
+                      onTouchTap={firebaseHelpers.requestPushNotificationPermissions}
+                    />
+                    <RaisedButton
+                      className="notifyBtn"
+                      label="Block Notifications"
+                      primary={true}
+                      onTouchTap={firebaseHelpers.sendUnregisterToServer}
+                    />
+                    <RaisedButton
+                      className="notifyBtn"
+                      label="Send A Test Notification"
+                      primary={true}
+                      onTouchTap={firebaseHelpers.sendTestPushNotification}
                     />
                   </CardText>
+                </Card>
 
-                </CardText>
-              </Card>
+                <Card className="profileCard">
+                  <CardHeader
+                    title="SMS / Text Messages"
+                    subtitle="Verify your phone number and get all your event and group invitations"
+                    avatar={<CommunicationPhone />}
+                    showExpandableButton={false}
+                  />
+                  <Divider />
+                  <CardText>
+                    <CardTitle title="Verify Your Phone Number" subtitle="Instructions on verifying your phone number" />
+                    <ol>
+                      <li>
+                        <CardText>
+                          Insert your phone number into the text field below in the format +1[phone number]. (e.g "+19993338080")
+                        </CardText>
+                      </li>
+                      <li>
+                        <CardText>
+                          Press Send Verification Code Button. This will send a text message to the phone number provided
+                        </CardText>
+                      </li>
+                      <li>
+                        <CardText>
+                          Send a reply with the verification code. It should look like 5 digits _ #. (e.g 12345_21)
+                        </CardText>
+                      </li>
+                    </ol>
+                    <Divider />
+                      {!this.props.profile.phone ? (
+                        <div>
+                           <CardTitle title="Send Verification Code" subtitle="Insert Phone Number"/>
+                           <CardText>
+                            <TextField
+                              hintText="+19993338080"
+                              className="notifyBtn"
+                              ref='phoneTextField'
+                              floatingLabelText="Phone Number"/>
+                            <RaisedButton
+                              className="notifyBtn"
+                              label="Send Verification Code"
+                              primary={true}
+                              onTouchTap={this.sendPhoneVerificationCode}
+                            />
+                          </CardText>
+                        </div>
+                      ) : (
+                        <div>
+                          <CardTitle title="Send Verification Code" subtitle="Insert Phone Number"/>
+                          <CardText> 
+                            Your Phone Number has already been verified! 
+                          </CardText>
+                          <CardText> 
+                            {this.props.profile.phone}
+                          </CardText>
+                        </div>
+                      ) }
 
-            </div>
-          </Tab>
-        </Tabs>
+                  </CardText>
+                </Card>
+
+              </div>
+            </Tab>
+
+          </Tabs>
+        ) : (
+          <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
+            
+            <Tab className="tabsItem" label="Profile Details" >
+              <div className="tabsPage">
+                <div className="profile">
+                  <Paper className="container">
+                    <Image 
+                    imageStyle={{borderRadius: '50%'}} 
+                    style={{backgroundColor: 'clear', height: '250px', width: '250px', margin: '25px'}}
+                    src={'https://openclipart.org/download/247319/abstract-user-flat-3.svg'}/>
+                    <h3> {'Anonymous User'} </h3>
+                    <div> 
+                      <p> Please log in to view details and manage groups and events </p>
+                      <a href='/auth/google'> 
+                        <RaisedButton className="notifyBtn" primary={true} label="Log in with google"/>
+                      </a>  
+                    </div>
+                  </Paper>
+                </div>
+              </div>
+            </Tab>
+
+          </Tabs>
+        ) 
+      }
 
 
 
@@ -247,11 +273,15 @@ export default class ProfilePageComponent extends React.Component {
           modal={false}
           open={this.state.open}
           onRequestClose={this.handleClose}
+          autoScrollBodyContent={true}
         >
+          <TextField className='textFields' ref='firstNameTextField' floatingLabelText="First Name"/>
+          <TextField className='textFields' ref='lastNameTextField' floatingLabelText="Last Name"/>
           <TextField className='textFields' ref='addressTextField' floatingLabelText="Address"/>
           <TextField className='textFields' ref='cityTextField' floatingLabelText="City"/>
           <TextField className='textFields' ref='stateTextField' floatingLabelText="State"/>
-          <TextField className='textFields' ref='birthdateTextField' floatingLabelText="Birthday"/>
+          <TextField className='textFields' ref='birthdateTextField' hintText="2000-01-01" floatingLabelText="Birthday"/>
+          <TextField className='textFields' ref='photoTextField' floatingLabelText="Photo Url"/>
         </Dialog>
 
       </div>

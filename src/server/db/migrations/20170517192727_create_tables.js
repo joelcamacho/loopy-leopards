@@ -45,7 +45,7 @@ knex.schema.createTable('users', function(table) {
       table.foreign('creator_id').references('users.id');
       table.integer('group_id').unsigned();
       table.foreign('group_id').references('groups.id');
-      table.string('img');
+      table.string('img','longtext');
     }),    
     knex.schema.createTable('groups', function(table) {
       table.increments('id').primary();

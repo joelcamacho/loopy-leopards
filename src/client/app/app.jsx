@@ -27,7 +27,7 @@ import EventsPageContainer from './containers/events.container.jsx';
 import CreatePageContainer from './containers/create.container.jsx';
 import AlertsPageContainer from './containers/alerts.container.jsx';
 import AboutPageContainer from './containers/about.container.jsx';
-import EventDetailsContainer from './containers/event.details.container.jsx';
+import EventDetailsPageContainer from './containers/event.details.container.jsx';
 
 // import helpers
 import firebaseHelpers from './helpers/firebase.helper.jsx';
@@ -72,6 +72,7 @@ class App extends React.Component {
                     <Route exact path="/alerts" component={AlertsPageContainer}/>
                     <Route exact path="/profile" component={ProfilePageContainer}/>
                     <Route exact path="/about" component={AboutPageContainer}/>
+                    <Route exact path="/details" component={EventDetailsPageContainer}/>
             	    </Switch>
                 </HashRouter>
               </NavContainer>

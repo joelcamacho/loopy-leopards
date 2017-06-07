@@ -83,7 +83,7 @@ export default class NavComponent extends React.Component {
             className="navbar"
             showMenuIconButton={false}
             title={<div>
-              <IconHome className="homeIcon" />
+              <Image  style={{backgroundColor: 'clear', display: 'inline'}} src="../../monkey.png" className="homeIcon" />
               <span className="homeText"> Hangin Hubs </span>
               </div>}
             iconElementRight={

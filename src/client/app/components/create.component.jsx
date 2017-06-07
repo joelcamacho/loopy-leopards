@@ -108,13 +108,14 @@ export default class CreatePageComponent extends React.Component {
       eventTime = eventTime.replace('T', ' ');
     }
     event = {
+              img: this.props.event.img || '',
               date_time: eventTime || time,
               description: this.props.event.description.slice(0,200) || this.state.descriptionTestValue,
               address: this.props.event.address || this.state.addressTestValue,
               city: this.props.event.city || this.state.cityTestValue,
               state: this.props.event.state || this.state.stateTestValue,
-              latitude: this.props.event.latitude,
-              longitude: this.props.event.longitude,
+              latitude: this.props.event.latitude || '',
+              longitude: this.props.event.longitude || '',
             }
     helpers.fetchCreateNewEvent(this.props.event.title || this.state.titleTestValue, event)
       .then(res => {

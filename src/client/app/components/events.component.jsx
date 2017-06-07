@@ -11,6 +11,8 @@ import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import Skycons from 'react-skycons';
+import helpers from '../helpers/fetch.helper.jsx';
+import { HashRouter, Router, Link } from 'react-router-dom';
 
 const styles = {
   headline: {
@@ -44,100 +46,6 @@ const styles = {
   }
 };
 
-const fakeEvents = [
-  {
-    img: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F16579431%2F145182189853%2F1%2Foriginal.jpg?s=1e0dad5ec9b6b0bf86d48945bc23b5bd',
-    name: "title01",
-    date_Time: '6/3/2017 13:25:15',
-    time: '13:25:15',
-    date: '6/3/2017',
-    description: 'Hello World!',
-    address: '100 3rd Ave',
-    city: 'NY',
-    state: 'NY',
-    phone: '6466210000',
-    latitude: '',
-    longitude: '',
-    comments: 'Let\'s GO!!!',
-    url: "www.google.com",
-    creator_id: 1,
-    vote_count: 5,
-  },
-  {
-    img: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F30676000%2F25399112885%2F1%2Foriginal.jpg?s=aad7d5822407c610ad5a604bc9a55a98',
-    name: "title02",
-    date_Time: '6/3/2017 13:25:15',
-    time: '14:25:15',
-    date: '6/3/2017',
-    description: 'Hello World!',
-    address: '100 3rd Ave',
-    city: 'NY',
-    state: 'NY',
-    phone: '6466210000',
-    latitude: '',
-    longitude: '',
-    comments: 'Let\'s GO!!!',
-    url: "www.google.com",
-    creator_id: 1,
-    vote_count: 6,
-  },
-  {
-    img: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F16579431%2F145182189853%2F1%2Foriginal.jpg?s=1e0dad5ec9b6b0bf86d48945bc23b5bd',
-    name: "title03",
-    date_Time: '6/3/2017 13:25:15',
-    time: '15:25:15',
-    date: '6/3/2017',
-    description: 'Hello World!',
-    address: '100 3rd Ave',
-    city: 'NY',
-    state: 'NY',
-    phone: '6466210000',
-    latitude: '',
-    longitude: '',
-    comments: 'Let\'s GO!!!',
-    url: "www.google.com",
-    creator_id: 1,
-    vote_count: 7,
-  },
-  {
-    img: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F30676000%2F25399112885%2F1%2Foriginal.jpg?s=aad7d5822407c610ad5a604bc9a55a98',
-    name: "title04",
-    date_Time: '6/4/2017 13:25:15',
-    time: '16:25:15',
-    date: '6/4/2017',
-    description: 'Hello World!',
-    address: '100 3rd Ave',
-    city: 'NY',
-    state: 'NY',
-    phone: '6466210000',
-    latitude: '',
-    longitude: '',
-    comments: 'Let\'s GO!!!',
-    url: "www.google.com",
-    creator_id: 1,
-    vote_count: 8,
-  },
-  {
-    img: 'https://img.evbuc.com/https%3A%2F%2Fcdn.evbuc.com%2Fimages%2F16579431%2F145182189853%2F1%2Foriginal.jpg?s=1e0dad5ec9b6b0bf86d48945bc23b5bd',
-    name: "title05",
-    date_Time: '6/5/2017 13:25:15',
-    time: '17:25:15',
-    date: '6/5/2017',
-    description: 'Hello World!',
-    address: '100 3rd Ave',
-    city: 'NY',
-    state: 'NY',
-    phone: '6466210000',
-    latitude: '',
-    longitude: '',
-    comments: 'Let\'s GO!!!',
-    url: "www.google.com",
-    creator_id: 1,
-    vote_count: 9,
-  }
-]
-
-
 export default class EventsPageComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -158,236 +66,175 @@ export default class EventsPageComponent extends React.Component {
       temperature: '',
     }
 
-    this.handleVote = this.handleVote.bind(this);
+    // this.handleVote = this.handleVote.bind(this);
     // this.handleEventClick = this.handleEventClick.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
-    this.handleClose = this.handleClose.bind(this);
-    this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
-    this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
-    this.handleGetDirection = this.handleGetDirection.bind(this);
+    // this.handleClose = this.handleClose.bind(this);
+    // this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
+    // this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
+    // this.handleGetDirection = this.handleGetDirection.bind(this);
   }
 
   handleOpen (event)  {
-    let init = {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({latitude: event.latitude, longitude: event.longitude,time: event.time})
-    }
-    fetch('/api/weather', init)
-    .then(res => res.json())
-    .catch(err => console.log('can not get data from darkSky: ', err ))
-    .then(res => {
-      let icon = '' 
-      res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
-      this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
-    });
-    this.setState({eventDetails: event})
-    this.setState({open: true});
-  };
+    // helpers.fetchWeatherData(event.latitude, event.longitude, event.time)
+    // .then(res => {
+    //   let icon = '' 
+    //   res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
+    //   this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
+    // });
+    // this.setState({eventDetails: event})
+    // this.setState({open: true});
 
-  handleClose () {
-    // this.state.invitedUsers = [];
-    // var rightIconArray = this.state.userStatus.map((ele, ind) => {
-    //   var rObj = {};
-    //   rObj.name = ele.name;
-    //   rObj.rightIconDisplay = (<ContentAdd />);
-    //   return rObj;
-    // })
-    // this.setState({userStatus: rightIconArray});
-    this.setState({open: false});
-  };
+    console.log("Hello, event is here: ", event);
+    this.props.eventDetails(event);
 
-  handleGoogleMapOpen (event) {
-    let init = {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({address: event.address})
-    }
-    fetch('/api/latlngMap', init)
-    .then(res => res.json())
-    .catch(err => console.log("can not get latlng code: ", err))
-    .then(res => {
-      const coords = res.results[0].geometry.location;
-      const myOptions = { 
-        zoom: 14, 
-        center: coords,
-        mapTypeId: google.maps.MapTypeId.ROADMAP,
-      }; 
-      const map = new google.maps.Map(document.getElementById("map"), myOptions); 
-      const marker = new google.maps.Marker({ 
-        position: coords, 
-        map: map,
-      }); 
-      const infoWindow = new google.maps.InfoWindow({ 
-        content: event.name,
-      }); 
-      infoWindow.open(map, marker); 
-      this.setState({directionButton: false})
-    })
-    this.setState({googleMapOpen: true});
-  }
-
-  handleGoogleMapClose () {
-    this.setState({directionButtonShowOrHide: true});
-    this.setState({googleMapOpen: false});
-    this.setState({displaydirectionDetails: false});
-  }
-
-  handleGetDirection (event, mode) {
-    let currentAddress;
-    let directionsService;
-    let directionsDisplay;
-    let originAddress;
-    let that;
-    let directionDetails;
-
-    that = this
-    that.setState({directionButton: true});
-    that.setState({transportationButton: true});
-    directionsService = new google.maps.DirectionsService();
-    directionsDisplay = new google.maps.DirectionsRenderer();
-
-    if (navigator.geolocation) { 
-        navigator.geolocation.getCurrentPosition(function (position) { 
-          const latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);  
-
-          var coords = position.coords;
-          let init = {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({latlngCode: {lat: coords.latitude, lng: coords.longitude}})
-          }
-          fetch('/api/addressMap', init)
-          .then(res => res.json())
-          .catch(err => console.log("can not save event data: ", err))
-          .then(res => {
-            currentAddress = res.results[0].formatted_address;
-            return currentAddress;
-          })
-          .then(function(address) {
-
-            currentAddress = address;
-
-            var mapOptions = {
-              zoom: 7,
-              mapTypeId: google.maps.MapTypeId.ROADMAP,
-              center: latlng
-            }
-
-            const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-
-            directionsDisplay.setMap(map);
-
-            var way = google.maps.TravelMode[mode];
-            var request = {
-              origin: address,
-              destination: event.address,
-              travelMode: way,
-            };
-            directionsService.route(request, function(response, status) {
-              if(status === 'OK') {
-                directionsDisplay.setDirections(response);
-              }
-            });
-            that.setState({directionButtonShowOrHide: false});
-            return address;
-          })
-          .then(currentAddress => {
-
-            let init = {
-              method: 'POST',
-              credentials: 'include',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({origin: currentAddress, destination: event.address, mode: mode})
-            }
-            fetch('/api/directionData', init)
-            .then(res => res.json())
-            .catch(err => console.log("can not save event data: ", err))
-            .then(res => {
-              directionDetails = {};
-              directionDetails.transportation = mode;
-              directionDetails.distance = res.routes[0].legs[0].distance.text;
-              directionDetails.time = res.routes[0].legs[0].duration.text;
-              directionDetails.currentAddress = currentAddress;
-              that.setState({directionDetails: directionDetails});
-              that.setState({displaydirectionDetails: true});
-              that.setState({transportationButton: false});
-            })
-          })
-        }
-      )
-    }
-  }
-
-  // handleTransportation (transportation) {
-  //   console.log("Hello World!!!")
-  // }
-
-
-  // handleEventClick () {
-  //   console.log("Hello World!")
-  // }
-
-  handleVote (event) {
-    let newUserEvents = []
-    if (!event.voteStatus) {
-      ++event.vote_count;
-      event.voteStatus = true;
+    if (event.creator_id === this.props.profile.id) {
+      //go some where
     } else {
-      --event.vote_count;
-      event.voteStatus = false;
+      //go some where
     }
+  };
 
-    this.state.userEvents.forEach(userEvent => {
-      if(userEvent.name === event.name) {//check this when get real data!!!!!!
-        userEvent.vote_count = event.vote_count;
-      }
-      newUserEvents.push(userEvent);
-    })
-    this.setState({userEvents: newUserEvents});
+  // handleClose () {
+  //   this.setState({open: false});
+  // };
 
-    //delete event.voteStatus;
-    console.log("voted event is ready to save to database: ", event)
-    //save event which include vote result in to database;
-    //fetch(...)
+  // handleGoogleMapOpen (event) {
+  //   helpers.fetchCoordinatesForEvent(event.address)
+  //   .then(res => {
+  //     const coords = res.results[0].geometry.location;
+  //     const myOptions = { 
+  //       zoom: 14, 
+  //       center: coords,
+  //       mapTypeId: google.maps.MapTypeId.ROADMAP,
+  //     }; 
+  //     const map = new google.maps.Map(document.getElementById("map"), myOptions); 
+  //     const marker = new google.maps.Marker({ 
+  //       position: coords, 
+  //       map: map,
+  //     }); 
+  //     const infoWindow = new google.maps.InfoWindow({ 
+  //       content: event.name,
+  //     }); 
+  //     infoWindow.open(map, marker); 
+  //     this.setState({directionButton: false})
+  //   })
+  //   this.setState({googleMapOpen: true});
+  // }
+
+  // handleGoogleMapClose () {
+  //   this.setState({directionButtonShowOrHide: true});
+  //   this.setState({googleMapOpen: false});
+  //   this.setState({displaydirectionDetails: false});
+  // }
+
+  // handleGetDirection (event, mode) {
+  //   let currentAddress;
+  //   let directionsService;
+  //   let directionsDisplay;
+  //   let originAddress;
+  //   let that;
+  //   let directionDetails;
+
+  //   that = this
+  //   that.setState({directionButton: true});
+  //   that.setState({transportationButton: true});
+  //   directionsService = new google.maps.DirectionsService();
+  //   directionsDisplay = new google.maps.DirectionsRenderer();
+
+  //   if (navigator.geolocation) { 
+  //       navigator.geolocation.getCurrentPosition(function (position) { 
+  //         const latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude); 
+  //         helpers.fetchAddressFromCoordinates(position)
+  //         .then(res => {
+  //           currentAddress = res;
+  //           return currentAddress;
+  //         })
+  //         .then(function(address) {
+  //           currentAddress = address;
+  //           var mapOptions = {
+  //             zoom: 7,
+  //             mapTypeId: google.maps.MapTypeId.ROADMAP,
+  //             center: latlng
+  //           }
+  //           const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+  //           directionsDisplay.setMap(map);
+  //           var way = google.maps.TravelMode[mode];
+  //           var request = {
+  //             origin: address,
+  //             destination: event.address,
+  //             travelMode: way,
+  //           };
+  //           directionsService.route(request, function(response, status) {
+  //             if(status === 'OK') {
+  //               directionsDisplay.setDirections(response);
+  //             }
+  //           });
+  //           that.setState({directionButtonShowOrHide: false});
+  //           return address;
+  //         })
+  //         .then(currentAddress => {
+  //           helpers.fetchDirectionData(currentAddress, event.address, mode)
+  //           .then(res => {
+  //             directionDetails = {};
+  //             directionDetails.transportation = mode;
+  //             directionDetails.distance = res.routes[0].legs[0].distance.text;
+  //             directionDetails.time = res.routes[0].legs[0].duration.text;
+  //             directionDetails.currentAddress = currentAddress;
+  //             that.setState({directionDetails: directionDetails});
+  //             that.setState({displaydirectionDetails: true});
+  //             that.setState({transportationButton: false});
+  //           })
+  //         })
+  //       }
+  //     )
+  //   }
+  // }
+
+  // handleVote (event) {
+  //   let newUserEvents = []
+  //   if (!event.voteStatus) {
+  //     ++event.vote_count;
+  //     event.voteStatus = true;
+  //   } else {
+  //     --event.vote_count;
+  //     event.voteStatus = false;
+  //   }
+
+  //   this.state.userEvents.forEach(userEvent => {
+  //     if(userEvent.name === event.name) {//check this when get real data!!!!!!
+  //       userEvent.vote_count = event.vote_count;
+  //     }
+  //     newUserEvents.push(userEvent);
+  //   })
+  //   this.setState({userEvents: newUserEvents});
+
+  //   //delete event.voteStatus;
+  //   console.log("voted event is ready to save to database: ", event)
+  //   //save event which include vote result in to database;
+  //   //fetch(...)
 
 
-  }
-  //get user's events data from database
+  // }
+
   componentDidMount() {
-    // fetch('/api/events', {credentials: 'include'})
-    // .then(res => res.json())
-    // .catch(err => console.log("Can not get user's events from server: ", err))
-    // .then(res => this.setState({userEvents: res}))
-    let res = fakeEvents;
-    let eventsDays = [];
-    res.map(event => event.voteStatus = false);
-    this.setState({userEvents: res});
-    res.forEach(event => eventsDays.push(event.date));
-    eventsDays = eventsDays
-    .filter((ele,ind) => eventsDays.indexOf(ele) === ind)
-    .map(date => {
-      let rObj = {};
-      rObj.date = date;
-      rObj.events = res.filter(event => event.date === date);
-      return rObj;
+    helpers.fetchAllEventData()
+    .then(res => {
+      res = res.created;
+      let eventsDays = [];
+      res.map(event => event.voteStatus = false);
+      this.setState({userEvents: res});
+      res.forEach(event => eventsDays.push(event.date_time));
+      eventsDays = eventsDays
+      .filter((ele,ind) => eventsDays.indexOf(ele) === ind)
+      .map(date => {
+        let rObj = {};
+        rObj.date = date;
+        rObj.events = res.filter(event => event.date_time === date);
+        return rObj;
+      })
+      this.setState({eventsDays: eventsDays})
     })
-    this.setState({eventsDays: eventsDays})
   }
 
   render() {
@@ -396,6 +243,19 @@ export default class EventsPageComponent extends React.Component {
 
     let date = new Date();
     let today = date.toLocaleDateString();
+    today = today.split("/");
+    let month = today[0];
+    let day = today[1];
+    let year = today[2];
+    if (day < 10) {
+      day = "0" + day;
+    }
+    if (month < 10) {
+      month = "0" + month;
+    }
+    today = year + '-' + month + '-' + day;
+    console.log("Date: ", today);
+    console.log("Props: ", this.props)
     return (
       <div>
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
@@ -408,16 +268,18 @@ export default class EventsPageComponent extends React.Component {
               style={styles.gridList}
             >
               <Subheader>&nbsp;</Subheader>
-              {this.state.userEvents.filter(event => event.date === today).map((event) => 
-                (<GridTile
-                  key={event.time}
-                  title={event.time}
-                  subtitle={<span><b>{event.description}</b></span>}
+              {this.state.userEvents.filter(event => event.date_time.slice(0,10) === today).map((event) => 
+                (<Link to='/details'>
+                  <GridTile
+                  key={event.date_time}
+                  title={event.date_time}
+                  subtitle={<span><b>{event.name}</b></span>}
                   onClick={() => this.handleOpen(event)}
                 >
-                  <img src={event.img} />
+                  {event.img? (<img src={event.img}/>) : (<img src={'https://2.bp.blogspot.com/-SvN4VSH-w9Q/WAODvBuRtOI/AAAAAAAAAUA/FpfcOM7w2pQWYMGfX4l86bRISTGD-0D2wCEw/s1600/Talking-Tables-Illuminations-Party-light-Christmas-lifestyle-Portrait.png'} />)}
 
                 </GridTile>
+                </Link>
               ))}
             </GridList>
           </div>
@@ -425,98 +287,99 @@ export default class EventsPageComponent extends React.Component {
         <Tab className="tabsItem" label="All Plans" >
           {this.state.eventsDays.map(eventdate => (
             <div style={styles.root}>
-              <h1 style={{margin:'40 20 0 0'}}>{eventdate.date}</h1>
+              <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
               <GridList
                 cols={1}
                 padding={15}
                 cellHeight={180}
                 style={styles.gridList}
-                key={eventdate.date}
+                key={eventdate.date_time}
               >
                 <Subheader>&nbsp;</Subheader>
                 {eventdate.events.map(event => 
-                  (<GridTile 
-                    key={event.time}
-                    title={event.time}
-                    subtitle={<span><b>{event.description}</b></span>}
-                    actionIcon={<span><b style={{color: "white"}}>{event.vote_count}</b><IconButton onClick={() => this.handleVote(event)}><ThumbUp color="white" /></IconButton></span>}
+                  (<Link to='/details'>
+                    <GridTile 
+                    key={event.date_time}
+                    title={event.date_time.slice(11,16)}
+                    subtitle={<span><b>{event.name}</b></span>}
                   >
-                    <img onClick={() => this.handleOpen(event)} src={event.img} />
+                    {event.img ? (<img onClick={() => this.handleOpen(event)} src={event.img} />) : (<img onClick={() => this.handleOpen(event)} src={'https://2.bp.blogspot.com/-SvN4VSH-w9Q/WAODvBuRtOI/AAAAAAAAAUA/FpfcOM7w2pQWYMGfX4l86bRISTGD-0D2wCEw/s1600/Talking-Tables-Illuminations-Party-light-Christmas-lifestyle-Portrait.png'} />)}
                   </GridTile>
+                  </Link>
                 ))}
               </GridList>
             </div>
           ))}
         </Tab>
       </Tabs>
-      <Dialog
-        title="Event Detail"
-        actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
-        modal={false}
-        open={this.state.open}
-        onRequestClose={this.handleClose}
-        autoScrollBodyContent={true}
-      >
-        <br/>
+    </div>);
+  }
+}
 
-        {this.state.eventDetails.img !== '' ? (<img src={this.state.eventDetails.img} alt="eventImg"/>) : null}
+      // <Dialog
+      //   title="Event Detail"
+      //   actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
+      //   modal={false}
+      //   open={this.state.open}
+      //   onRequestClose={this.handleClose}
+      //   autoScrollBodyContent={true}
+      // >
+        // <br/>
+
+        // {this.state.eventDetails.img !== '' ? (<img src={this.state.eventDetails.img} alt="eventImg"/>) : null}
 
 
 
 
         
-        {this.state.weather !== '' ? (<List><div><Subheader>Weather:</Subheader><Skycons color='orange' icon={this.state.weather.icon} autoplay={true} style={styles.weather}/><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather.summary}</p><p>{this.state.weather.temperature}&#8451;</p></div><Divider/></List>) : null}
-        {this.state.eventDetails.name !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.name}</p></div><Divider/></List>) : null}
-        {this.state.eventDetails.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.description.length > 100 ? this.state.eventDetails.description.slice(0,100) + '...' : this.state.eventDetails.description }{this.state.eventDetails.url ? (<a href={this.state.eventDetails.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
-        {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
-        {this.state.eventDetails.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.address}</p><RaisedButton label="Map Open" onTouchTap={() => this.handleGoogleMapOpen(this.state.eventDetails)} /></div><br/><Divider/></List>) : null}
-        {this.state.eventDetails.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.city}</p></div><Divider/></List>) : null}
-        {this.state.eventDetails.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.state}</p></div><Divider/></List>) : null}
-        {this.state.eventDetails.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.phone}</p></div><Divider/></List>) : null}
-        {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Group:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
+        // {this.state.weather !== '' ? (<List><div><Subheader>Weather:</Subheader><Skycons color='orange' icon={this.state.weather.icon} autoplay={true} style={styles.weather}/><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather.summary}</p><p>{this.state.weather.temperature}&#8451;</p></div><Divider/></List>) : null}
+        // {this.state.eventDetails.name !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.name}</p></div><Divider/></List>) : null}
+        // {this.state.eventDetails.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.description.length > 100 ? this.state.eventDetails.description.slice(0,100) + '...' : this.state.eventDetails.description }{this.state.eventDetails.url ? (<a href={this.state.eventDetails.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
+        // {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
+        // {this.state.eventDetails.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.address}</p><RaisedButton label="Map Open" onTouchTap={() => this.handleGoogleMapOpen(this.state.eventDetails)} /></div><br/><Divider/></List>) : null}
+        // {this.state.eventDetails.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.city}</p></div><Divider/></List>) : null}
+        // {this.state.eventDetails.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.state}</p></div><Divider/></List>) : null}
+        // {this.state.eventDetails.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.phone}</p></div><Divider/></List>) : null}
+        // {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Group:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
           
-      </Dialog>
-      <Dialog
-        title="The Location Of Your Event"
-        actions={<FlatButton label="Cancle" primary={true} onTouchTap={this.handleGoogleMapClose} />}
-        modal={false}
-        open={this.state.googleMapOpen}
-        onRequestClose={this.handleGoogleMapClose}
-        autoScrollBodyContent={true}
-      >
-        <br/>
-        { this.state.displaydirectionDetails ? 
-          (<div>
-            <div>
-              <p>Current Address(A): {this.state.directionDetails.currentAddress}</p>
-            </div>
-            <div>
-              <p>Derection Address(B): {this.state.eventDetails.address}</p>
-            </div>
-            <div>
-              <p>Transportation: {this.state.directionDetails.transportation}</p>
-            </div>
-            <div>
-              <p>Distance: {this.state.directionDetails.distance}</p>
-            </div>
-            <div>
-              <p>Time: {this.state.directionDetails.time}</p>
-            </div>
-          </div>)
-          : null
-        }
-        <div id="map" style={styles.googleMapStyle}></div>
-        <br/>
-        {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton label="TRANSIT" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'TRANSIT')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton label="DRIVING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton label="BICYCLING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'BICYCLING')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton label="WALKING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'WALKING')}/>) : null}
-      </Dialog>
-    </div>);
-  }
-}
+      // </Dialog>
 
-
+      // <Dialog
+      //   title="The Location Of Your Event"
+      //   actions={<FlatButton label="Cancle" primary={true} onTouchTap={this.handleGoogleMapClose} />}
+      //   modal={false}
+      //   open={this.state.googleMapOpen}
+      //   onRequestClose={this.handleGoogleMapClose}
+      //   autoScrollBodyContent={true}
+      // >
+      //   <br/>
+      //   { this.state.displaydirectionDetails ? 
+      //     (<div>
+      //       <div>
+      //         <p>Current Address(A): {this.state.directionDetails.currentAddress}</p>
+      //       </div>
+      //       <div>
+      //         <p>Derection Address(B): {this.state.eventDetails.address}</p>
+      //       </div>
+      //       <div>
+      //         <p>Transportation: {this.state.directionDetails.transportation}</p>
+      //       </div>
+      //       <div>
+      //         <p>Distance: {this.state.directionDetails.distance}</p>
+      //       </div>
+      //       <div>
+      //         <p>Time: {this.state.directionDetails.time}</p>
+      //       </div>
+      //     </div>)
+      //     : null
+      //   }
+      //   <div id="map" style={styles.googleMapStyle}></div>
+      //   <br/>
+      //   {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
+      //   {this.state.displaydirectionDetails ? (<RaisedButton label="TRANSIT" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'TRANSIT')}/>) : null}
+      //   {this.state.displaydirectionDetails ? (<RaisedButton label="DRIVING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
+      //   {this.state.displaydirectionDetails ? (<RaisedButton label="BICYCLING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'BICYCLING')}/>) : null}
+      //   {this.state.displaydirectionDetails ? (<RaisedButton label="WALKING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'WALKING')}/>) : null}
+      // </Dialog>
 
 

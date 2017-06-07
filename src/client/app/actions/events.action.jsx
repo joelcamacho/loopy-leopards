@@ -36,6 +36,13 @@ let action = {
       payload: event,
     }
   },
+
+  eventDetails: function(event) {
+    return {
+      type: "EVENT_DETAILS",
+      payload: event
+    }
+  }
 };
 
 export default action;

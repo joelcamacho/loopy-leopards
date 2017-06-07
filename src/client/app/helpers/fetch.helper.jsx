@@ -131,7 +131,7 @@ const helpers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({address: event.address})
+      body: JSON.stringify({address: event})
     };
 
     return fetch('/api/latlngMap', options)
@@ -166,7 +166,7 @@ const helpers = {
       });
   },
 
-  fetchDirectionData: (address, destination) => {
+  fetchDirectionData: (address, destination, mode) => {
     let options = {
       method: 'POST',
       credentials: 'include',
@@ -174,7 +174,7 @@ const helpers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({origin: address, destination: destination.address})
+      body: JSON.stringify({origin: address, destination: destination, mode: mode})
     };
 
     return fetch('/api/directionData', options)
@@ -184,6 +184,24 @@ const helpers = {
         return err;
       })
   },
+
+  //darksky helper
+  fetchWeatherData: (latitude, longitude, time) => {
+    let init = {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({latitude: latitude, longitude: longitude, time: time})
+    }
+
+    return fetch('/api/weather', init)
+      .then(res => res.json())
+      .catch(err => console.log('can not get data from darkSky: ', err ))
+  },
+
 
   // User helpers
   fetchUserData: () => {
@@ -453,6 +471,17 @@ const helpers = {
   // Event helpers (specific events)
   fetchEventData: (event) => {
     let endpoint = '/api/events/' + event.id;
+
+    return fetch(endpoint, {credentials: 'include'})
+      .then(res => res.json())
+      .catch(err => {
+        console.log("can not fetch event: ", err);
+        return err;
+      })
+  },
+
+  fetchAllEventData: () => {
+    let endpoint = '/api/events/';
 
     return fetch(endpoint, {credentials: 'include'})
       .then(res => res.json())

@@ -237,13 +237,11 @@ export default class EventDetailsPageComponent extends React.Component {
   // }
 
   render() {
-
     console.log("THIS event is FROM PROPS: ", this.props.event)
     console.log("ThIS profile is FROM PROPS: ", this.props.profile)
-    return (
-    this.props.event.creator_id === this.props.profile.id ? (
 
-        <Dialog
+    return this.props.event.creator_id === this.props.profile.id ? (
+      <Dialog
           title="Event Detail"
           actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
           modal={false}
@@ -253,9 +251,8 @@ export default class EventDetailsPageComponent extends React.Component {
         >
           <p>Hello!!! Event Creator!!!</p>
         </Dialog>
-
-    ) : (
-        <Dialog
+      ) : (
+      <Dialog
           title="Event Detail"
           actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
           modal={false}
@@ -265,7 +262,7 @@ export default class EventDetailsPageComponent extends React.Component {
         >
           <p>Hello!!! Guest User!!!</p>
         </Dialog>
-    ))
+      )
   }
 }
 

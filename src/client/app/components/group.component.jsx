@@ -7,7 +7,7 @@ import ContentAdd from 'material-ui/svg-icons/content/add';
 import CommunicationPhone from 'material-ui/svg-icons/communication/phone';
 import TextField from 'material-ui/TextField';
 import Paper from 'material-ui/Paper';
-import FlatButton from 'material-ui/FlatButton';
+import RaisedButton from 'material-ui/RaisedButton';
 import {Tabs, Tab} from 'material-ui/Tabs';
 
 // import helpers
@@ -155,7 +155,7 @@ export default class GroupPageComponent extends React.Component {
                 <div className="group">
                   <Paper className="container">
                     <div>
-                      <h3> { this.props.group.name } </h3>
+                      <div className='groupName'> { this.props.group.name } </div>
                       <Divider/>
                       <List>
                         <Subheader> Current Members </Subheader>
@@ -169,7 +169,7 @@ export default class GroupPageComponent extends React.Component {
                       <Divider/>
                       <List>
                         <Subheader> Leave Group </Subheader>
-                        <FlatButton onClick={() => this.leaveGroup()} className="addBtn" label="Leave Current Group" />
+                        <RaisedButton primary={true} onClick={() => this.leaveGroup()} className="addBtn" label="Leave Current Group" />
                       </List>
                     </div>
                   </Paper>
@@ -187,7 +187,7 @@ export default class GroupPageComponent extends React.Component {
                           <Subheader> Invite Friends </Subheader>
                           <TextField ref='inviteTextFieldPhone' className="add"  floatingLabelText="Phone Number"/>
                           <br />
-                          <FlatButton onClick={() => this.sendInvitation()} className="addBtn" label="Send Invitation" />
+                          <RaisedButton primary={true} onClick={() => this.sendInvitation()} className="addBtn" label="Send Invitation" />
                         </List>
                         <Divider/>
                         <List>
@@ -226,14 +226,14 @@ export default class GroupPageComponent extends React.Component {
                         <Subheader> Request To Join Group </Subheader>
                         <TextField ref='joinTextField' className="add" floatingLabelText="Group Name"/>
                         <br />
-                        <FlatButton onClick={() => this.sendRequest()} className="addBtn" label="Send Request" />
+                        <RaisedButton primary={true} onClick={() => this.sendRequest()} className="addBtn" label="Send Request" />
                       </List>
                       <Divider/>
                       <List>
                         <Subheader> Create New Group </Subheader>
                         <TextField ref='createTextField' className="add" floatingLabelText="Group Name"/>
                         <br />
-                        <FlatButton onClick={() => this.createGroup()} className="addBtn" label="Create New Group" />
+                        <RaisedButton primary={true} onClick={() => this.createGroup()} className="addBtn" label="Create New Group" />
                       </List>
                       <Divider/>
                       <List>
@@ -284,7 +284,7 @@ export default class GroupPageComponent extends React.Component {
     <Subheader> Join Group </Subheader>
     <TextField ref='joinTextField' className="add" floatingLabelText="Group Name"/>
     <br />
-    <FlatButton onClick={() => this.actionSendRequest()} className="addBtn" label="Send Invite Request" />
+    <RaisedButton primary={true} onClick={() => this.actionSendRequest()} className="addBtn" label="Send Invite Request" />
   </List>
   <Divider/>
   <List>

@@ -1,32 +1,5 @@
-$primaryColor: lightblue;
-$fontSize: (100px - 50px);
-
 .group {
-  background-color: $primaryColor;
-  font-size: $fontSize;
-  min-height: 75vh;
-  width: 100%;
-  min-width: 300px; 
-  padding-bottom: 30pt;
-  padding-top: 40pt;
-
   .container {
-    margin: 5% !important;
-
-    h3 {
-      font-weight: 400;
-      padding: 20pt 0 0 16px !important
-    }
-
-    .add {
-      width: 38%;
-      margin: 0 5% 5% 5%;
-      padding-left: 16px;
-    }
-
-    .addBtn {
-      margin: 0 5% 5% 5%  !important;
-    }
 
     .phone {
       height: 100% !important;
@@ -35,5 +8,40 @@ $fontSize: (100px - 50px);
       right: -10pt !important;
     }
   }
+}
 
+.groupAuth {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 30pt 20pt;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.tabsContainer {
+
+}
+
+.tabsPage {
+  margin-top: 50pt;
+  padding: 0 10pt;
+}
+
+.groupName {
+  font-size: 50pt;
+  padding: 20pt 10pt;
+}
+
+.addBtn {
+  width: 94% !important;
+  margin: 10pt 3% !important;
+  padding: 0 0 !important;
+}
+
+.add {
+  width: 94% !important;
+  margin: 10pt 3% !important;
+  padding: 0 0 !important;
 }

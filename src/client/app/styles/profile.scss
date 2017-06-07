@@ -1,23 +1,20 @@
-$primaryColor: lightblue;
-$fontSize: (100px - 50px);
 
 .profile {
-  background-color: $primaryColor;
-  font-size: $fontSize;
+  font-size: 50px;
   display: flex;
   flex-wrap: wrap;
-  width: 100%;
-  min-height: 98vh;
-  min-width: 300px;
-  align-items: center center;
-  padding-bottom: 30pt;
+  align-items: center;
+  justify-content: center;
+  height: 70%;
+
+  padding: 5pt 0 5pt 0;
 
   .container {
-    width: 350px !important;
+    width: 350px !important;    
     margin: auto;
     min-height: 400px;
     text-align: center;
-    padding-bottom: 30pt;
+    padding: 5pt 20pt 15pt 20pt;
 
     h3 {
       font-size: 30px;
@@ -26,5 +23,42 @@ $fontSize: (100px - 50px);
     p {
       font-size: 15px;
     }
+  }
+
+}
+
+.notifyBtn {
+  margin: 10pt 3%;
+  width: 94% !important;
+}
+
+.profileCard {
+  margin-top: 20pt;
+}
+
+.textFields {
+  width: 44% !important;
+  margin: 0 3%;
+}
+
+.profileHeader {
+  font-size: 15pt;
+  font-weight: 500;
+  margin-top: 10pt;
+  margin-bottom: 5pt;
+}
+
+.profileContent {
+  padding: 20pt 40pt!important;
+  word-wrap: break-word;
+}
+
+@media screen and (max-width: 500px) {
+  .textFields {
+    width: 94% !important;
+  }
+
+  .profile {
+    padding: 5pt 0 30pt 0;
   }
 }

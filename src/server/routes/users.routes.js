@@ -65,10 +65,16 @@ routes.route('/user')
 		//   password, address, city, state,
 		//   latitude, longitude, phone, birthdate, registered }
 		helpers.getUserIdFromGoogleId(req.user ? req.user.id : null)
-		.catch(err => res.status(400).send({result: err}))
+		.catch(err => {
+			console.log(err);
+			res.status(400).send({result: err});
+		})
 		.then(id => helpers.updateCurrentUserFromId(id, req.body))
 		.then(result => res.send(result))
-		.catch(err => res.status(400).send({result: err}))
+		.catch(err => {
+			console.log(err);
+			res.status(400).send({result: err});
+		})
 	})
 	.delete((req,res) => {
 		helpers.getUserIdFromGoogleId(req.user ? req.user.id : null)

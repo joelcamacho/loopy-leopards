@@ -19,7 +19,7 @@ routes.get('/auth/google',
   passport.authenticate('google', {scope: 'https://www.googleapis.com/auth/plus.login'}));
  
 routes.get('/auth/google/callback', 
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: '/#/profile' }),
   function(req, res) {
     // Successful authentication, redirect home.
     console.log('Successful authentication google', req.user);
@@ -39,7 +39,7 @@ routes.get('/auth/google/callback',
         User.forge(userData).save()
         .then((user) => {
           console.log(user);
-          res.redirect('/');  
+          res.redirect('/#/profile');  
         })
         .catch((err) => {
           console.log(err)

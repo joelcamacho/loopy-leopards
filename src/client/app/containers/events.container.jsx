@@ -8,9 +8,12 @@ export default connect(
   },
   function mapDispatchToProps(dispatch) {
     return {     	
-    	eventDetails: function(events) {
-    		return dispatch(action.eventDetails(events));
+    	eventDetails: function(event) {
+    		return dispatch(action.eventDetails(event));
     	},
+      updateEvent: function(event) {
+        return dispatch(action.updateEvent(event))
+      }
     };
   }
 )(EventsPageComponent);

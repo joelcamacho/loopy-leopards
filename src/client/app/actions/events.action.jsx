@@ -42,6 +42,13 @@ let action = {
       type: "EVENT_DETAILS",
       payload: event
     }
+  },
+
+  updateEvent: function(event) {
+    return {
+      type: "MODIFY_EVENT",
+      payload: event
+    }
   }
 };
 

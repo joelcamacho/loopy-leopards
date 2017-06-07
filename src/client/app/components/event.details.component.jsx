@@ -50,9 +50,9 @@ export default class EventDetailsPageComponent extends React.Component {
     super(props);
 
     this.state = {
-      userEvents: [],
-      voteStatus: false,
-      eventsDays: [],
+      // userEvents: [],
+      rsvpStatus: false,
+      // eventsDays: [],
       open: true,
       eventDetails: {},
       googleMapOpen: false,
@@ -189,16 +189,41 @@ export default class EventDetailsPageComponent extends React.Component {
   //     )
   //   }
   // }
+  
+  getEventDetails() {
+  	helpers.fetchEventData(this.state.eventDetails)
+  	.then(res => {
+  		console.log(res)
+  		let inv = res.groupsBelongingTo.find(group => group._pivot_status === 'member');
+        if(!userGroup) {
+          this.props.resetGroup();
+        } else {
+        	this.props.updateEvent(res);
+        }
+  	})
+  }
 
-  // handleVote (event) {
-  //   let newUserEvents = []
-  //   if (!event.voteStatus) {
-  //     ++event.vote_count;
-  //     event.voteStatus = true;
-  //   } else {
-  //     --event.vote_count;
-  //     event.voteStatus = false;
-  //   }
+  acceptInvitationToEvent() {
+    console.log('accept invitation');
+    helpers.fetchAcceptEventInvitation(this.state.eventDetails)
+    .then(res => {
+    	console.log('fetchAcceptGroupInvitation', res);
+    	this.getEventDetails();
+	}) 
+  }
+
+  rejectInvitationToEvent() {
+  	console.log('reject invitation')
+  	helpers.fetchRejectEventInvitation(this.state.eventDetails)
+  	.then(res => {
+  		if(res) {
+  			//redirect to event list view
+  		} else {
+  			this.getEventDetails()
+  		}
+  		console.log('rejectEventInvitation', res)
+  	})
+  }
 
   //   this.state.userEvents.forEach(userEvent => {
   //     if(userEvent.name === event.name) {//check this when get real data!!!!!!
@@ -216,56 +241,83 @@ export default class EventDetailsPageComponent extends React.Component {
 
   // }
 
-  // componentDidMount() {
-  //   helpers.fetchAllEventData()
-  //   .then(res => {
-  //     res = res.created;
-  //     let eventsDays = [];
-  //     res.map(event => event.voteStatus = false);
-  //     this.setState({userEvents: res});
-  //     res.forEach(event => eventsDays.push(event.date_time));
-  //     eventsDays = eventsDays
-  //     .filter((ele,ind) => eventsDays.indexOf(ele) === ind)
-  //     .map(date => {
-  //       let rObj = {};
-  //       rObj.date = date;
-  //       rObj.events = res.filter(event => event.date_time === date);
-  //       return rObj;
-  //     })
-  //     this.setState({eventsDays: eventsDays})
-  //   })
-  // }
+  componentDidMount() {
+    this.setState({eventDetails: this.props.event})
+  }
+
+
 
   render() {
 
-    console.log("THIS event is FROM PROPS: ", this.props.event)
-    console.log("ThIS profile is FROM PROPS: ", this.props.profile)
-    return (
-    this.props.event.creator_id === this.props.profile.id ? (
+  	console.log("THIS event is FROM PROPS: ", this.props.event);
+    console.log("ThIS profile is FROM PROPS: ", this.props.profile);
+    console.log('Event details', this.state.eventDetails)
 
-        <Dialog
-          title="Event Detail"
-          actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
+    let buttons =[
+    <FlatButton label="YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />,
+    <FlatButton label="NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
+    ]
+
+  	// return this.props.event.creator_id === this.props.profile.id ? 
+  	// (
+  	// 	<Dialog
+   //        title="Event Detail"
+   //        actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
+   //        modal={false}
+   //        open={this.state.open}
+   //        onRequestClose={this.handleClose}
+   //        autoScrollBodyContent={true}
+   //      >
+   //        <p>Hello!!! Event Creator!!!</p>
+   //      </Dialog>
+  	// ) 
+  	// : 
+  	return (
+  		<Dialog
+  		title="Event Detail"
+          actions={buttons}
           modal={false}
           open={this.state.open}
           onRequestClose={this.handleClose}
           autoScrollBodyContent={true}
-        >
-          <p>Hello!!! Event Creator!!!</p>
+          >
+          <br/>
+          {this.state.eventDetails.img !== '' ? (
+          	<img 
+          	src={this.state.eventDetails.img} 
+          	alt="eventImg"
+          	/>) : null}
+          {this.state.weather !== '' ? (
+          	<List>
+	          	<div>
+		          	<Subheader>Weather:</Subheader>
+		          	<Skycons color='orange' 
+		          		icon={this.state.weather.icon} 
+		          		autoplay={true} 
+		          		style={styles.weather}
+		          	/>
+		          	<p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather.summary}</p>
+		          	<p>{this.state.weather.temperature}&#8451;</p>
+	          	</div>
+	          	<Divider/>
+          	</List>) : null}
+        {this.state.eventDetails.name !== '' ? (
+        	<List>
+        		<div>
+        			<Subheader>Event:</Subheader>
+        			<p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.name}</p>
+        		</div><Divider/>
+        	</List>) : null}
+        {this.state.eventDetails.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.description.length > 100 ? this.state.eventDetails.description.slice(0,100) + '...' : this.state.eventDetails.description }{this.state.eventDetails.url ? (<a href={this.state.eventDetails.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.address}</p><RaisedButton label="Map Open" onTouchTap={() => this.handleGoogleMapOpen(this.state.eventDetails)} /></div><br/><Divider/></List>) : null}
+        {this.state.eventDetails.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.city}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.state}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.phone}</p></div><Divider/></List>) : null}
+        {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Group:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
+          
         </Dialog>
-
-    ) : (
-        <Dialog
-          title="Event Detail"
-          actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
-          modal={false}
-          open={this.state.open}
-          onRequestClose={this.handleClose}
-          autoScrollBodyContent={true}
-        >
-          <p>Hello!!! Guest User!!!</p>
-        </Dialog>
-    ))
+  	)
   }
 }
 

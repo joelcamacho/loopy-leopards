@@ -480,6 +480,17 @@ const helpers = {
       })
   },
 
+  fetchAllEventData: () => {
+    let endpoint = '/api/events/';
+
+    return fetch(endpoint, {credentials: 'include'})
+      .then(res => res.json())
+      .catch(err => {
+        console.log("can not fetch event: ", err);
+        return err;
+      })
+  },
+
   fetchUpdateEventData: (event, details) => {
     let endpoint = '/api/events/' + event.id;
 

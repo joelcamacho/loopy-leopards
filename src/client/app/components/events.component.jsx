@@ -236,27 +236,9 @@ export default class EventsPageComponent extends React.Component {
 
     if (navigator.geolocation) { 
         navigator.geolocation.getCurrentPosition(function (position) { 
-
-
-          const latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);  
-
-          // var coords = position.coords;
-          // let init = {
-          //   method: 'POST',
-          //   credentials: 'include',
-          //   headers: {
-          //     'Accept': 'application/json',
-          //     'Content-Type': 'application/json'
-          //   },
-          //   body: JSON.stringify({latlngCode: {lat: coords.latitude, lng: coords.longitude}})
-          // }
-          // fetch('/api/addressMap', init)
-          // .then(res => res.json())
-          // .catch(err => console.log("can not save event data: ", err))
-
+          const latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude); 
           helpers.fetchAddressFromCoordinates(position)
           .then(res => {
-            console.log(res)
             currentAddress = res;
             return currentAddress;
           })
@@ -301,15 +283,6 @@ export default class EventsPageComponent extends React.Component {
     }
   }
 
-  // handleTransportation (transportation) {
-  //   console.log("Hello World!!!")
-  // }
-
-
-  // handleEventClick () {
-  //   console.log("Hello World!")
-  // }
-
   handleVote (event) {
     let newUserEvents = []
     if (!event.voteStatus) {
@@ -341,26 +314,44 @@ export default class EventsPageComponent extends React.Component {
     // .then(res => res.json())
     // .catch(err => console.log("Can not get user's events from server: ", err))
     // .then(res => this.setState({userEvents: res}))
-    let res = fakeEvents;
-    let eventsDays = [];
-    res.map(event => event.voteStatus = false);
-    this.setState({userEvents: res});
-    res.forEach(event => eventsDays.push(event.date));
-    eventsDays = eventsDays
-    .filter((ele,ind) => eventsDays.indexOf(ele) === ind)
-    .map(date => {
-      let rObj = {};
-      rObj.date = date;
-      rObj.events = res.filter(event => event.date === date);
-      return rObj;
+    console.log("Hello!!!!!")
+    helpers.fetchAllEventData()
+    .then(res => {
+      res = res.created;
+      console.log(res)
+
+      let eventsDays = [];
+      res.map(event => event.voteStatus = false);
+      this.setState({userEvents: res});
+      res.forEach(event => eventsDays.push(event.date_time));
+      eventsDays = eventsDays
+      .filter((ele,ind) => eventsDays.indexOf(ele) === ind)
+      .map(date => {
+        let rObj = {};
+        rObj.date = date;
+        rObj.events = res.filter(event => event.date_time === date);
+        return rObj;
+      })
+      console.log("HHHHHHHH: ", eventsDays)
+      this.setState({eventsDays: eventsDays})
     })
-    this.setState({eventsDays: eventsDays})
   }
 
   render() {
-    console.log("!!!!!!!!: ", this.props)
     let date = new Date();
     let today = date.toLocaleDateString();
+    today = today.split("/");
+    let month = today[0];
+    let day = today[1];
+    let year = today[2];
+    if (day < 10) {
+      day = "0" + day;
+    }
+    if (month < 10) {
+      month = "0" + month;
+    }
+    today = year + '-' + month + '-' + day;
+    console.log(today);
     return (
       <div>
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
@@ -373,14 +364,14 @@ export default class EventsPageComponent extends React.Component {
               style={styles.gridList}
             >
               <Subheader>&nbsp;</Subheader>
-              {this.state.userEvents.filter(event => event.date === today).map((event) => 
+              {this.state.userEvents.filter(event => event.date_time.slice(0,10) === today).map((event) => 
                 (<GridTile
-                  key={event.time}
-                  title={event.time}
-                  subtitle={<span><b>{event.description}</b></span>}
+                  key={event.date_time}
+                  title={event.date_time}
+                  subtitle={<span><b>{event.name}</b></span>}
                   onClick={() => this.handleOpen(event)}
                 >
-                  <img src={event.img} />
+                  <img src={'https://2.bp.blogspot.com/-SvN4VSH-w9Q/WAODvBuRtOI/AAAAAAAAAUA/FpfcOM7w2pQWYMGfX4l86bRISTGD-0D2wCEw/s1600/Talking-Tables-Illuminations-Party-light-Christmas-lifestyle-Portrait.png'} />
 
                 </GridTile>
               ))}
@@ -390,20 +381,20 @@ export default class EventsPageComponent extends React.Component {
         <Tab className="tabsItem" label="All Plans" >
           {this.state.eventsDays.map(eventdate => (
             <div style={styles.root}>
-              <h1 style={{margin:'40 20 0 0'}}>{eventdate.date}</h1>
+              <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
               <GridList
                 cols={1}
                 padding={15}
                 cellHeight={180}
                 style={styles.gridList}
-                key={eventdate.date}
+                key={eventdate.date_time}
               >
                 <Subheader>&nbsp;</Subheader>
                 {eventdate.events.map(event => 
                   (<GridTile 
-                    key={event.time}
-                    title={event.time}
-                    subtitle={<span><b>{event.description}</b></span>}
+                    key={event.date_time}
+                    title={event.date_time.slice(11,16)}
+                    subtitle={<span><b>{event.name}</b></span>}
                     actionIcon={<span><b style={{color: "white"}}>{event.vote_count}</b><IconButton onClick={() => this.handleVote(event)}><ThumbUp color="white" /></IconButton></span>}
                   >
                     <img onClick={() => this.handleOpen(event)} src={event.img} />

@@ -143,6 +143,7 @@ export default class ProfilePageComponent extends React.Component {
             {profileComponent}
           </Paper>
         </div>
+
         <Dialog
           title="Edit Profile"
           actions={actions}
@@ -150,11 +151,12 @@ export default class ProfilePageComponent extends React.Component {
           open={this.state.open}
           onRequestClose={this.handleClose}
         >
-          <TextField ref='addressTextField' floatingLabelText="Address"/>
-          <TextField ref='cityTextField' floatingLabelText="City"/>
-          <TextField ref='stateTextField' floatingLabelText="State"/>
-          <TextField ref='birthdateTextField' floatingLabelText="Birthday"/>
+          <TextField className='textFields' ref='addressTextField' floatingLabelText="Address"/>
+          <TextField className='textFields' ref='cityTextField' floatingLabelText="City"/>
+          <TextField className='textFields' ref='stateTextField' floatingLabelText="State"/>
+          <TextField className='textFields' ref='birthdateTextField' floatingLabelText="Birthday"/>
         </Dialog>
+        
       </div>
     );
   }

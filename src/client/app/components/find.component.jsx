@@ -4,6 +4,7 @@ import { HashRouter, Router, Link } from 'react-router-dom';
 import TextField from 'material-ui/TextField';
 import Checkbox from 'material-ui/Checkbox';
 import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import CircularProgress from 'material-ui/CircularProgress';
 
 export default class SearchPageComponent extends React.Component {
   constructor(props) {
@@ -19,6 +20,7 @@ export default class SearchPageComponent extends React.Component {
       events: [],
       showMoreButton: false,
       searchButton: false,
+      hasSearched: false
     }
 
     this.handleExpandChange = this.handleExpandChange.bind(this);
@@ -188,6 +190,7 @@ export default class SearchPageComponent extends React.Component {
         this.props.addEvents(result);
         this.setState({expanded: true});
         this.setState({searchButton: false});
+        this.setState({hasSearched: true});
         result.length > 20 ? this.setState({showMoreButton: false}) : this.setState({showMoreButton: true})
       })
     this.setState({searchButton: true});
@@ -270,6 +273,10 @@ export default class SearchPageComponent extends React.Component {
             />
           </Card>
 
+          {this.state.searchButton ? (
+            <CircularProgress className='progress' size={120} thickness={8} />
+          ) : null}
+
           <div className="findResults">
             {
               events.slice(2, 20).map(event => {
@@ -307,24 +314,26 @@ export default class SearchPageComponent extends React.Component {
               })
             }
             </div>
-            <br/>
-            <RaisedButton
-              primary={true} 
-              className='findShowBtn'
-              expandable={true}
-              label="Show more" 
-              onTouchTap={this.handleMoreSearchResult} 
-              disabled={this.state.showMoreButton}
-            />
-            <br/>
-            <RaisedButton
-              primary={true}
-              className='findShowBtn'
-              expandable={true} 
-              label="Top" 
-              onTouchTap={this.handleBackToTop} 
-            />
-            <br/>
+            { this.state.hasSearched ? (
+              <div>
+                <br/>
+                <RaisedButton
+                  primary={true} 
+                  className='findShowBtn'
+                  label="Show more" 
+                  onTouchTap={this.handleMoreSearchResult} 
+                  disabled={this.state.showMoreButton}
+                />
+                <br/>
+                <RaisedButton
+                  primary={true}
+                  className='findShowBtn'
+                  label="Top" 
+                  onTouchTap={this.handleBackToTop} 
+                />
+                <br/>
+              </div>) : null
+            }
 
         </div>
       </div>

@@ -11,6 +11,7 @@ import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import Skycons from 'react-skycons';
+import helpers from '../helpers/fetch.helper.jsx';
 
 const styles = {
   headline: {
@@ -168,18 +169,7 @@ export default class EventsPageComponent extends React.Component {
   }
 
   handleOpen (event)  {
-    let init = {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({latitude: event.latitude, longitude: event.longitude,time: event.time})
-    }
-    fetch('/api/weather', init)
-    .then(res => res.json())
-    .catch(err => console.log('can not get data from darkSky: ', err ))
+    helpers.fetchWeatherData(event.latitude, event.longitude, event.time)
     .then(res => {
       let icon = '' 
       res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
@@ -202,18 +192,7 @@ export default class EventsPageComponent extends React.Component {
   };
 
   handleGoogleMapOpen (event) {
-    let init = {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({address: event.address})
-    }
-    fetch('/api/latlngMap', init)
-    .then(res => res.json())
-    .catch(err => console.log("can not get latlng code: ", err))
+    helpers.fetchCoordinatesForEvent(event.address)
     .then(res => {
       const coords = res.results[0].geometry.location;
       const myOptions = { 
@@ -257,39 +236,39 @@ export default class EventsPageComponent extends React.Component {
 
     if (navigator.geolocation) { 
         navigator.geolocation.getCurrentPosition(function (position) { 
+
+
           const latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);  
 
-          var coords = position.coords;
-          let init = {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({latlngCode: {lat: coords.latitude, lng: coords.longitude}})
-          }
-          fetch('/api/addressMap', init)
-          .then(res => res.json())
-          .catch(err => console.log("can not save event data: ", err))
+          // var coords = position.coords;
+          // let init = {
+          //   method: 'POST',
+          //   credentials: 'include',
+          //   headers: {
+          //     'Accept': 'application/json',
+          //     'Content-Type': 'application/json'
+          //   },
+          //   body: JSON.stringify({latlngCode: {lat: coords.latitude, lng: coords.longitude}})
+          // }
+          // fetch('/api/addressMap', init)
+          // .then(res => res.json())
+          // .catch(err => console.log("can not save event data: ", err))
+
+          helpers.fetchAddressFromCoordinates(position)
           .then(res => {
-            currentAddress = res.results[0].formatted_address;
+            console.log(res)
+            currentAddress = res;
             return currentAddress;
           })
           .then(function(address) {
-
             currentAddress = address;
-
             var mapOptions = {
               zoom: 7,
               mapTypeId: google.maps.MapTypeId.ROADMAP,
               center: latlng
             }
-
             const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-
             directionsDisplay.setMap(map);
-
             var way = google.maps.TravelMode[mode];
             var request = {
               origin: address,
@@ -305,19 +284,7 @@ export default class EventsPageComponent extends React.Component {
             return address;
           })
           .then(currentAddress => {
-
-            let init = {
-              method: 'POST',
-              credentials: 'include',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({origin: currentAddress, destination: event.address, mode: mode})
-            }
-            fetch('/api/directionData', init)
-            .then(res => res.json())
-            .catch(err => console.log("can not save event data: ", err))
+            helpers.fetchDirectionData(currentAddress, event.address, mode)
             .then(res => {
               directionDetails = {};
               directionDetails.transportation = mode;
@@ -391,6 +358,7 @@ export default class EventsPageComponent extends React.Component {
   }
 
   render() {
+    console.log("!!!!!!!!: ", this.props)
     let date = new Date();
     let today = date.toLocaleDateString();
     return (

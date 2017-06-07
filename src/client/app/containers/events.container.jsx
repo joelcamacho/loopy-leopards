@@ -3,10 +3,7 @@ import EventsPageComponent from '../components/events.component.jsx';
 
 export default connect(
   function mapStateToProps(state) {
-    return {
-    	profile: state.profile.toJS(),
-    	events: state.userEvents.toJS(),
-    };
+    return {};
   },
   function mapDispatchToProps(dispatch) {
     return { 

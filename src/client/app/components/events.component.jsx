@@ -85,14 +85,8 @@ export default class EventsPageComponent extends React.Component {
     // this.setState({eventDetails: event})
     // this.setState({open: true});
 
-    console.log("Hello, event is here: ", event);
-    this.props.eventDetails(event);
-
-    if (event.creator_id === this.props.profile.id) {
-      //go some where
-    } else {
-      //go some where
-    }
+    console.log("events components, handleOpen", event);
+    this.props.updateEvent(event);
   };
 
   // handleClose () {
@@ -285,7 +279,12 @@ export default class EventsPageComponent extends React.Component {
           </div>
         </Tab>
         <Tab className="tabsItem" label="All Plans" >
-          {this.state.eventsDays.map(eventdate => (
+          {this.state.eventsDays.sort((a,b) => {
+            var dateA = new Date(a.date_time)
+            var dateB = new Date(b.date_time)
+
+            console.log('DATE HERE:',dateA)
+          }).map(eventdate => (
             <div style={styles.root}>
               <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
               <GridList

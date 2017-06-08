@@ -7,6 +7,7 @@ export default connect(
 		return { 
 			profile: state.profile.toJS(),
 			event: state.event,
+			eventDetails: state.event.toJS(),
 		};
 	},
 	function mapDispatchToProps(dispatch) {

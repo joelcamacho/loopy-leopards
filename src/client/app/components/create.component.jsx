@@ -124,7 +124,7 @@ export default class CreatePageComponent extends React.Component {
             }
     helpers.fetchCreateNewEvent(this.props.createEventData.title || this.state.titleTestValue, event)
       .then(res => {
-        console.log('fetchCreateNewEvent', res);
+        // console.log('fetchCreateNewEvent', res);
       })
     this.props.setStateBackToDefault({});
   }
@@ -138,7 +138,7 @@ export default class CreatePageComponent extends React.Component {
         flexWrap: 'wrap',
       },
     };
-    console.log("this.state.currentEvent: ", this.state.currentEvent)
+    // console.log("this.state.currentEvent: ", this.state.currentEvent)
     return (
       <div className="createContainer">
         <Paper className="container">

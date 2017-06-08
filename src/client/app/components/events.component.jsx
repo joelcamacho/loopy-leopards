@@ -280,10 +280,7 @@ export default class EventsPageComponent extends React.Component {
         </Tab>
         <Tab className="tabsItem" label="All Plans" >
           {this.state.eventsDays.sort((a,b) => {
-            var dateA = new Date(a.date_time)
-            var dateB = new Date(b.date_time)
-
-            console.log('DATE HERE:',dateA)
+            return new Date(a.date) - new Date(b.date)
           }).map(eventdate => (
             <div style={styles.root}>
               <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>

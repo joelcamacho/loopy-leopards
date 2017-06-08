@@ -13,6 +13,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Skycons from 'react-skycons';
 import helpers from '../helpers/fetch.helper.jsx';
 import { HashRouter, Router, Link } from 'react-router-dom';
+import Paper from 'material-ui/Paper';
 
 const styles = {
   headline: {
@@ -111,7 +112,7 @@ export default class EventsPageComponent extends React.Component {
       searchEventsDays = this.props.createdEventsData
       .map(userEvents => 
         userEvents.events.filter(event => 
-        event.name.indexOf(userInput) > -1 
+        event.name.toLowerCase().indexOf(userInput.toLowerCase()) > -1 
       ))
       let result = []
       for (var i = 0; i < searchEventsDays.length; i++) {
@@ -141,8 +142,10 @@ export default class EventsPageComponent extends React.Component {
       month = "0" + month;
     }
     today = year + '-' + month + '-' + day;
-    return (
-      <div>
+
+    console.log("this.props.profile: ", this.props.profile.id)
+    return !!this.props.profile.id ?
+      (<div>
         <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
         <Tab className="tabsItem" label="Schedule" >
           <div style={styles.root}>
@@ -210,6 +213,25 @@ export default class EventsPageComponent extends React.Component {
           ))}
         </Tab>
       </Tabs>
-    </div>);
+    </div>
+      )
+      : (<div className="alertsContainer">
+            <h2 className="alertsTitle"> Plans </h2>
+            <div className="group">
+                <Paper className="groupAuth">
+                  <div> Please Sign In With Google To See Your Events Plans </div>
+                  <br />
+                  <a className="add" href="/#/profile">
+                    <RaisedButton
+                      labelColor="white"
+                      backgroundColor="#009688"
+                      className="add"
+                      label="Go To Profile"
+                    />
+                  </a>
+                  </Paper>
+              </div>
+          </div>
+        )
   }
 }

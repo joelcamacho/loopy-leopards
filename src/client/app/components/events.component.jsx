@@ -72,16 +72,6 @@ export default class EventsPageComponent extends React.Component {
   }
 
   handleOpen (event)  {
-
-    // helpers.fetchWeatherData(event.latitude, event.longitude, event.time)
-    // .then(res => {
-    //   let icon = '' 
-    //   res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
-    //   this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
-    // });
-    // this.setState({eventDetails: event})
-    // this.setState({open: true});
-
     console.log("events components, handleOpen", event);
     this.props.updateEvent(event);
     // this.props.eventDetails(event);

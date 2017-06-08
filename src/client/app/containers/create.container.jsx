@@ -8,7 +8,7 @@ export default connect(
   function mapStateToProps(state) {
     return { 
       events: state.events,
-      event: state.event,
+      createEventData: state.createEvent.toJS(),
       users: state.searchUsers,
       profile: state.profile.toJS(),
     };
@@ -24,9 +24,6 @@ export default connect(
       },
       setStateBackToDefault: function(event) {
         return dispatch(action.setStateBackToDefault(event));
-      },
-      searchUsers: function(users) {
-        return dispatch(searchUserAction.searchUsers(users));
       },
     }
   }

@@ -39,6 +39,7 @@ export default class CreatePageComponent extends React.Component {
     this.handleDescriptionTestValue = this.handleDescriptionTestValue.bind(this);
     this.handleAddressTestValue = this.handleAddressTestValue.bind(this);
     this.handleCityTestValue = this.handleCityTestValue.bind(this);
+    this.handleFetchEventbriteAddress = this.handleFetchEventbriteAddress.bind(this);
   }
 
   handleTitleTestValue (event) {
@@ -65,19 +66,23 @@ export default class CreatePageComponent extends React.Component {
     this.setState({controlledDate: date});
   };
 
+  handleFetchEventbriteAddress () {
+    helpers.fetchEventbriteAddress(this.props.createEventData.venue_id)
+    .then(res => {
+      let currentEvent = this.props.createEventData;
+      currentEvent.address = res.address.localized_address_display;
+      currentEvent.city = res.address.city;
+      currentEvent.latitude = res.latitude;
+      currentEvent.longitude = res.longitude;
+      this.setState({currentEvent: currentEvent});
+    })
+  }
+
   componentDidMount() {
-    if (this.props.event.venue_id) {
-      helpers.fetchEventbriteAddress(this.props.event.venue_id)
-      .then(res => {
-        let currentEvent = this.props.event;
-        currentEvent.address = res.address.localized_address_display;
-        currentEvent.city = res.address.city;
-        currentEvent.latitude = res.latitude;
-        currentEvent.longitude = res.longitude;
-        this.setState({currentEvent: currentEvent});
-      })
+    if (this.props.createEventData.venue_id) {
+      this.handleFetchEventbriteAddress();
     } else {
-      this.setState({currentEvent: this.props.event});
+      this.setState({currentEvent: this.props.createEventData});
     }
   }
 
@@ -103,21 +108,21 @@ export default class CreatePageComponent extends React.Component {
     }
     time = date + hour + time.slice(2);
     time = time.replace('T', ' ');
-    eventTime = this.props.event.date_time
+    eventTime = this.props.createEventData.date_time
     if (eventTime) {
       eventTime = eventTime.replace('T', ' ');
     }
     event = {
-              img: this.props.event.img || '',
+              img: this.props.createEventData.img || '',
               date_time: eventTime || time,
-              description: this.props.event.description.slice(0,200) || this.state.descriptionTestValue,
-              address: this.props.event.address || this.state.addressTestValue,
-              city: this.props.event.city || this.state.cityTestValue,
-              state: this.props.event.state || this.state.stateTestValue,
-              latitude: this.props.event.latitude || '',
-              longitude: this.props.event.longitude || '',
+              description: this.props.createEventData.description.slice(0,200) || this.state.descriptionTestValue,
+              address: this.props.createEventData.address || this.state.addressTestValue,
+              city: this.props.createEventData.city || this.state.cityTestValue,
+              state: this.props.createEventData.state || this.state.stateTestValue,
+              latitude: this.props.createEventData.latitude || '',
+              longitude: this.props.createEventData.longitude || '',
             }
-    helpers.fetchCreateNewEvent(this.props.event.title || this.state.titleTestValue, event)
+    helpers.fetchCreateNewEvent(this.props.createEventData.title || this.state.titleTestValue, event)
       .then(res => {
         console.log('fetchCreateNewEvent', res);
       })
@@ -133,7 +138,7 @@ export default class CreatePageComponent extends React.Component {
         flexWrap: 'wrap',
       },
     };
-
+    console.log("this.state.currentEvent: ", this.state.currentEvent)
     return (
       <div className="createContainer">
         <Paper className="container">

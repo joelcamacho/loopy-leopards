@@ -252,6 +252,7 @@ const helpers = {
   },
 
   fetchGroupData: (group) => {
+    console.log("!!!!!!!!!!!!!!!!!!: ", group)
     let endpoint = '/api/groups/' + group.id;
 
     return fetch(endpoint, {credentials: 'include'})

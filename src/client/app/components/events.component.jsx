@@ -90,6 +90,8 @@ export default class EventsPageComponent extends React.Component {
   fetchEvents () {
     helpers.fetchAllEventData()
     .then(res => {
+      if (!res.created)  return;
+
       res = res.created;
       let eventsDays = [];
       res.map(event => event.voteStatus = false);
@@ -182,12 +184,15 @@ export default class EventsPageComponent extends React.Component {
         <br/>
         <br/>
         <br/>
-            <TextField
-              hintText="Hint Text"
-              floatingLabelText="Search:"
-              onChange={this.handleSearchEvents}
-            />
-          {this.props.createdEventsData.map(eventdate => (
+        <TextField
+          hintText="Hint Text"
+          floatingLabelText="Search:"
+          onChange={this.handleSearchEvents}
+        />
+            
+          {this.props.createdEventsData.sort((a,b) => {
+            return new Date(a.date) - new Date(b.date)
+          }).map(eventdate => (
             <div style={styles.root}>
               <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
               <GridList

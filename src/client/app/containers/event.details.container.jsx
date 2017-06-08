@@ -18,10 +18,7 @@ export default connect(
 	function mapDispatchToProps(dispatch) {
 		return {
 			getEventDetails: function(event) {
-				return dispatch(EventAction.eventDetails(event));
-			},
-			updateEvent: function(group) {
-				return dispatch(EventAction.updateEvent(event));
+				return dispatch(action.eventDetails(event));
 			},
 			searchUsers: function(users) {
         		return dispatch(searchUserAction.searchUsers(users));
@@ -31,7 +28,10 @@ export default connect(
       		},
       		getUsersData: function(usersData) {
       			return dispatch(eventDetailsAction.usersData(usersData));
-      		}
+      		},
+			updateEvent: function(event) {
+				return dispatch(action.updateEvent(event));
+			}
 		};
 	}
 )(EventDetailsPageComponent);

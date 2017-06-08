@@ -6,7 +6,7 @@ export default connect(
   function mapStateToProps(state) {
     console.log("state.events: ", state.events)
     return {
-      events: state.events
+      createdEventsData: state.createdEvents
     };
   },
   function mapDispatchToProps(dispatch) {
@@ -15,7 +15,6 @@ export default connect(
     		return dispatch(action.eventDetails(events));
     	},
       createdEvents: function(events) {
-        console.log("events: ", events)
         return dispatch(action.createdEvents(events));
       }
     };

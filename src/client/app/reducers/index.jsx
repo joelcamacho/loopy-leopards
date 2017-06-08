@@ -10,6 +10,7 @@ import invitations from './invitations.reducer.jsx';
 import alerts from './alerts.reducer.jsx';
 import groupUsers from './groupUsers.reducer.jsx';
 import allUsers from './allUsers.reducer.jsx';
+import createdEvents from './createdEvents.reducer.jsx';
 
 export default combineReducers({
 	profile,
@@ -23,4 +24,5 @@ export default combineReducers({
   alerts,
   groupUsers,
   allUsers,
+  createdEvents,
 })

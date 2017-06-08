@@ -49,7 +49,7 @@ let action = {
       type: "CREATED_EVENTS",
       payload: events
     }
-  }
+  },
 
 };
 

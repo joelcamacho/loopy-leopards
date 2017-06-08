@@ -81,6 +81,7 @@ export default class EventsPageComponent extends React.Component {
       res = res.created;
       let eventsDays = [];
       res.map(event => event.voteStatus = false);
+      console.log('response', res);
       this.setState({userEvents: res});
       res.forEach(event => eventsDays.push(event.date_time));
       eventsDays = eventsDays
@@ -91,8 +92,7 @@ export default class EventsPageComponent extends React.Component {
         rObj.events = res.filter(event => event.date_time === date);
         return rObj;
       })
-      // this.setState({eventsDays: eventsDays})
-      console.log("eventsDays: ", eventsDays)
+      console.log('eventsDays: ', eventsDays);
       this.props.createdEvents(eventsDays);
     })
   }
@@ -104,7 +104,7 @@ export default class EventsPageComponent extends React.Component {
   handleSearchEvents (event, userInput) {
     let searchEventsDays;
     if (!!userInput) {
-      searchEventsDays = this.props.events
+      searchEventsDays = this.props.createdEventsData
       .map(userEvents => 
         userEvents.events.filter(event => 
         event.name.indexOf(userInput) > -1 
@@ -112,12 +112,11 @@ export default class EventsPageComponent extends React.Component {
       let result = []
       for (var i = 0; i < searchEventsDays.length; i++) {
         if (searchEventsDays[i].length !== 0) {
-          result.push({date: this.props.events[i].date, events: searchEventsDays[i]});
+          result.push({date: this.props.createdEventsData[i].date, events: searchEventsDays[i]});
         } else {
           continue;
         }
       }
-      console.log("result: ", result)
       this.props.createdEvents(result);
     } else {
       this.fetchEvents();
@@ -139,8 +138,6 @@ export default class EventsPageComponent extends React.Component {
     }
     today = year + '-' + month + '-' + day;
     return (
-
-
       <div>
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
         <Tab className="tabsItem" label="Schedule" >
@@ -178,7 +175,7 @@ export default class EventsPageComponent extends React.Component {
               floatingLabelText="Search:"
               onChange={this.handleSearchEvents}
             />
-          {this.props.events.map(eventdate => (
+          {this.props.createdEventsData.map(eventdate => (
             <div style={styles.root}>
               <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
               <GridList

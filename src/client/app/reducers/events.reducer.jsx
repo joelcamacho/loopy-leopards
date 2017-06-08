@@ -59,6 +59,8 @@ export default function events(state = [], action) {
       return idx !== undefined ? state.splice(idx, 1) : state;
     case 'RESET_GROUP': 
       return fromJS([]);
+    case 'CREATED_EVENTS':
+      return action.payload;
     default:
       return state
   }

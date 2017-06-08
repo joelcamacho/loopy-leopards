@@ -68,13 +68,14 @@ export default class EventsPageComponent extends React.Component {
 
     this.handleOpen = this.handleOpen.bind(this);
     this.handleSearchEvents = this.handleSearchEvents.bind(this);
+    this.fetchEvents = this.fetchEvents.bind(this);
   }
 
   handleOpen (event)  {
     this.props.eventDetails(event);
   };
 
-  componentDidMount() {
+  fetchEvents () {
     helpers.fetchAllEventData()
     .then(res => {
       res = res.created;
@@ -90,34 +91,37 @@ export default class EventsPageComponent extends React.Component {
         rObj.events = res.filter(event => event.date_time === date);
         return rObj;
       })
-      this.setState({eventsDays: eventsDays})
+      // this.setState({eventsDays: eventsDays})
+      console.log("eventsDays: ", eventsDays)
+      this.props.createdEvents(eventsDays);
     })
   }
 
-  handleSearchEvents (event) {
-    let searchValue;
-    let searchEventsDays;
-    searchValue = event.target.value;
-    if (searchValue !== "") {
-    searchEventsDays = this.state.eventsDays
-    .map(userEvents => 
-      userEvents.events.filter(event => 
-      event.name.indexOf(searchValue) > -1 
-    ))
-    let result = []
-    for (var i = 0; i < searchEventsDays.length; i++) {
-      if (searchEventsDays[i].length !== 0) {
-        result.push({date: this.state.eventsDays[i].date, events: searchEventsDays[i]});
-      } else {
-        continue;
-      }
-    }
-    console.log("!!!!!!!!!!!!!!!: ", result)
-    this.setState({eventsDays: result});
-  } else {
-    var event = this.state.eventsDays;
-    this.setState({eventsDays: result});
+  componentDidMount() {
+    this.fetchEvents();
   }
+
+  handleSearchEvents (event, userInput) {
+    let searchEventsDays;
+    if (!!userInput) {
+      searchEventsDays = this.props.events
+      .map(userEvents => 
+        userEvents.events.filter(event => 
+        event.name.indexOf(userInput) > -1 
+      ))
+      let result = []
+      for (var i = 0; i < searchEventsDays.length; i++) {
+        if (searchEventsDays[i].length !== 0) {
+          result.push({date: this.props.events[i].date, events: searchEventsDays[i]});
+        } else {
+          continue;
+        }
+      }
+      console.log("result: ", result)
+      this.props.createdEvents(result);
+    } else {
+      this.fetchEvents();
+    }
   } 
 
   render() {
@@ -134,8 +138,9 @@ export default class EventsPageComponent extends React.Component {
       month = "0" + month;
     }
     today = year + '-' + month + '-' + day;
-
     return (
+
+
       <div>
         <Tabs className="tabsContainer" tabItemContainerStyle={{backgroundColor: "lightslategrey", position: 'fixed', zIndex: '5'}}>
         <Tab className="tabsItem" label="Schedule" >
@@ -173,7 +178,7 @@ export default class EventsPageComponent extends React.Component {
               floatingLabelText="Search:"
               onChange={this.handleSearchEvents}
             />
-          {this.state.eventsDays.map(eventdate => (
+          {this.props.events.map(eventdate => (
             <div style={styles.root}>
               <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
               <GridList

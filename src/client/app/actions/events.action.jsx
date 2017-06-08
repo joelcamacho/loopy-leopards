@@ -49,7 +49,14 @@ let action = {
       type: "MODIFY_EVENT",
       payload: event
     }
-  }
+  },
+  createdEvents: function(events) {
+    return {
+      type: "CREATED_EVENTS",
+      payload: events
+    }
+  },
+
 };
 
 export default action;

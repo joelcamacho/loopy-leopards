@@ -393,7 +393,7 @@ router.post('/events/:id/confirm',(req,res) => {
 
 		if(!isFound) {
 			failed = true;
-			return res.send('That event was not found')
+			return res.send({result:'That event was not found'})
 		} else if (isFound.status === 'suggested') {
 			invitees = isFound.invitees;
 			event_details = isFound;
@@ -402,7 +402,7 @@ router.post('/events/:id/confirm',(req,res) => {
 			return helpers.getGroup(isFound.group_id)
 		} else {
 			failed = true;
-			return res.send('Event needs to have a "suggested" status to be confirmed')
+			return res.send({result: 'Event needs to have a "suggested" status to be confirmed'})
 		}
 	})
 	.then(group => {
@@ -427,7 +427,7 @@ router.post('/events/:id/confirm',(req,res) => {
 			return helpers.updateEventFromId(event_id, {status: 'confirmed'})
 		} else {
 			failed = true;
-			res.send('Not enough people confirmed for this event')
+			res.send({result: 'Not enough people confirmed for this event'})
 		}
 	})
 	.then(result => {
@@ -450,7 +450,7 @@ router.post('/events/:id/confirm',(req,res) => {
 			return Promise.all(updateConflicts);
 		}
 	})
-	.catch(err => res.send(err))
+	.catch(err => res.send({result: err}))
 	.then(result => {
 
 		if(!failed) {
@@ -463,7 +463,7 @@ router.post('/events/:id/confirm',(req,res) => {
 			util.pushToUsers(confirmedInvitees, options);
 			util.sendEventInvitations(confirmedInvitees, options.body);
 		}
-		res.send(result);
+		res.send({result: 'Success!'});
 	});
 });
 

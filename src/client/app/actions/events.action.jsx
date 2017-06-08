@@ -42,7 +42,15 @@ let action = {
       type: "EVENT_DETAILS",
       payload: event
     }
-  }
+  },
+
+  createdEvents: function(events) {
+    return {
+      type: "CREATED_EVENTS",
+      payload: events
+    }
+  },
+
 };
 
 export default action;

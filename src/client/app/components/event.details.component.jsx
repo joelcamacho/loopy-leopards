@@ -12,6 +12,13 @@ import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import Skycons from 'react-skycons';
 import helpers from '../helpers/fetch.helper.jsx';
+import Avatar from 'material-ui/Avatar';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import ContentRemove from 'material-ui/svg-icons/content/remove';
+import Chip from 'material-ui/Chip';
+import Paper from 'material-ui/Paper';
+import { HashRouter, Router, Link } from 'react-router-dom';
+
 
 const styles = {
   headline: {
@@ -42,7 +49,14 @@ const styles = {
   weather: {
     width: '150px',
     height: '100px',
-  }
+  },
+  wrapper: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  chip: {
+    margin: 5,
+  },
 };
 
 export default class EventDetailsPageComponent extends React.Component {
@@ -50,10 +64,6 @@ export default class EventDetailsPageComponent extends React.Component {
     super(props);
 
     this.state = {
-      userEvents: [],
-      voteStatus: false,
-      eventsDays: [],
-      open: true,
       eventDetails: {},
       googleMapOpen: false,
       directionButton: true,
@@ -63,199 +73,313 @@ export default class EventDetailsPageComponent extends React.Component {
       transportationButton: false,
       weather: '',
       temperature: '',
+      groupUsers: null,
+      textMessageOpen: false,
+      userPhoneNumber: null,
+      commentText: null,
     }
 
-    // this.handleVote = this.handleVote.bind(this);
-    // this.handleEventClick = this.handleEventClick.bind(this);
-    this.handleOpen = this.handleOpen.bind(this);
-    // this.handleClose = this.handleClose.bind(this);
-    // this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
-    // this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
-    // this.handleGetDirection = this.handleGetDirection.bind(this);
+    this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
+    this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
+    this.handleGetDirection = this.handleGetDirection.bind(this);
+    this.handleClose = this.handleClose.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.fetchDatas = this.fetchDatas.bind(this);
+    this.handleTextMessageOpen = this.handleTextMessageOpen.bind(this);
+    this.handleTextMessageClose = this.handleTextMessageClose.bind(this);
+    this.handleUserPhoneNumber = this.handleUserPhoneNumber.bind(this);
+    this.handleConfirm = this.handleConfirm.bind(this);
+    this.handleCommentText = this.handleCommentText.bind(this);
   }
 
-  handleOpen (event)  {
-    // helpers.fetchWeatherData(event.latitude, event.longitude, event.time)
-    // .then(res => {
-    //   let icon = '' 
-    //   res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
-    //   this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
-    // });
-    // this.setState({eventDetails: event})
-    // this.setState({open: true});
+  handleTextMessageOpen () {
+    this.setState({textMessageOpen: true});
+  }
 
-    console.log("Hello, event is here: ", event);
-    this.props.eventDetails(event);
+  handleTextMessageClose () {
+    this.setState({textMessageOpen: false});
+  }
 
-    // if (event.creator_id === this.props.profile.id) {
-    //   //go some where
-    // } else {
-    //   //go some where
-    // }
+  handleUserPhoneNumber (event) {
+    this.setState({userPhoneNumber: event.target.value});
+  }
+
+  handleGoogleMapOpen (event) {
+    helpers.fetchCoordinatesForEvent(event.address)
+    .then(res => {
+      const coords = res.results[0].geometry.location;
+      const myOptions = { 
+        zoom: 14, 
+        center: coords,
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+      }; 
+      const map = new google.maps.Map(document.getElementById("map"), myOptions); 
+      const marker = new google.maps.Marker({ 
+        position: coords, 
+        map: map,
+      }); 
+      const infoWindow = new google.maps.InfoWindow({ 
+        content: event.name,
+      }); 
+      infoWindow.open(map, marker); 
+      this.setState({directionButton: false})
+    })
+    this.setState({googleMapOpen: true});
+  }
+
+  handleGoogleMapClose () {
+    this.setState({directionButtonShowOrHide: true});
+    this.setState({googleMapOpen: false});
+    this.setState({displaydirectionDetails: false});
+  }
+
+  handleGetDirection (event, mode) {
+    let currentAddress;
+    let directionsService;
+    let directionsDisplay;
+    let originAddress;
+    let that;
+    let directionDetails;
+
+    that = this
+    that.setState({directionButton: true});
+    that.setState({transportationButton: true});
+    directionsService = new google.maps.DirectionsService();
+    directionsDisplay = new google.maps.DirectionsRenderer();
+
+    if (navigator.geolocation) { 
+        navigator.geolocation.getCurrentPosition(function (position) { 
+          const latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude); 
+          helpers.fetchAddressFromCoordinates(position)
+          .then(res => {
+            currentAddress = res;
+            return currentAddress;
+          })
+          .then(function(address) {
+            currentAddress = address;
+            var mapOptions = {
+              zoom: 7,
+              mapTypeId: google.maps.MapTypeId.ROADMAP,
+              center: latlng
+            }
+            const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+            directionsDisplay.setMap(map);
+            var way = google.maps.TravelMode[mode];
+            var request = {
+              origin: address,
+              destination: event.address,
+              travelMode: way,
+            };
+            directionsService.route(request, function(response, status) {
+              if(status === 'OK') {
+                directionsDisplay.setDirections(response);
+              }
+            });
+            that.setState({directionButtonShowOrHide: false});
+            return address;
+          })
+          .then(currentAddress => {
+            helpers.fetchDirectionData(currentAddress, event.address, mode)
+            .then(res => {
+              directionDetails = {};
+              directionDetails.transportation = mode;
+              directionDetails.distance = res.routes[0].legs[0].distance.text;
+              directionDetails.time = res.routes[0].legs[0].duration.text;
+              directionDetails.currentAddress = currentAddress;
+              that.setState({directionDetails: directionDetails});
+              that.setState({displaydirectionDetails: true});
+              that.setState({transportationButton: false});
+            })
+          })
+        }
+      )
+    }
+  }
+
+  handleClose () {
+    this.setState({textMessageOpen: false});
   };
 
-  // handleClose () {
-  //   this.setState({open: false});
-  // };
+  handleSubmit () {
+    this.setState({textMessageOpen: false});
+    let phoneNumber;
+    phoneNumber = '+1' + this.state.userPhoneNumber;
+    helpers.fetchSendEventInvitationToPhone(this.props.event, phoneNumber)
+    .then(res => this.fetchDatas())
+  };
 
-  // handleGoogleMapOpen (event) {
-  //   helpers.fetchCoordinatesForEvent(event.address)
-  //   .then(res => {
-  //     const coords = res.results[0].geometry.location;
-  //     const myOptions = { 
-  //       zoom: 14, 
-  //       center: coords,
-  //       mapTypeId: google.maps.MapTypeId.ROADMAP,
-  //     }; 
-  //     const map = new google.maps.Map(document.getElementById("map"), myOptions); 
-  //     const marker = new google.maps.Marker({ 
-  //       position: coords, 
-  //       map: map,
-  //     }); 
-  //     const infoWindow = new google.maps.InfoWindow({ 
-  //       content: event.name,
-  //     }); 
-  //     infoWindow.open(map, marker); 
-  //     this.setState({directionButton: false})
-  //   })
-  //   this.setState({googleMapOpen: true});
-  // }
+  fetchDatas () {
+    helpers.fetchGroupData({id: this.props.event.group_id})
+    .then(res => {
+      let groupUsers = res.members;
+      this.props.getGroupUsers(groupUsers);
+    })
+    this.setState({eventDetails: this.props.event});
+  }
 
-  // handleGoogleMapClose () {
-  //   this.setState({directionButtonShowOrHide: true});
-  //   this.setState({googleMapOpen: false});
-  //   this.setState({displaydirectionDetails: false});
-  // }
+  componentDidMount() {
+    this.fetchDatas();
+    helpers.fetchWeatherData(event.latitude, event.longitude, event.date_time)//fix this later
+    .then(res => {
+      let icon = '' 
+      res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
+      this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
+    });
+  }
 
-  // handleGetDirection (event, mode) {
-  //   let currentAddress;
-  //   let directionsService;
-  //   let directionsDisplay;
-  //   let originAddress;
-  //   let that;
-  //   let directionDetails;
+  handleCommentText (event) {
+    this.setState({commentText: event.target.value});
+  }
 
-  //   that = this
-  //   that.setState({directionButton: true});
-  //   that.setState({transportationButton: true});
-  //   directionsService = new google.maps.DirectionsService();
-  //   directionsDisplay = new google.maps.DirectionsRenderer();
-
-  //   if (navigator.geolocation) { 
-  //       navigator.geolocation.getCurrentPosition(function (position) { 
-  //         const latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude); 
-  //         helpers.fetchAddressFromCoordinates(position)
-  //         .then(res => {
-  //           currentAddress = res;
-  //           return currentAddress;
-  //         })
-  //         .then(function(address) {
-  //           currentAddress = address;
-  //           var mapOptions = {
-  //             zoom: 7,
-  //             mapTypeId: google.maps.MapTypeId.ROADMAP,
-  //             center: latlng
-  //           }
-  //           const map = new google.maps.Map(document.getElementById("map"), mapOptions);
-  //           directionsDisplay.setMap(map);
-  //           var way = google.maps.TravelMode[mode];
-  //           var request = {
-  //             origin: address,
-  //             destination: event.address,
-  //             travelMode: way,
-  //           };
-  //           directionsService.route(request, function(response, status) {
-  //             if(status === 'OK') {
-  //               directionsDisplay.setDirections(response);
-  //             }
-  //           });
-  //           that.setState({directionButtonShowOrHide: false});
-  //           return address;
-  //         })
-  //         .then(currentAddress => {
-  //           helpers.fetchDirectionData(currentAddress, event.address, mode)
-  //           .then(res => {
-  //             directionDetails = {};
-  //             directionDetails.transportation = mode;
-  //             directionDetails.distance = res.routes[0].legs[0].distance.text;
-  //             directionDetails.time = res.routes[0].legs[0].duration.text;
-  //             directionDetails.currentAddress = currentAddress;
-  //             that.setState({directionDetails: directionDetails});
-  //             that.setState({displaydirectionDetails: true});
-  //             that.setState({transportationButton: false});
-  //           })
-  //         })
-  //       }
-  //     )
-  //   }
-  // }
-
-  // handleVote (event) {
-  //   let newUserEvents = []
-  //   if (!event.voteStatus) {
-  //     ++event.vote_count;
-  //     event.voteStatus = true;
-  //   } else {
-  //     --event.vote_count;
-  //     event.voteStatus = false;
-  //   }
-
-  //   this.state.userEvents.forEach(userEvent => {
-  //     if(userEvent.name === event.name) {//check this when get real data!!!!!!
-  //       userEvent.vote_count = event.vote_count;
-  //     }
-  //     newUserEvents.push(userEvent);
-  //   })
-  //   this.setState({userEvents: newUserEvents});
-
-  //   //delete event.voteStatus;
-  //   console.log("voted event is ready to save to database: ", event)
-  //   //save event which include vote result in to database;
-  //   //fetch(...)
-
-
-  // }
-
-  // componentDidMount() {
-  //   helpers.fetchAllEventData()
-  //   .then(res => {
-  //     res = res.created;
-  //     let eventsDays = [];
-  //     res.map(event => event.voteStatus = false);
-  //     this.setState({userEvents: res});
-  //     res.forEach(event => eventsDays.push(event.date_time));
-  //     eventsDays = eventsDays
-  //     .filter((ele,ind) => eventsDays.indexOf(ele) === ind)
-  //     .map(date => {
-  //       let rObj = {};
-  //       rObj.date = date;
-  //       rObj.events = res.filter(event => event.date_time === date);
-  //       return rObj;
-  //     })
-  //     this.setState({eventsDays: eventsDays})
-  //   })
-  // }
+  handleConfirm() {
+    let event;
+    let comment;
+    event = this.props.event;
+    comment = this.state.commentText
+    if (comment) {
+      comment = {body: comment};
+      helpers.fetchSendEventBroadcast(event, comment)
+      .then(res => console.log("fetchSendEventBroadcast: ", res))
+    }
+    helpers.fetchConfirmEvent(event)
+    .then(res => {
+      if (res.result === 'Not enough people confirmed for this event') {
+        alert("Not enough people confirmed for this event");
+      } else {
+        alert("Success");
+      }
+    });
+  }
 
   render() {
+    const actions = [
+      <FlatButton
+        label="Cancel"
+        primary={true}
+        onTouchTap={this.handleTextMessageClose}
+      />,
+      <FlatButton
+        label="Submit"
+        primary={true}
+        keyboardFocused={true}
+        onTouchTap={this.handleSubmit}
+      />,
+    ];
 
-    console.log("THIS event is FROM PROPS: ", this.props.event)
-    console.log("ThIS profile is FROM PROPS: ", this.props.profile)
-    return (
-    this.props.event.creator_id === this.props.profile.id ? (
+    return this.props.event.creator_id === this.props.profile.id ? (
+      <div>
+        <Paper>
+        <br/>
+        {this.props.event.img !== '' ? (<img src={this.props.event.img} alt="eventImg"/>) : null}
+        {this.state.weather !== '' ? (<List><div><Subheader>Weather:</Subheader><Skycons color='orange' icon={this.state.weather.icon} autoplay={true} style={styles.weather}/><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather.summary}</p><p>{this.state.weather.temperature}&#8451;</p></div><Divider/></List>) : null}
+        {this.props.event.name !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.name}</p></div><Divider/></List>) : null}
+        {this.props.event.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.description.length > 100 ? this.props.event.description.slice(0,100) + '...' : this.props.event.description }{this.props.event.url ? (<a href={this.props.event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
+        {this.props.event.date_time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.date_time.slice(0,16).replace("T", " ")}</p></div><Divider/></List>) : null}
+        {this.props.event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.address}</p><RaisedButton label="Map Open" onTouchTap={() => this.handleGoogleMapOpen(this.state.eventDetails)} /></div><br/><Divider/></List>) : null}
+        {this.props.event.city !== '' ? (<List><div><Subheader>City & State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.city}</p></div><Divider/></List>) : null}
+        {this.props.event.invitees !== null ? (
+        <List>
+          <div>
+          <Subheader>Invitees:</Subheader>
+          <div style={styles.wrapper}>
+            {
+              this.props.event.invitees.map(user => (
+                <Chip
+                  key={user.id} 
+                  style={styles.chip}
+                >
+                  <Avatar src={!!user.photo ? user.photo : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />
+                  {user.first_name + " " + user.last_name}
+                </Chip>
+              ))
+            }
+          </div>
+          </div><Divider/></List>) : null}
+        <List>
+          <div>
+            <Subheader>Invite Friends</Subheader>
+            <RaisedButton label="Invite Friends" onTouchTap={this.handleTextMessageOpen} />
+            <Dialog
+              title="Invite your friends"
+              actions={actions}
+              modal={false}
+              open={this.state.textMessageOpen}
+              onRequestClose={this.handleTextMessageClose}
+              autoScrollBodyContent={true}
+            >
+            <TextField
+              hintText="Hint Text"
+              floatingLabelText="Please enter a phone number:"
+              onChange={this.handleUserPhoneNumber}
+            />
+            </Dialog>
+          </div>
+          <br/>
+          <Divider/>
+        </List>
+        <List>
+          <div>
+            <Subheader>Comment:</Subheader>
+            <TextField
+              hintText="Hint Text"
+              floatingLabelText="Anything you want to say?"
+              onChange={this.handleCommentText}
+            />
+          </div>
+          <br/>
+          <Divider/>
+        </List>
+        <Link to='/plans'>
+          <FlatButton label="Confirm" primary={true} onTouchTap={this.handleConfirm} />
+        </Link>
+        <br/>
+        <br/>
+      </Paper>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
 
-        <Dialog
-          title="Event Detail"
-          actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
-          modal={false}
-          open={this.state.open}
-          onRequestClose={this.handleClose}
-          autoScrollBodyContent={true}
-        >
-          <p>Hello!!! Event Creator!!!</p>
-        </Dialog>
-
+      <Dialog
+        title="The Location Of Your Event"
+        actions={<FlatButton label="Cancle" primary={true} onTouchTap={this.handleGoogleMapClose} />}
+        modal={false}
+        open={this.state.googleMapOpen}
+        onRequestClose={this.handleGoogleMapClose}
+        autoScrollBodyContent={true}
+      >
+        <br/>
+        { this.state.displaydirectionDetails ? 
+          (<div>
+            <div>
+              <p>Current Address(A): {this.state.directionDetails.currentAddress}</p>
+            </div>
+            <div>
+              <p>Derection Address(B): {this.state.eventDetails.address}</p>
+            </div>
+            <div>
+              <p>Transportation: {this.state.directionDetails.transportation}</p>
+            </div>
+            <div>
+              <p>Distance: {this.state.directionDetails.distance}</p>
+            </div>
+            <div>
+              <p>Time: {this.state.directionDetails.time}</p>
+            </div>
+          </div>)
+          : null
+        }
+        <div id="map" style={styles.googleMapStyle}></div>
+        <br/>
+        {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="TRANSIT" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'TRANSIT')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="DRIVING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="BICYCLING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'BICYCLING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton label="WALKING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'WALKING')}/>) : null}
+      </Dialog>
+      </div>
     ) : (
-        <Dialog
+      <Dialog
           title="Event Detail"
           actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
           modal={false}
@@ -265,72 +389,6 @@ export default class EventDetailsPageComponent extends React.Component {
         >
           <p>Hello!!! Guest User!!!</p>
         </Dialog>
-    ))
+      )
   }
 }
-
-      // <Dialog
-      //   title="Event Detail"
-      //   actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
-      //   modal={false}
-      //   open={this.state.open}
-      //   onRequestClose={this.handleClose}
-      //   autoScrollBodyContent={true}
-      // >
-        // <br/>
-
-        // {this.state.eventDetails.img !== '' ? (<img src={this.state.eventDetails.img} alt="eventImg"/>) : null}
-
-
-
-
-        
-        // {this.state.weather !== '' ? (<List><div><Subheader>Weather:</Subheader><Skycons color='orange' icon={this.state.weather.icon} autoplay={true} style={styles.weather}/><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather.summary}</p><p>{this.state.weather.temperature}&#8451;</p></div><Divider/></List>) : null}
-        // {this.state.eventDetails.name !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.name}</p></div><Divider/></List>) : null}
-        // {this.state.eventDetails.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.description.length > 100 ? this.state.eventDetails.description.slice(0,100) + '...' : this.state.eventDetails.description }{this.state.eventDetails.url ? (<a href={this.state.eventDetails.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
-        // {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
-        // {this.state.eventDetails.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.address}</p><RaisedButton label="Map Open" onTouchTap={() => this.handleGoogleMapOpen(this.state.eventDetails)} /></div><br/><Divider/></List>) : null}
-        // {this.state.eventDetails.city !== '' ? (<List><div><Subheader>City:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.city}</p></div><Divider/></List>) : null}
-        // {this.state.eventDetails.state !== '' ? (<List><div><Subheader>State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.state}</p></div><Divider/></List>) : null}
-        // {this.state.eventDetails.phone !== '' ? (<List><div><Subheader>Phone:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.phone}</p></div><Divider/></List>) : null}
-        // {this.state.eventDetails.date_Time !== '' ? (<List><div><Subheader>Group:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.date_Time}</p></div><Divider/></List>) : null}
-          
-      // </Dialog>
-
-      // <Dialog
-      //   title="The Location Of Your Event"
-      //   actions={<FlatButton label="Cancle" primary={true} onTouchTap={this.handleGoogleMapClose} />}
-      //   modal={false}
-      //   open={this.state.googleMapOpen}
-      //   onRequestClose={this.handleGoogleMapClose}
-      //   autoScrollBodyContent={true}
-      // >
-      //   <br/>
-      //   { this.state.displaydirectionDetails ? 
-      //     (<div>
-      //       <div>
-      //         <p>Current Address(A): {this.state.directionDetails.currentAddress}</p>
-      //       </div>
-      //       <div>
-      //         <p>Derection Address(B): {this.state.eventDetails.address}</p>
-      //       </div>
-      //       <div>
-      //         <p>Transportation: {this.state.directionDetails.transportation}</p>
-      //       </div>
-      //       <div>
-      //         <p>Distance: {this.state.directionDetails.distance}</p>
-      //       </div>
-      //       <div>
-      //         <p>Time: {this.state.directionDetails.time}</p>
-      //       </div>
-      //     </div>)
-      //     : null
-      //   }
-      //   <div id="map" style={styles.googleMapStyle}></div>
-      //   <br/>
-      //   {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
-      //   {this.state.displaydirectionDetails ? (<RaisedButton label="TRANSIT" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'TRANSIT')}/>) : null}
-      //   {this.state.displaydirectionDetails ? (<RaisedButton label="DRIVING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
-      //   {this.state.displaydirectionDetails ? (<RaisedButton label="BICYCLING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'BICYCLING')}/>) : null}
-      //   {this.state.displaydirectionDetails ? (<RaisedButton label="WALKING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'WALKING')}/>) : null}
-      // </Dialog>

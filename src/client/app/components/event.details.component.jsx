@@ -62,10 +62,10 @@ export default class EventDetailsPageComponent extends React.Component {
     super(props);
 
     this.state = {
-      userEvents: [],
-      voteStatus: false,
-      eventsDays: [],
-      usersOpen: false,
+      // userEvents: [],
+      // voteStatus: false,
+      // eventsDays: [],
+      // usersOpen: false,
       eventDetails: {},//////
       googleMapOpen: false,
       directionButton: true,
@@ -75,48 +75,43 @@ export default class EventDetailsPageComponent extends React.Component {
       transportationButton: false,
       weather: '',
       temperature: '',
-      invitedUsers: [],//users who has been invited
-      userStatus: [],//for user name and right icon which is + or -
-      userGroupData: [],//this groupdata is only for search bar
+      //invitedUsers: [],//users who has been invited
+      //userStatus: [],//for user name and right icon which is + or -
+      //userGroupData: [],//this groupdata is only for search bar
       open: true,
       groupUsers: null,
+
+      textMessageOpen: false,
+      userPhoneNumber: null,
     }
 
     // this.handleVote = this.handleVote.bind(this);
     // this.handleEventClick = this.handleEventClick.bind(this);
-    this.handleOpen = this.handleOpen.bind(this);
-    // this.handleClose = this.handleClose.bind(this);
     this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
     this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
     this.handleGetDirection = this.handleGetDirection.bind(this);
   
-    this.handleDeleteChip = this.handleDeleteChip.bind(this);
-    this.handleUsersOpen =this.handleUsersOpen.bind(this);
+
     this.handleClose = this.handleClose.bind(this);
-    this.handleSearchbar = this.handleSearchbar.bind(this);
-    this.handleClickUser = this.handleClickUser.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchDatas = this.fetchDatas.bind(this);
+
+    this.handleTextMessageOpen = this.handleTextMessageOpen.bind(this);
+    this.handleTextMessageClose = this.handleTextMessageClose.bind(this);
+    this.handleUserPhoneNumber = this.handleUserPhoneNumber.bind(this);
   }
 
-  handleOpen (event)  {
+  handleTextMessageOpen () {
+    this.setState({textMessageOpen: true});
+  }
 
-    this.setState({eventDetails: event})
-    this.setState({open: true});
+  handleTextMessageClose () {
+    this.setState({textMessageOpen: false});
+  }
 
-    console.log("Hello, event is here: ", event);
-    this.props.eventDetails(event);
-
-    // if (event.creator_id === this.props.profile.id) {
-    //   //go some where
-    // } else {
-    //   //go some where
-    // }
-  };
-
-  // handleClose () {
-  //   this.setState({open: false});
-  // };
+  handleUserPhoneNumber (event) {
+    this.setState({userPhoneNumber: event.target.value});
+  }
 
   handleGoogleMapOpen (event) {
     helpers.fetchCoordinatesForEvent(event.address)
@@ -210,115 +205,13 @@ export default class EventDetailsPageComponent extends React.Component {
     }
   }
 
-  // handleVote (event) {
-  //   let newUserEvents = []
-  //   if (!event.voteStatus) {
-  //     ++event.vote_count;
-  //     event.voteStatus = true;
-  //   } else {
-  //     --event.vote_count;
-  //     event.voteStatus = false;
-  //   }
-
-  //   this.state.userEvents.forEach(userEvent => {
-  //     if(userEvent.name === event.name) {//check this when get real data!!!!!!
-  //       userEvent.vote_count = event.vote_count;
-  //     }
-  //     newUserEvents.push(userEvent);
-  //   })
-  //   this.setState({userEvents: newUserEvents});
-
-  //   //delete event.voteStatus;
-  //   console.log("voted event is ready to save to database: ", event)
-  //   //save event which include vote result in to database;
-  //   //fetch(...)
-
-
-  // }
-
-  handleUsersOpen ()  {
-    this.setState({usersOpen: true});
-  };
-
   handleClose () {
-    this.state.invitedUsers = [];
-    var rightIconArray = this.state.userStatus.map((ele, ind) => {
-      var rObj = {};
-      rObj.name = ele.name;
-      rObj.rightIconDisplay = (<ContentAdd />);
-      return rObj;
-    })
-    this.setState({userStatus: rightIconArray});
-    this.setState({usersOpen: false});
+    this.setState({textMessageOpen: false});
   };
-
-  handleSearchbar (event, userInput) {
-    var users = [];
-    !!userInput ? this.state.userGroupData.forEach(userInfo => {
-      if(userInfo.name.indexOf(userInput) > -1 || userInfo.phone.indexOf(userInput) > -1) {
-          users.push(userInfo)
-        }
-      }) : users = this.state.userGroupData;
-    //this.props.searchUsers(users);//////??????????
-  }
-
-  handleDeleteChip (name) {
-    const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(name);
-    this.state.invitedUsers.splice(chipToDelete, 1);
-    let rightIconArray = this.state.userStatus.map((ele, ind) => {
-      var rObj = {};
-      if (ele.name === name) {
-        rObj.name = name;
-        rObj.rightIconDisplay = (<ContentAdd />);
-      } else {
-        rObj.name = ele.name;
-        rObj.rightIconDisplay = ele.rightIconDisplay;
-      }
-      return rObj;
-    })
-    this.setState({userStatus: rightIconArray});
-  }
-
-  handleClickUser (user) {
-    let rightIconArray;
-    let position
-    rightIconArray = this.state.userStatus.map((ele, ind) => {
-    var rObj = {};
-      if(ele.name === user.name && ele.rightIconDisplay.type.displayName === "ContentAdd") {
-        rObj.name = user.name;
-        rObj.rightIconDisplay = (<ContentRemove />);
-        position = ind;
-      } else if (ele.name === user.name && ele.rightIconDisplay.type.displayName === "ContentRemove") {
-        rObj.name = user.name;
-        rObj.rightIconDisplay = (<ContentAdd />);
-        position = ind;
-      } else {
-        rObj.name = ele.name;
-        rObj.rightIconDisplay = ele.rightIconDisplay;
-      }
-      return rObj;
-    })
-    if (this.state.userStatus[position].rightIconDisplay.type.displayName === "ContentAdd") {
-        this.state.invitedUsers.push({name: user.name, photo: user.photo, phone: user.phone});
-    } else {
-        const chipToDelete = this.state.invitedUsers.map((user) => user.name).indexOf(user.name);
-        this.state.invitedUsers.splice(chipToDelete, 1);
-    }
-    this.setState({userStatus: rightIconArray});
-  }
-
-  getIndex (name) {
-    let RIC; 
-    this.state.userStatus.forEach((ele,ind) => {
-      if(ele.name === name) {
-        RIC = ele.rightIconDisplay
-      }
-    })
-    return RIC;
-  }
 
   handleSubmit () {
-    this.setState({usersOpen: false});
+    this.setState({textMessageOpen: false});
+    console.log("User Phone Number: ", this.state.userPhoneNumber)
   };
 
   fetchDatas () {
@@ -327,48 +220,12 @@ export default class EventDetailsPageComponent extends React.Component {
 
     helpers.fetchGroupData({id: this.props.event.group_id})
     .then(res => {
-      
-      // let groupUsers = res.members.map(user => {
-      //   let rObj = {};
-      //   rObj.name = user.first_name + ' ' + user.last_name;
-      //   rObj.img = user.photo || '';
-      //   rObj.id = user.id;
-      //   return rObj;
-      // })
       let groupUsers = res.members;
-      console.log("Group data from databases: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",groupUsers);
       this.props.getGroupUsers(groupUsers);
     })
 
     helpers.fetchUsersData()
-    .then(res => {
-    //   console.log("User data from database: ", res)
-    //   let userStatusArray = []
-    //   res.forEach(user => {
-    //     if (user.first_name !== currentUserFirstName && user.last_name !== currentUserLastName) {
-    //       var rObj = {};
-    //       rObj.name = user.first_name + ' ' + user.last_name;
-    //       rObj.rightIconDisplay = (<ContentAdd />);
-    //       userStatusArray.push(rObj);
-    //     }
-    //   })
-    //   console.log("user status data from databases: ", userStatusArray);
-    //   this.setState({userStatus: userStatusArray});
-    //   let userGroup = [];
-    //   res.forEach(user => {
-    //     if (user.first_name !== currentUserFirstName && user.last_name !== currentUserLastName) {
-    //       var rObj = {};
-    //       rObj.name = user.first_name + ' ' + user.last_name;
-    //       rObj.photo = null;
-    //       rObj.phone = user.phone || null;
-    //       userGroup.push(rObj);
-    //     }
-    //   })
-    //   this.setState({userGroupData: userGroup});
-      this.props.getUsersData(res);//update
-    })
-
-
+    .then(res => {this.props.getUsersData(res)})//update
     this.setState({eventDetails: this.props.event});
   }
 
@@ -385,14 +242,14 @@ export default class EventDetailsPageComponent extends React.Component {
   render() {
     const { users } = this.props;
     const {allUsers} = this.props;
-    console.log("GroupUsers: ", this.props.groupUsersData);
-    console.log("All Users: ", allUsers);
-    console.log("Events ", this.props.event);
+    // console.log("GroupUsers: ", this.props.groupUsersData);
+    // console.log("All Users: ", allUsers);
+    // console.log("Events ", this.props.event);
     const actions = [
       <FlatButton
         label="Cancel"
         primary={true}
-        onTouchTap={this.handleClose}
+        onTouchTap={this.handleTextMessageClose}
       />,
       <FlatButton
         label="Submit"
@@ -439,84 +296,27 @@ export default class EventDetailsPageComponent extends React.Component {
         <List>
           <div>
           <Subheader>Invite Friends</Subheader>
-          <div style={styles.wrapper}>
-            {
-              this.state.invitedUsers.map(user => (
-                <Chip
-                  key={user.name} 
-                  style={styles.chip}
-                  onRequestDelete={() => this.handleDeleteChip(user.name)}
-                >
-                  <Avatar src={!!user.photo ? user.photo : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />
-                  {user.name}
-                </Chip>
-              ))
-            }
-          </div>
-          <RaisedButton label="Invite Friends" onTouchTap={this.handleUsersOpen} />
+
+          <RaisedButton label="Invite Friends" onTouchTap={this.handleTextMessageOpen} />
             
             <Dialog
               title="Invite your friends"
               actions={actions}
               modal={false}
-              open={this.state.usersOpen}
-              onRequestClose={this.handleUsersClose}
+              open={this.state.textMessageOpen}
+              onRequestClose={this.handleTextMessageClose}
               autoScrollBodyContent={true}
             >
               <TextField
                 hintText="Hint Text"
-                floatingLabelText="Search"
-                onChange={this.handleSearchbar}
+                floatingLabelText="Please enter a phone number:"
+                onChange={this.handleUserPhoneNumber}
               />
-
-              <List>
-                <Subheader> Current Members </Subheader>
-                {
-                  !!users.size ? 
-                  this.state.userGroupData.map((obj, ind) => (<ListItem
-                  key={obj.phone }
-                  primaryText={obj.name }
-                  leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                  rightIcon={this.state.userStatus[ind].rightIconDisplay}
-                  onClick={() => this.handleClickUser(obj)}
-                />)) :
-                  users.map((obj, ind) => (<ListItem
-                  key={!!obj.phone ? obj.phone : this.group.list.phone }
-                  primaryText={!!obj.name ? obj.name : this.group.list.name }
-                  leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
-                  rightIcon={this.getIndex(obj.name)}
-                  onClick={() => this.handleClickUser(obj)}
-                />))
-                }
-              </List>
             </Dialog>
           </div>
           <br/>
           <Divider/>
-          </List>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        </List>
       </Dialog>
 
       <Dialog
@@ -576,3 +376,22 @@ export default class EventDetailsPageComponent extends React.Component {
       )
   }
 }
+
+
+
+
+
+          // <div style={styles.wrapper}>
+          //   {
+          //     this.state.invitedUsers.map(user => (
+          //       <Chip
+          //         key={user.name} 
+          //         style={styles.chip}
+          //         onRequestDelete={() => this.handleDeleteChip(user.name)}
+          //       >
+          //         <Avatar src={!!user.photo ? user.photo : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />
+          //         {user.name}
+          //       </Chip>
+          //     ))
+          //   }
+          // </div>

@@ -261,14 +261,22 @@ export default class EventDetailsPageComponent extends React.Component {
   }
 
   componentDidMount() {
-    this.fetchDatas();
-    helpers.fetchWeatherData(event.latitude, event.longitude, event.date_time)//fix this later
+    let latitude;
+    let longitude;
+    let date_time;
+    let hour;
+    latitude = this.props.event.latitude;
+    longitude = this.props.event.longitude;
+    date_time = this.props.event.date_time.slice(0,19);
+    hour = +this.props.event.date_time.slice(11,13);
+    helpers.fetchWeatherData(latitude, longitude, date_time)
     .then(res => {
       res = JSON.parse(res.result);
       let icon = '' 
-      res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
-      this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
+      res.hourly.data[hour].icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
+      this.setState({weather: {summary: res.hourly.data[hour].summary, temperature: res.hourly.data[hour].temperature, icon: icon}});
     });
+    this.fetchDatas();
   }
 
   handleCommentText (event) {

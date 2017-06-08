@@ -64,11 +64,7 @@ export default class EventDetailsPageComponent extends React.Component {
     super(props);
 
     this.state = {
-      // userEvents: [],
-      // voteStatus: false,
-      // eventsDays: [],
-      // usersOpen: false,
-      eventDetails: {},//////
+      eventDetails: {},
       googleMapOpen: false,
       directionButton: true,
       directionButtonShowOrHide: true,
@@ -77,28 +73,18 @@ export default class EventDetailsPageComponent extends React.Component {
       transportationButton: false,
       weather: '',
       temperature: '',
-      //invitedUsers: [],//users who has been invited
-      //userStatus: [],//for user name and right icon which is + or -
-      //userGroupData: [],//this groupdata is only for search bar
-      open: true,
       groupUsers: null,
-
       textMessageOpen: false,
       userPhoneNumber: null,
       commentText: null,
     }
 
-    // this.handleVote = this.handleVote.bind(this);
-    // this.handleEventClick = this.handleEventClick.bind(this);
     this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
     this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
     this.handleGetDirection = this.handleGetDirection.bind(this);
-  
-
     this.handleClose = this.handleClose.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.fetchDatas = this.fetchDatas.bind(this);
-
     this.handleTextMessageOpen = this.handleTextMessageOpen.bind(this);
     this.handleTextMessageClose = this.handleTextMessageClose.bind(this);
     this.handleUserPhoneNumber = this.handleUserPhoneNumber.bind(this);
@@ -231,8 +217,6 @@ export default class EventDetailsPageComponent extends React.Component {
     this.setState({eventDetails: this.props.event});
   }
 
-
-
   componentDidMount() {
     this.fetchDatas();
     helpers.fetchWeatherData(event.latitude, event.longitude, event.date_time)//fix this later
@@ -268,11 +252,6 @@ export default class EventDetailsPageComponent extends React.Component {
   }
 
   render() {
-    const { users } = this.props;
-    const {allUsers} = this.props;
-    // console.log("GroupUsers: ", this.props.groupUsersData);
-    // console.log("All Users: ", allUsers);
-    console.log("Events ", this.props.event);
     const actions = [
       <FlatButton
         label="Cancel"
@@ -302,7 +281,7 @@ export default class EventDetailsPageComponent extends React.Component {
         {this.props.event.invitees !== null ? (
         <List>
           <div>
-          <Subheader>Group Members:</Subheader>
+          <Subheader>Invitees:</Subheader>
           <div style={styles.wrapper}>
             {
               this.props.event.invitees.map(user => (
@@ -400,12 +379,7 @@ export default class EventDetailsPageComponent extends React.Component {
         {this.state.displaydirectionDetails ? (<RaisedButton label="WALKING" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'WALKING')}/>) : null}
       </Dialog>
       </div>
-
-
-
-
-
-      ) : (
+    ) : (
       <Dialog
           title="Event Detail"
           actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
@@ -419,29 +393,3 @@ export default class EventDetailsPageComponent extends React.Component {
       )
   }
 }
-
-
-      // <Dialog
-      //     title="Event Detail"
-      //     actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
-      //     modal={false}
-      //     open={this.state.open}
-      //     onRequestClose={this.handleClose}
-      //     autoScrollBodyContent={true}
-      //   >
-
-
-          // <div style={styles.wrapper}>
-          //   {
-          //     this.state.invitedUsers.map(user => (
-          //       <Chip
-          //         key={user.name} 
-          //         style={styles.chip}
-          //         onRequestDelete={() => this.handleDeleteChip(user.name)}
-          //       >
-          //         <Avatar src={!!user.photo ? user.photo : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />
-          //         {user.name}
-          //       </Chip>
-          //     ))
-          //   }
-          // </div>

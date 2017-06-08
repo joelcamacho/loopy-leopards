@@ -13,7 +13,7 @@ const util = require('../helpers/util.helpers.js');
 router.route('/events') 
 	.get((req,res) => {
 
-		let google_id = req.user ? req.user.id : 2235254;
+		let google_id = req.user ? req.user.id : null;
 
 		if(!google_id) return res.send({result: 'User must be authenticated to get events!'});
 

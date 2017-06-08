@@ -67,6 +67,7 @@ export default class EventsPageComponent extends React.Component {
     }
 
     this.handleOpen = this.handleOpen.bind(this);
+    this.handleSearchEvents = this.handleSearchEvents.bind(this);
   }
 
   handleOpen (event)  {
@@ -92,6 +93,32 @@ export default class EventsPageComponent extends React.Component {
       this.setState({eventsDays: eventsDays})
     })
   }
+
+  handleSearchEvents (event) {
+    let searchValue;
+    let searchEventsDays;
+    searchValue = event.target.value;
+    if (searchValue !== "") {
+    searchEventsDays = this.state.eventsDays
+    .map(userEvents => 
+      userEvents.events.filter(event => 
+      event.name.indexOf(searchValue) > -1 
+    ))
+    let result = []
+    for (var i = 0; i < searchEventsDays.length; i++) {
+      if (searchEventsDays[i].length !== 0) {
+        result.push({date: this.state.eventsDays[i].date, events: searchEventsDays[i]});
+      } else {
+        continue;
+      }
+    }
+    console.log("!!!!!!!!!!!!!!!: ", result)
+    this.setState({eventsDays: result});
+  } else {
+    var event = this.state.eventsDays;
+    this.setState({eventsDays: result});
+  }
+  } 
 
   render() {
     let date = new Date();
@@ -137,6 +164,15 @@ export default class EventsPageComponent extends React.Component {
           </div>
         </Tab>
         <Tab className="tabsItem" label="All Plans" >
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+            <TextField
+              hintText="Hint Text"
+              floatingLabelText="Search:"
+              onChange={this.handleSearchEvents}
+            />
           {this.state.eventsDays.map(eventdate => (
             <div style={styles.root}>
               <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>

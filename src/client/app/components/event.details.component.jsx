@@ -81,6 +81,7 @@ export default class EventDetailsPageComponent extends React.Component {
       textMessageOpen: false,
       userPhoneNumber: null,
       commentText: null,
+      confirmButton: null,
     }
     this.acceptInvitationToEvent = this.acceptInvitationToEvent.bind(this);
     this.rejectInvitationToEvent = this.rejectInvitationToEvent.bind(this);
@@ -254,6 +255,9 @@ export default class EventDetailsPageComponent extends React.Component {
       this.props.getGroupUsers(groupUsers);
     })
     this.setState({eventDetails: this.props.event});
+    this.props.event.status === 'suggested' ?
+      this.setState({confirmButton: true})
+    : this.setState({confirmButton: false})
   }
 
   componentDidMount() {
@@ -261,9 +265,6 @@ export default class EventDetailsPageComponent extends React.Component {
     helpers.fetchWeatherData(event.latitude, event.longitude, event.date_time)//fix this later
     .then(res => {
       res = JSON.parse(res.result);
-      console.log('fetchWeatherData', res);
-
-
       let icon = '' 
       res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
       this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
@@ -295,11 +296,6 @@ export default class EventDetailsPageComponent extends React.Component {
   }
   
   render() {
-
-  	console.log("THIS event is FROM PROPS: ", this.props.event);
-    console.log("ThIS profile is FROM PROPS: ", this.props.profile);
-    console.log('------- Event details FROM PROPS -------', this.props.eventDetails)
-    console.log("this.state.weather: ", this.state.weather)
     const actions = [
       <FlatButton
         label="Cancel"
@@ -378,7 +374,7 @@ export default class EventDetailsPageComponent extends React.Component {
           <Divider/>
         </List>
         <Link to='/plans'>
-          <FlatButton label="Confirm" primary={true} onTouchTap={this.handleConfirm} />
+          <FlatButton label="Confirm" primary={true} onTouchTap={this.handleConfirm} disabled={this.state.confirmButton}/>
         </Link>
         <br/>
         <br/>

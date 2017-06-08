@@ -9,10 +9,10 @@ const eventInit = fromJS({
   state: '',
   phone: '',
   activeState: 'In progress',
+  invitees: [],
 });
 
-
-export default function event(state = eventInit.toJS(), action) {
+export default function event(state = eventInit, action) {
   switch (action.type) {
     case "CREATE_EVENT":
       return Object.assign({}, state,
@@ -33,7 +33,7 @@ export default function event(state = eventInit.toJS(), action) {
     case "SET_STATE_BACK_TO_DEFAULT":
       return Object.assign({}, eventInit.toJS(), action.payload);
     case 'MODIFY_EVENT':
-      return state.map((v, k) => !!action.payload[k] ? action.payload[k] : v);
+      return fromJS(action.payload);
     case 'RESET_GROUP': 
       return  fromJS({
         photo: '',

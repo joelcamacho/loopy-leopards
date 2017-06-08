@@ -19,11 +19,11 @@ routes.post('/api/weather', (req, res) => {
 
   rp(options)
   .then(function(response) {
-    res.status(200).send(response);
+    res.status(200).send({result: response});
   })
   .catch(function(err) {
     console.log(err);
-    res.status(400).send('Something\s wrong, please try again!')
+    res.status(400).send({result: 'Something\s wrong, please try again!'})
   })
 });
 

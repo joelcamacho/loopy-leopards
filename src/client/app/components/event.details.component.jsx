@@ -9,6 +9,7 @@ import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
+import Paper from 'material-ui/Paper';
 import RaisedButton from 'material-ui/RaisedButton';
 import Skycons from 'react-skycons';
 import helpers from '../helpers/fetch.helper.jsx';
@@ -16,7 +17,6 @@ import Avatar from 'material-ui/Avatar';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Chip from 'material-ui/Chip';
-import Paper from 'material-ui/Paper';
 import { HashRouter, Router, Link } from 'react-router-dom';
 
 
@@ -64,7 +64,11 @@ export default class EventDetailsPageComponent extends React.Component {
     super(props);
 
     this.state = {
-      eventDetails: {},
+      // userEvents: [],
+      rsvpStatus: false,
+      // eventsDays: [],
+      open: true,
+      // eventDetails: {},
       googleMapOpen: false,
       directionButton: true,
       directionButtonShowOrHide: true,
@@ -78,7 +82,8 @@ export default class EventDetailsPageComponent extends React.Component {
       userPhoneNumber: null,
       commentText: null,
     }
-
+    this.acceptInvitationToEvent = this.acceptInvitationToEvent.bind(this);
+    this.rejectInvitationToEvent = this.rejectInvitationToEvent.bind(this);
     this.handleGoogleMapOpen = this.handleGoogleMapOpen.bind(this);
     this.handleGoogleMapClose = this.handleGoogleMapClose.bind(this);
     this.handleGetDirection = this.handleGetDirection.bind(this);
@@ -131,6 +136,40 @@ export default class EventDetailsPageComponent extends React.Component {
     this.setState({directionButtonShowOrHide: true});
     this.setState({googleMapOpen: false});
     this.setState({displaydirectionDetails: false});
+  }
+
+   getEventDetails() {
+    helpers.fetchEventData(this.props.eventDetails)
+    .then(res => {
+      console.log('response from fetchEventData',res)
+      if(typeof res === 'string') {
+        //tell user event could not be retrieved
+      } else {
+          this.props.updateEvent(res);
+      }
+    })
+  }
+
+  acceptInvitationToEvent() {
+    console.log('accept invitation');
+    helpers.fetchAcceptEventInvitation(this.props.eventDetails)
+    .then(res => {
+      console.log('fetchAcceptGroupInvitation', res);
+      this.getEventDetails();
+  }) 
+  }
+
+  rejectInvitationToEvent() {
+    console.log('reject invitation')
+    helpers.fetchRejectEventInvitation(this.props.eventDetails)
+    .then(res => {
+      if(res) {
+        //redirect to event list view
+      } else {
+        this.getEventDetails()
+      }
+      console.log('rejectEventInvitation', res)
+    })
   }
 
   handleGetDirection (event, mode) {
@@ -221,6 +260,10 @@ export default class EventDetailsPageComponent extends React.Component {
     this.fetchDatas();
     helpers.fetchWeatherData(event.latitude, event.longitude, event.date_time)//fix this later
     .then(res => {
+      res = JSON.parse(res.result);
+      console.log('fetchWeatherData', res);
+
+
       let icon = '' 
       res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
       this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
@@ -250,8 +293,13 @@ export default class EventDetailsPageComponent extends React.Component {
       }
     });
   }
-
+  
   render() {
+
+  	console.log("THIS event is FROM PROPS: ", this.props.event);
+    console.log("ThIS profile is FROM PROPS: ", this.props.profile);
+    console.log('------- Event details FROM PROPS -------', this.props.eventDetails)
+    console.log("this.state.weather: ", this.state.weather)
     const actions = [
       <FlatButton
         label="Cancel"
@@ -379,16 +427,141 @@ export default class EventDetailsPageComponent extends React.Component {
       </Dialog>
       </div>
     ) : (
-      <Dialog
-          title="Event Detail"
-          actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
-          modal={false}
-          open={this.state.open}
-          onRequestClose={this.handleClose}
-          autoScrollBodyContent={true}
-        >
-          <p>Hello!!! Guest User!!!</p>
-        </Dialog>
+            <div>
+        <Paper>
+            <br/>
+
+            {this.props.eventDetails && this.props.eventDetails.img !== '' ? (
+              <img 
+               src={this.props.eventDetails.img} 
+               alt="eventImg"
+              />) 
+              : null
+            }
+
+            {this.props.eventDetails.name !== '' ? (
+              <List>
+                <div>
+                  <Subheader>Event:</Subheader>
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.eventDetails.name}</p>
+                </div>
+                <Divider/>
+              </List>)
+              : null
+            }
+
+          {this.props.eventDetails && this.props.eventDetails.description !== '' ? 
+            (<List>
+              <div>
+                <Subheader> Description: </Subheader>
+                <p> 
+                  { this.props.eventDetails.description.length > 100 ? 
+                    this.props.eventDetails.description.slice(0,100) + '...' 
+                    : this.props.eventDetails.description }
+                  { this.props.eventDetails.url ? 
+                    (<a href={this.props.eventDetails.url} target="_blank"> more details</a>)
+                    : null
+                  }
+                </p>
+                </div>
+                <Divider/>
+              </List>)
+            : null
+          }
+          
+          {this.props.eventDetails && this.props.eventDetails.date_time !== '' ?
+            (<List>
+              <div>
+                <Subheader>Event start:</Subheader>
+                <p> 
+                  {this.props.eventDetails.date_time}
+                </p>
+              </div>
+              <Divider/>
+            </List>)
+            : null
+          }
+          
+          {this.props.eventDetails && this.props.eventDetails.address !== '' ? 
+            (<List>
+              <div>
+                <Subheader>Address:</Subheader>
+                <p>
+                  {this.props.eventDetails.address}
+                </p>
+                <RaisedButton 
+                  label="Map Open"
+                  onTouchTap={() => this.handleGoogleMapOpen(this.props.eventDetails)}
+                />
+                </div>
+                <br/>
+                <Divider/>
+              </List>)
+              : null
+            }
+          
+          {this.props.eventDetails && this.props.eventDetails.city !== '' ? 
+            (<List>
+              <div>
+                <Subheader>City:</Subheader>
+                <p>
+                  {this.props.eventDetails.city} 
+                </p>
+              </div>
+              <Divider/>
+            </List>)
+            : null
+          }
+
+          {this.props.eventDetails && this.props.eventDetails.state !== '' ?
+            (<List>
+              <div>
+                <Subheader>State:</Subheader>
+                <p>
+                  {this.props.eventDetails.state}
+                </p>
+              </div>
+              <Divider/>
+            </List>)
+            : null
+          }
+          
+          {this.props.eventDetails && this.props.eventDetails.invitees.length >= 0 ?
+            (<List>
+              <div>
+                <Subheader>Invitees:</Subheader>
+                <ul>
+                  { this.props.eventDetails.invitees
+                    .map(user => (<li>{user.first_name} {user.last_name} : {user._pivot_status}</li>)) 
+                  }
+                </ul>
+              </div>
+              <Divider/>
+            </List>
+            )
+            : null
+          }
+
+          {this.props.eventDetails.invitees.find(invitee => 
+            {
+              console.log('INVITEE ID:', invitee.id, 'status', invitee._pivot_status, 'PROFILE ID:',this.props.profile.id)
+              return invitee.id === this.props.profile.id
+            })._pivot_status === 'confirmed' ?
+            (
+              <div> You are confirmed for this event </div>
+              
+            ) 
+            : 
+            (
+              <div>
+                <FlatButton label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
+                <FlatButton label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
+              </div>
+            )
+          }
+          
+          </Paper>
+        </div>
       )
   }
 }

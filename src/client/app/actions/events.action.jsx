@@ -44,6 +44,12 @@ let action = {
     }
   },
 
+  updateEvent: function(event) {
+    return {
+      type: "MODIFY_EVENT",
+      payload: event
+    }
+  },
   createdEvents: function(events) {
     return {
       type: "CREATED_EVENTS",

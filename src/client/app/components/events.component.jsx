@@ -72,12 +72,26 @@ export default class EventsPageComponent extends React.Component {
   }
 
   handleOpen (event)  {
-    this.props.eventDetails(event);
+
+    // helpers.fetchWeatherData(event.latitude, event.longitude, event.time)
+    // .then(res => {
+    //   let icon = '' 
+    //   res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
+    //   this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
+    // });
+    // this.setState({eventDetails: event})
+    // this.setState({open: true});
+
+    console.log("events components, handleOpen", event);
+    this.props.updateEvent(event);
+    // this.props.eventDetails(event);
   };
 
   fetchEvents () {
     helpers.fetchAllEventData()
     .then(res => {
+      if (!res.created)  return;
+
       res = res.created;
       let eventsDays = [];
       res.map(event => event.voteStatus = false);
@@ -170,12 +184,15 @@ export default class EventsPageComponent extends React.Component {
         <br/>
         <br/>
         <br/>
-            <TextField
-              hintText="Hint Text"
-              floatingLabelText="Search:"
-              onChange={this.handleSearchEvents}
-            />
-          {this.props.createdEventsData.map(eventdate => (
+        <TextField
+          hintText="Hint Text"
+          floatingLabelText="Search:"
+          onChange={this.handleSearchEvents}
+        />
+            
+          {this.props.createdEventsData.sort((a,b) => {
+            return new Date(a.date) - new Date(b.date)
+          }).map(eventdate => (
             <div style={styles.root}>
               <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
               <GridList

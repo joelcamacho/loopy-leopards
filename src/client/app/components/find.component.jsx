@@ -61,14 +61,6 @@ export default class SearchPageComponent extends React.Component {
     scrolldelay = setTimeout(this.handleBackToTop(),100);
   }
 
-  componentDidMount() {
-    fetch('/api/user', {credentials: 'include'})
-    .then(res => res.json())
-    .then(res => {
-      this.props.updateProfile(res);
-    })
-  }
-
   handleSearchResult () {
     const userSearchEvent = this.state.userSearchEvent;
     const userLocation = this.state.userLocation === 'Please enter your location' ? null : this.state.userLocation
@@ -200,7 +192,7 @@ export default class SearchPageComponent extends React.Component {
             <TextField
               className='inputs'
               id="text-field-controlled"
-              value={this.state.userLocation}
+              value={!!this.props.profile.address ? this.props.profile.address : this.state.userLocation}
               onChange={this.handleAddressTextFieldChange}
               multiLine={true}
             />

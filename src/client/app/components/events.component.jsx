@@ -156,9 +156,9 @@ export default class EventsPageComponent extends React.Component {
                   title={event.date_time.slice(11,16)}
                   subtitle={<span><b>{event.name}</b></span>}
                   onClick={() => this.handleOpen(event)}
+                  actionIcon={<span><b style={{color: "white"}}>{event.status}</b></span>}
                 >
                   {event.img? (<img src={event.img}/>) : (<img src={'https://2.bp.blogspot.com/-SvN4VSH-w9Q/WAODvBuRtOI/AAAAAAAAAUA/FpfcOM7w2pQWYMGfX4l86bRISTGD-0D2wCEw/s1600/Talking-Tables-Illuminations-Party-light-Christmas-lifestyle-Portrait.png'} />)}
-
                 </GridTile>
                 </Link>
               ))}
@@ -192,6 +192,7 @@ export default class EventsPageComponent extends React.Component {
                     key={event.date_time}
                     title={event.date_time.slice(11,16)}
                     subtitle={<span><b>{event.name}</b></span>}
+                    actionIcon={<span><b style={{color: "white"}}>{event.status}</b></span>}
                   >
                     {event.img ? (<img onClick={() => this.handleOpen(event)} src={event.img} />) : (<img onClick={() => this.handleOpen(event)} src={'https://2.bp.blogspot.com/-SvN4VSH-w9Q/WAODvBuRtOI/AAAAAAAAAUA/FpfcOM7w2pQWYMGfX4l86bRISTGD-0D2wCEw/s1600/Talking-Tables-Illuminations-Party-light-Christmas-lifestyle-Portrait.png'} />)}
                   </GridTile>

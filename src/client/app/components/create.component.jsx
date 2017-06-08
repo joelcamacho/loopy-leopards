@@ -10,6 +10,7 @@ import DatePicker from 'material-ui/DatePicker';
 import TextField from 'material-ui/TextField';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import helpers from '../helpers/fetch.helper.jsx';
+import RaisedButton from 'material-ui/RaisedButton';
 
 export default class CreatePageComponent extends React.Component {
   constructor(props) {
@@ -138,9 +139,8 @@ export default class CreatePageComponent extends React.Component {
         flexWrap: 'wrap',
       },
     };
-    // console.log("this.state.currentEvent: ", this.state.currentEvent)
-    return (
-      <div className="createContainer">
+    return !!this.props.profile.id ?
+      (<div className="createContainer">
         <Paper className="container">
           {this.state.currentEvent.img !== '' ? (<img src={this.state.currentEvent.img} alt="eventImg"/>) : (<div><br/><h1>Create Your Own Event</h1><Divider/></div>)}
           {this.state.currentEvent.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.title}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Title" onChange={this.handleTitleTestValue}/><br/></div>)}
@@ -176,6 +176,24 @@ export default class CreatePageComponent extends React.Component {
           <br/>
         </Paper>
       </div>
-    );
+    )
+    : (<div className="alertsContainer">
+        <h2 className="alertsTitle"> Create </h2>
+        <div className="group">
+          <Paper className="groupAuth">
+            <div> Please Sign In With Google To Create Events </div>
+            <br />
+            <a className="add" href="/#/profile">
+              <RaisedButton
+                labelColor="white"
+                backgroundColor="#009688"
+                className="add"
+                label="Go To Profile"
+              />
+            </a>
+          </Paper>
+        </div>
+      </div>
+      )
   }
 }

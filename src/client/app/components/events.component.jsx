@@ -142,8 +142,6 @@ export default class EventsPageComponent extends React.Component {
       month = "0" + month;
     }
     today = year + '-' + month + '-' + day;
-
-    console.log("this.props.profile: ", this.props.profile.id)
     return !!this.props.profile.id ?
       (<div>
         <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>

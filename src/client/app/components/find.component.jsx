@@ -291,25 +291,3 @@ export default class SearchPageComponent extends React.Component {
     ); 
   }
 }
-
-
-
-// <CardMedia
-//   expandable={true}
-//   overlay={<CardTitle title="Overlay title" subtitle="Overlay subtitle" />}
-// >
-//   <img src="images/nature-600-337.jpg" />
-// </CardMedia>
-
-// this.handleReduce = this.handleReduce.bind(this);
-// handleReduce () {
-//   this.setState({expanded: false});
-// };
-//<RaisedButton label="Reduce" onTouchTap={this.handleReduce} />
-// <CardTitle title="Card title" subtitle="Card subtitle" expandable={true} />
-// <CardText expandable={true}>
-//   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-//   Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-//   Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-//   Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-// </CardText>

@@ -54,7 +54,7 @@ export default class EventsPageComponent extends React.Component {
     this.state = {
       userEvents: [],
       voteStatus: false,
-      eventsDays: [],
+      daysWithEvents: [],
       open: false,
       eventDetails: {},
       googleMapOpen: false,
@@ -86,7 +86,6 @@ export default class EventsPageComponent extends React.Component {
       res = res.created;
       let eventsDays = [];
       res.map(event => event.voteStatus = false);
-      console.log('response', res);
       this.setState({userEvents: res});
       res.forEach(event => eventsDays.push(event.date_time));
       eventsDays = eventsDays
@@ -97,7 +96,7 @@ export default class EventsPageComponent extends React.Component {
         rObj.events = res.filter(event => event.date_time === date);
         return rObj;
       })
-      console.log('eventsDays: ', eventsDays);
+      this.setState({daysWithEvents: eventsDays});
       this.props.createdEvents(eventsDays);
     })
   }
@@ -109,7 +108,7 @@ export default class EventsPageComponent extends React.Component {
   handleSearchEvents (event, userInput) {
     let searchEventsDays;
     if (!!userInput) {
-      searchEventsDays = this.props.createdEventsData
+      searchEventsDays = this.state.daysWithEvents
       .map(userEvents => 
         userEvents.events.filter(event => 
         event.name.toLowerCase().indexOf(userInput.toLowerCase()) > -1 
@@ -117,11 +116,13 @@ export default class EventsPageComponent extends React.Component {
       let result = []
       for (var i = 0; i < searchEventsDays.length; i++) {
         if (searchEventsDays[i].length !== 0) {
-          result.push({date: this.props.createdEventsData[i].date, events: searchEventsDays[i]});
+          result.push({date: this.state.daysWithEvents[i].date, events: searchEventsDays[i]});
         } else {
           continue;
         }
       }
+      console.log("user input: ", userInput);
+      console.log("search Result: ", result);
       this.props.createdEvents(result);
     } else {
       this.fetchEvents();

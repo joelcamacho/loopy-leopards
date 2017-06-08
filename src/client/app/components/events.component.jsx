@@ -214,6 +214,8 @@ export default class EventsPageComponent extends React.Component {
   componentDidMount() {
     helpers.fetchAllEventData()
     .then(res => {
+      if (!res.created)  return;
+
       res = res.created;
       let eventsDays = [];
       res.map(event => event.voteStatus = false);

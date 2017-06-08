@@ -13,10 +13,10 @@ export default connect(
 	function mapDispatchToProps(dispatch) {
 		return {
 			getEventDetails: function(event) {
-				return dispatch(EventAction.eventDetails(event));
+				return dispatch(action.eventDetails(event));
 			},
-			updateEvent: function(group) {
-				return dispatch(EventAction.updateEvent(event));
+			updateEvent: function(event) {
+				return dispatch(action.updateEvent(event));
 			}
 		};
 	}

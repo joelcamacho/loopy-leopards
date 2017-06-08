@@ -374,13 +374,14 @@ export default class EventDetailsPageComponent extends React.Component {
             : null
           }
 
-          {this.props.eventDetails.invitees.filter(invitee => 
+          {this.props.eventDetails.invitees.find(invitee => 
             {
               console.log('INVITEE ID:', invitee.id, 'status', invitee._pivot_status, 'PROFILE ID:',this.props.profile.id)
               return invitee.id === this.props.profile.id
             })._pivot_status === 'confirmed' ?
             (
               <div> You are confirmed for this event </div>
+              
             ) 
             : 
             (

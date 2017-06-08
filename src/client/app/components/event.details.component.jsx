@@ -16,6 +16,8 @@ import Avatar from 'material-ui/Avatar';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import ContentRemove from 'material-ui/svg-icons/content/remove';
 import Chip from 'material-ui/Chip';
+import Paper from 'material-ui/Paper';
+import { HashRouter, Router, Link } from 'react-router-dom';
 
 
 const styles = {
@@ -83,6 +85,7 @@ export default class EventDetailsPageComponent extends React.Component {
 
       textMessageOpen: false,
       userPhoneNumber: null,
+      commentText: null,
     }
 
     // this.handleVote = this.handleVote.bind(this);
@@ -99,6 +102,8 @@ export default class EventDetailsPageComponent extends React.Component {
     this.handleTextMessageOpen = this.handleTextMessageOpen.bind(this);
     this.handleTextMessageClose = this.handleTextMessageClose.bind(this);
     this.handleUserPhoneNumber = this.handleUserPhoneNumber.bind(this);
+    this.handleConfirm = this.handleConfirm.bind(this);
+    this.handleCommentText = this.handleCommentText.bind(this);
   }
 
   handleTextMessageOpen () {
@@ -211,31 +216,54 @@ export default class EventDetailsPageComponent extends React.Component {
 
   handleSubmit () {
     this.setState({textMessageOpen: false});
-    console.log("User Phone Number: ", this.state.userPhoneNumber)
+    let phoneNumber;
+    phoneNumber = '+1' + this.state.userPhoneNumber;
+    helpers.fetchSendEventInvitationToPhone(this.props.event, phoneNumber)
+    .then(res => this.fetchDatas())
   };
 
   fetchDatas () {
-    let currentUserFirstName = this.props.profile.first_name || "";
-    let currentUserLastName = this.props.profile.last_name || "";
-
     helpers.fetchGroupData({id: this.props.event.group_id})
     .then(res => {
       let groupUsers = res.members;
       this.props.getGroupUsers(groupUsers);
     })
-
-    helpers.fetchUsersData()
-    .then(res => {this.props.getUsersData(res)})//update
     this.setState({eventDetails: this.props.event});
   }
 
+
+
   componentDidMount() {
     this.fetchDatas();
-    helpers.fetchWeatherData(event.latitude, event.longitude, event.time)//fix this later
+    helpers.fetchWeatherData(event.latitude, event.longitude, event.date_time)//fix this later
     .then(res => {
       let icon = '' 
       res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
       this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
+    });
+  }
+
+  handleCommentText (event) {
+    this.setState({commentText: event.target.value});
+  }
+
+  handleConfirm() {
+    let event;
+    let comment;
+    event = this.props.event;
+    comment = this.state.commentText
+    if (comment) {
+      comment = {body: comment};
+      helpers.fetchSendEventBroadcast(event, comment)
+      .then(res => console.log("fetchSendEventBroadcast: ", res))
+    }
+    helpers.fetchConfirmEvent(event)
+    .then(res => {
+      if (res.result === 'Not enough people confirmed for this event') {
+        alert("Not enough people confirmed for this event");
+      } else {
+        alert("Success");
+      }
     });
   }
 
@@ -244,7 +272,7 @@ export default class EventDetailsPageComponent extends React.Component {
     const {allUsers} = this.props;
     // console.log("GroupUsers: ", this.props.groupUsersData);
     // console.log("All Users: ", allUsers);
-    // console.log("Events ", this.props.event);
+    console.log("Events ", this.props.event);
     const actions = [
       <FlatButton
         label="Cancel"
@@ -261,14 +289,8 @@ export default class EventDetailsPageComponent extends React.Component {
 
     return this.props.event.creator_id === this.props.profile.id ? (
       <div>
-      <Dialog
-          title="Event Detail"
-          actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
-          modal={false}
-          open={this.state.open}
-          onRequestClose={this.handleClose}
-          autoScrollBodyContent={true}
-        >
+        <Paper>
+
         <br/>
         {this.state.eventDetails.img !== '' ? (<img src={this.state.eventDetails.img} alt="eventImg"/>) : null}
         {this.state.weather !== '' ? (<List><div><Subheader>Weather:</Subheader><Skycons color='orange' icon={this.state.weather.icon} autoplay={true} style={styles.weather}/><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather.summary}</p><p>{this.state.weather.temperature}&#8451;</p></div><Divider/></List>) : null}
@@ -278,7 +300,9 @@ export default class EventDetailsPageComponent extends React.Component {
         {this.state.eventDetails.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.address}</p><RaisedButton label="Map Open" onTouchTap={() => this.handleGoogleMapOpen(this.state.eventDetails)} /></div><br/><Divider/></List>) : null}
         {this.state.eventDetails.city !== '' ? (<List><div><Subheader>City & State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.eventDetails.city}</p></div><Divider/></List>) : null}
         {this.props.event.invitees !== null ? (
-          <List><div><Subheader>Group Members:</Subheader>
+        <List>
+          <div>
+          <Subheader>Group Members:</Subheader>
           <div style={styles.wrapper}>
             {
               this.props.event.invitees.map(user => (
@@ -295,10 +319,8 @@ export default class EventDetailsPageComponent extends React.Component {
           </div><Divider/></List>) : null}
         <List>
           <div>
-          <Subheader>Invite Friends</Subheader>
-
-          <RaisedButton label="Invite Friends" onTouchTap={this.handleTextMessageOpen} />
-            
+            <Subheader>Invite Friends</Subheader>
+            <RaisedButton label="Invite Friends" onTouchTap={this.handleTextMessageOpen} />
             <Dialog
               title="Invite your friends"
               actions={actions}
@@ -307,17 +329,38 @@ export default class EventDetailsPageComponent extends React.Component {
               onRequestClose={this.handleTextMessageClose}
               autoScrollBodyContent={true}
             >
-              <TextField
-                hintText="Hint Text"
-                floatingLabelText="Please enter a phone number:"
-                onChange={this.handleUserPhoneNumber}
-              />
+            <TextField
+              hintText="Hint Text"
+              floatingLabelText="Please enter a phone number:"
+              onChange={this.handleUserPhoneNumber}
+            />
             </Dialog>
           </div>
           <br/>
           <Divider/>
         </List>
-      </Dialog>
+        <List>
+          <div>
+            <Subheader>Comment:</Subheader>
+            <TextField
+              hintText="Hint Text"
+              floatingLabelText="Anything you want to say?"
+              onChange={this.handleCommentText}
+            />
+          </div>
+          <br/>
+          <Divider/>
+        </List>
+        <Link to='/plans'>
+          <FlatButton label="Confirm" primary={true} onTouchTap={this.handleConfirm} />
+        </Link>
+        <br/>
+        <br/>
+      </Paper>
+      <br/>
+      <br/>
+      <br/>
+      <br/>
 
       <Dialog
         title="The Location Of Your Event"
@@ -378,7 +421,14 @@ export default class EventDetailsPageComponent extends React.Component {
 }
 
 
-
+      // <Dialog
+      //     title="Event Detail"
+      //     actions={<FlatButton label="Confirm" primary={true} onTouchTap={this.handleClose} />}
+      //     modal={false}
+      //     open={this.state.open}
+      //     onRequestClose={this.handleClose}
+      //     autoScrollBodyContent={true}
+      //   >
 
 
           // <div style={styles.wrapper}>

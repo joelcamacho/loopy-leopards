@@ -97,7 +97,7 @@ export default class NavComponent extends React.Component {
                   anchorOrigin={{horizontal: 'right', vertical: 'top'}}>
                     <a className="navLink" href="/#/profile"> <MenuItem primaryText="Profile" /> </a>
                     <a className="navLink" href="/#/about"> <MenuItem primaryText="About Us" /> </a>
-                    <a className="navLink" href="/logout"> <MenuItem primaryText="Sign out" /> </a>
+                    <a className="navLink" onTouchTap={() => {firebaseHelpers.sendUnregisterToServer()}} href="/logout"> <MenuItem primaryText="Sign out" /> </a>
                   </IconMenu>
                 </div>
                 )

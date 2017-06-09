@@ -391,23 +391,27 @@ export default class EventDetailsPageComponent extends React.Component {
         <Link to='/plans'>
           <FlatButton label="Confirm" primary={true} onTouchTap={this.handleConfirm} disabled={this.state.confirmButton}/>
         </Link>
-        {this.props.eventDetails.invitees.find(invitee => 
-            {
-              console.log('INVITEE ID:', invitee.id, 'status', invitee._pivot_status, 'PROFILE ID:',this.props.profile.id)
-              return invitee.id === this.props.profile.id
-            })._pivot_status === 'confirmed' ?
-            (
-              <div> You have confirmed you are attending this event </div>
-              
-            ) 
-            : 
-            (
-              <div>
-                <FlatButton label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
-                <FlatButton label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
-              </div>
-            )
-          }
+        {
+          this.props.eventDetails.invitees.filter(invitee => {
+            console.log('INVITEE ID:', invitee.id, 'status', invitee._pivot_status, 'PROFILE ID:',this.props.profile.id)
+            return invitee.id === this.props.profile.id
+          }) && 
+          this.props.eventDetails.invitees.filter(invitee => {
+            console.log('INVITEE ID:', invitee.id, 'status', invitee._pivot_status, 'PROFILE ID:',this.props.profile.id)
+            return invitee.id === this.props.profile.id
+          })._pivot_status === 'confirmed' ?
+          (
+            <div> You have confirmed you are attending this event </div>
+            
+          ) 
+          : 
+          (
+            <div>
+              <FlatButton label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
+              <FlatButton label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
+            </div>
+          )
+        }
         <br/>
         <br/>
       </Paper>

@@ -150,8 +150,8 @@ export default class GroupPageComponent extends React.Component {
                       <Divider/>
                       <List>
                         <Subheader> Current Members </Subheader>
-                        {this.props.group.members ? this.props.group.members.map(obj => (<ListItem
-                          key={!obj.phone ? 'Not Verified' : obj.phone}
+                        {this.props.group.members ? this.props.group.members.map((obj, idx)=> (<ListItem
+                          key={idx + 'current'}
                           primaryText={obj.first_name}
                           leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
                           rightIcon={<span className="phone">{obj.phone}</span>}
@@ -183,8 +183,8 @@ export default class GroupPageComponent extends React.Component {
                         <Divider/>
                         <List>
                           <Subheader> Pending Invitations </Subheader>
-                          {this.props.group.invitees && this.props.group.invitees.length > 0 ? this.props.group.invitees.map(obj => (<ListItem
-                            key={!obj.phone ? 'Not Verified' : obj.phone}
+                          {this.props.group.invitees && this.props.group.invitees.length > 0 ? this.props.group.invitees.map((obj, idx) => (<ListItem
+                            key={idx + 'pending'}
                             primaryText={obj.first_name}
                             leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
                             rightIcon={<span className="phone">{obj.phone}</span>}
@@ -193,9 +193,9 @@ export default class GroupPageComponent extends React.Component {
                         <Divider/>
                         <List>
                           <Subheader> Pending Requests </Subheader>
-                          {this.props.group.requests && this.props.group.requests.length > 0 ? this.props.group.requests.map(obj => (<ListItem
+                          {this.props.group.requests && this.props.group.requests.length > 0 ? this.props.group.requests.map((obj, idx) => (<ListItem
                             onClick={() => this.acceptRequest(obj)}
-                            key={!obj.phone ? 'Not Verified' : obj.phone}
+                            key={idx + 'requests'}
                             primaryText={obj.first_name}
                             leftAvatar={<Avatar src={!!obj.photo ? obj.photo  : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />}
                             rightIcon={(<ContentAdd />)}

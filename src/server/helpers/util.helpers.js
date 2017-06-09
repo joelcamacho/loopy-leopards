@@ -22,7 +22,7 @@ const _pushToUserFromId = (id, options = {}) => {
     'title': options.title || 'Hangin\'Hubs',
     'body': options.body || 'This is the default notification',
     'icon': options.icon || 'https://www.iconfinder.com/data/icons/basic-application-vol-1/128/Material_Design-15-512.png',
-    'click_action': options.click_action || 'http://www.google.com'
+    'click_action': options.click_action || 'http://127.0.0.1:3000'
   };
   return new Promise(function (resolve, reject) {
     helpers.getCurrentUserTokenFromId(id)
@@ -110,7 +110,7 @@ exports.sendMessageToPhone = (phone, message, callback = (res) => res) => {
   });
 }
 
-exports.sendCodeToPhone = (phone, profile, message = "To verify your HanginHubs please reply with the following 5 numbers and \'_" + profile.id + "\': \n(e.g. 12345_12)\n") => {
+exports.sendCodeToPhone = (phone, profile, message = "To verify with HanginHubs please reply with the following 5 numbers and \'_" + profile.id + "\': \n(e.g. 12345_12)\n") => {
   return twilioAuthService.sendCode(phone, message);
 }
 

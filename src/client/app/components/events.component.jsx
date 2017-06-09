@@ -51,19 +51,22 @@ export default class EventsPageComponent extends React.Component {
     .then(res => {
       if (!res.created)  return;
 
-      res = res.created;
+      console.log(res.created, ' ', res.invitedTo);
+
+      res = [...res.created, ...res.invitedTo];
       let eventsDays = [];
       res.map(event => event.voteStatus = false);
       this.setState({userEvents: res});
       res.forEach(event => eventsDays.push(event.date_time));
-      eventsDays = eventsDays
-      .filter((ele,ind) => eventsDays.indexOf(ele) === ind)
+      eventsDays = 
+      eventsDays.filter((ele,ind) => eventsDays.indexOf(ele) === ind)
       .map(date => {
         let rObj = {};
         rObj.date = date;
         rObj.events = res.filter(event => event.date_time === date);
         return rObj;
       })
+
       this.setState({daysWithEvents: eventsDays});
       this.props.createdEvents(eventsDays);
     })

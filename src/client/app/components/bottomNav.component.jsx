@@ -12,6 +12,12 @@ import { HashRouter, Router, Link } from 'react-router-dom'
 export default class BottomNav extends React.Component {
   constructor(props) {
     super(props);
+    this.handleCreateClick = this.handleCreateClick.bind(this);
+  }
+
+  handleCreateClick() {
+    console.log("this.props:", this.props)
+    this.props.setStateBackToDefault({});
   }
 
   render() {
@@ -41,6 +47,7 @@ export default class BottomNav extends React.Component {
                       className="bottomNavItem"
                       label={<div className="bottomNavLabel"> Create </div>} 
                       icon={<IconAdd className="bottomNavIcon"/>}
+                      onClick={() => this.handleCreateClick()}
                     />
                   </Link>
                   <Link to="/group"> 

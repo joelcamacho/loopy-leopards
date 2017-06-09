@@ -17,6 +17,7 @@ export default function createEvent(state = createEventInit, action) {
     case "CREATE_EVENT":
       return fromJS(action.payload);
     case "SET_STATE_BACK_TO_DEFAULT":
+    console.log("SET_STATE_BACK_TO_DEFAULT RECEIVED")
       return createEventInit;
     default:
       return state

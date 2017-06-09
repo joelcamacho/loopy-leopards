@@ -1,110 +1,65 @@
-.tabsPage {
-  
-}
+.events {
+	padding: 20pt 10pt 30pt 10pt;
 
-.h1 {
-	margin: 40 10 0 0;
-}
+	.tabsContainer {
 
-.headline {
-	font-size: 24;
-	padding-top: 16;
-	margin-bottom: 12;
-	font-weight: 400;
-}
+	}
 
-.root {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
-	min-height: 85vh;
-	padding: 10pt;
-}
+	.headline {
+		font-size: 24;
+		padding-top: 16;
+		margin-bottom: 12;
+		font-weight: 400;
+	}
 
-.gridList {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	width: 700;
-	overflow-y: auto;
-	width: 727;
-	overflow-y: auto;
-}
+	.root {
+		display: flex;
+	    flex-wrap: wrap;
+	    justify-content: space-around;
+	}
 
-.customContentStyle {
-	width: 100%;
-	max-width: none;
-}
+	.gridList {
+		width: 500;
+	    height: 450;
+	    overflow-y: auto;
+	    padding: 10pt 20pt 20pt 20pt !important;
+	}
 
-.googleMapStyle {
-	width: 720px;
-	height: 450px;
-}
+	.customContentStyle {
+		width: 100%;
+		max-width: none;
+	}
 
-.weather {
-	width: 150px;
-	height: 100px;
-}
+	.googleMapStyle {
+		width: 720px;
+		height: 450px;
+	}
 
-.headline {
-    font-size: 24;
-    padding-top: 16;
-    margin-bottom: 12;
-    font-weight: 400;
-}
+	.weather {
+		width: 150px;
+		height: 100px;
+	}
 
-.root {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    min-height: 85vh;
-    padding: 10pt;
-}
+	.googleMapStyle {
+	    width: 720px;
+	    height: 450px;
+	}
 
-.headline {
-  font-size: 24;
-  padding-top: 16;
-  margin-bottom: 12;
-  font-weight: 400;
-}
+	.wrapper {
+	    display: flex;
+	    flex-wrap: wrap;
+	}
 
-.root {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  min-height: 85vh;
-  padding: 10pt;
-}
+	.chip {
+	   margin: 5;
+	}
 
-.gridList {
-    width: 727;
-    overflow-y: auto;
-}
+	.heading {
 
-.customContentStyle {
-    width: 100%;
-    max-width: none;
-}
+	}
 
-.googleMapStyle {
-    width: 720px;
-    height: 450px;
-}
+	.date {
 
-.wrapper {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.chip {
-   margin: 5;
-}
-
-.heading {
-
-}
-
-.date {
+	}
 }
 

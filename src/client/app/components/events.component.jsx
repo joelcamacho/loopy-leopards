@@ -7,13 +7,16 @@ import ThumbUp from 'material-ui/svg-icons/action/thumb-up';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
-import {List, ListItem} from 'material-ui/List';
+// import {List, ListItem} from 'material-ui/List';
 import Divider from 'material-ui/Divider';
 import RaisedButton from 'material-ui/RaisedButton';
 import Skycons from 'react-skycons';
 import helpers from '../helpers/fetch.helper.jsx';
 import { HashRouter, Router, Link } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
+import Checkbox from 'material-ui/Checkbox';
+import {Card, CardActions, CardHeader, CardMedia, CardTitle, CardText} from 'material-ui/Card';
+import CircularProgress from 'material-ui/CircularProgress';
 
 export default class EventsPageComponent extends React.Component {
   constructor(props) {
@@ -115,85 +118,87 @@ export default class EventsPageComponent extends React.Component {
     }
     today = year + '-' + month + '-' + day;
     return !!this.props.profile.id ?
-      (<div>
-        <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
-        <Tab className="tabsItem" label="Today" >
-          <div className='root'>
-            <h1 style={{margin:'40 20 0 0'}}>Your Events for the Day</h1>
-            <GridList
-              cols={1}
-              cellHeight={180}
-              className='gridList'
-            >
-              <Subheader>&nbsp;</Subheader>
-              {this.state.userEvents.filter(event => event.date_time.slice(0,10) === today).map((event) => 
-                (<Link to='/details'>
-                  <GridTile
-                  key={event.date_time}
-                  title={event.date_time.slice(11,16)}
-                  subtitle={<span><b>{event.name}</b></span>}
-                  onClick={() => this.handleOpen(event)}
-                  actionIcon={<span><b style={{color: "white"}}>{event.status}</b></span>}
-                >
-                  {event.img? (<img src={event.img}/>) : (<img src={'https://2.bp.blogspot.com/-SvN4VSH-w9Q/WAODvBuRtOI/AAAAAAAAAUA/FpfcOM7w2pQWYMGfX4l86bRISTGD-0D2wCEw/s1600/Talking-Tables-Illuminations-Party-light-Christmas-lifestyle-Portrait.png'} />)}
-                </GridTile>
-                </Link>
-              ))}
-            </GridList>
-          </div>
-        </Tab>
-        <Tab className="tabsItem" label="All Plans" >
-        <br/>
-        <br/>
-        <br/>
-        <br/>
-        <TextField
-          hintText="Hint Text"
-          floatingLabelText="Search:"
-          onChange={this.handleSearchEvents}
-        />
-            
-          {this.props.createdEventsData.sort((a,b) => {
-            return new Date(a.date) - new Date(b.date)
-          })
-          .map(event => {
-            event.events = event.events.filter(ev => ev.status === "active" || ev.status === "suggested");
-            return event;
-          })
-          .filter(event => {
-            return new Date(event.date) >= date;
-          })
-          .map(eventdate => (
-            <div className='root'>
-              <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
-              <GridList
-                cols={1}
-                padding={15}
-                cellHeight={180}
-                className='gridList'
-                key={eventdate.date_time}
-              >
-                <Subheader>&nbsp;</Subheader>
-                {eventdate.events.map(event => 
-                  (<Link to='/details'>
-                    <GridTile 
-                    key={event.date_time}
-                    title={event.date_time.slice(11,16)}
-                    subtitle={<span><b>{event.name}</b></span>}
-                    actionIcon={<span><b style={{color: "white"}}>{event.status}</b></span>}
-                  >
-                    {event.img ? (<img onClick={() => this.handleOpen(event)} src={event.img} />) : (<img onClick={() => this.handleOpen(event)} src={'https://2.bp.blogspot.com/-SvN4VSH-w9Q/WAODvBuRtOI/AAAAAAAAAUA/FpfcOM7w2pQWYMGfX4l86bRISTGD-0D2wCEw/s1600/Talking-Tables-Illuminations-Party-light-Christmas-lifestyle-Portrait.png'} />)}
-                  </GridTile>
-                  </Link>
-                ))}
-              </GridList>
-            </div>
-          ))}
-        </Tab>
-      </Tabs>
-    </div>
+      (
+        <div>
+              <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6', position: 'fixed'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
+                <Tab className="tabsItem" label="Today" >
+                  <div className='root'>
+                    <h1 style={{margin:'40 20 0 0'}}>Your Events for the Day</h1>
+                    <GridList
+                      cols={2}
+                      cellHeight={180}
+                      className='gridList'
+                    >
+                      <Subheader>&nbsp;</Subheader>
+                      {this.state.userEvents.filter(event => event.date_time.slice(0,10) === today).map((event) => 
+                        (<Link to='/details'>
+                          <GridTile
+                          key={event.date_time}
+                          title={event.date_time.slice(11,16)}
+                          subtitle={<span><b>{event.name}</b></span>}
+                          onClick={() => this.handleOpen(event)}
+                          actionIcon={<span><b style={{color: "white"}}>{event.status}</b></span>}
+                        >
+                          {event.img? (<img src={event.img}/>) : (<img src={'https://2.bp.blogspot.com/-SvN4VSH-w9Q/WAODvBuRtOI/AAAAAAAAAUA/FpfcOM7w2pQWYMGfX4l86bRISTGD-0D2wCEw/s1600/Talking-Tables-Illuminations-Party-light-Christmas-lifestyle-Portrait.png'} />)}
+                        </GridTile>
+                        </Link>
+                      ))}
+                    </GridList>
+                  </div>
+                </Tab>
+                <Tab className="tabsItem" label="All Plans" >
+                  <br/>
+                  <br/>
+                  <br/>
+                  <br/>
+                  <TextField
+                    hintText="Name of Event"
+                    floatingLabelText="Filter Events:"
+                    onChange={this.handleSearchEvents}
+                  />
+                    
+                  {this.props.createdEventsData.sort((a,b) => {
+                    return new Date(a.date) - new Date(b.date)
+                  })
+                  .map(event => {
+                    event.events = event.events.filter(ev => ev.status === "active" || ev.status === "suggested");
+                    return event;
+                  })
+                  .filter(event => {
+                    return new Date(event.date) >= date;
+                  })
+                  .map(eventdate => (
+                    <div className='root'>
+                      
+                      <GridList
+                        cols={2}
+                        cellHeight={180}
+                        className='gridList'
+                        key={eventdate.date_time}
+                      >
+                        <Subheader style={{color: "white"}}>{eventdate.date.slice(0,10)}</Subheader>
+                        {eventdate.events.map(event => 
+                          (<Link to='/details'>
+                            <GridTile 
+                            key={event.date_time}
+                            title={event.date_time.slice(11,16)}
+                            subtitle={<span><b>{event.name}</b></span>}
+                            actionIcon={<span><b style={{color: "white"}}>{event.status}</b></span>}
+                          >
+                            {event.img ? (<img onClick={() => this.handleOpen(event)} src={event.img} />) : (<img onClick={() => this.handleOpen(event)} src={'https://2.bp.blogspot.com/-SvN4VSH-w9Q/WAODvBuRtOI/AAAAAAAAAUA/FpfcOM7w2pQWYMGfX4l86bRISTGD-0D2wCEw/s1600/Talking-Tables-Illuminations-Party-light-Christmas-lifestyle-Portrait.png'} />)}
+                          </GridTile>
+                          </Link>
+                        ))}
+                      </GridList>
+                    </div>
+                  ))}
+                </Tab>
+              </Tabs>
+        </div>
       )
-      : (<div className="alertsContainer">
+      : 
+      (
+        <div className="alertsContainer">
             <h2 className="alertsTitle"> Plans </h2>
             <div className="group">
                 <Paper className="groupAuth">

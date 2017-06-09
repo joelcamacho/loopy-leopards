@@ -52,6 +52,7 @@
     "promise": "^7.1.1",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
+    "react-parallax": "^1.4.1",
     "react-redux": "^5.0.4",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",

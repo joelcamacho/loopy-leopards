@@ -3,10 +3,9 @@ const apiKeys = require('../config/config.js');
 const rp = require('request-promise');
 
 routes.post('/api/weather', (req, res) => {
-  console.log(req.body)
-  let latitude = req.body.latitude || 42.3601;
-  let longitude = req.body.longitude || -71.0589;
-  let time = 409467600;
+  let latitude = req.body.latitude || 40.7128;
+  let longitude = req.body.longitude || 74.0059;
+  let time = req.body.time || null;
 
 	const options = {
 	    uri: `https://api.darksky.net/forecast/${apiKeys.darkSky}/${latitude},${longitude},${time}?`,

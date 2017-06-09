@@ -14,6 +14,7 @@ import Skycons from 'react-skycons';
 import helpers from '../helpers/fetch.helper.jsx';
 import { HashRouter, Router, Link } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
+import Card from 'material-ui/Card';
 
 export default class EventsPageComponent extends React.Component {
   constructor(props) {
@@ -51,9 +52,7 @@ export default class EventsPageComponent extends React.Component {
     .then(res => {
       if (!res.created)  return;
 
-      console.log(res.created, ' ', res.invitedTo);
-
-      res = [...res.created, ...res.invitedTo];
+      res = res.invitedTo;
       let eventsDays = [];
       res.map(event => event.voteStatus = false);
       this.setState({userEvents: res});
@@ -117,18 +116,19 @@ export default class EventsPageComponent extends React.Component {
     return !!this.props.profile.id ?
       (<div>
         <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
+        
         <Tab className="tabsItem" label="Schedule" >
-          <div className='root'>
-            <h1 style={{margin:'40 20 0 0'}}>Today</h1>
+          <div className="tabGridContainer">
+            <h1 className="gridTitle">Today</h1>
             <GridList
-              cols={1}
-              cellHeight={180}
-              className='gridList'
-            >
-              <Subheader>&nbsp;</Subheader>
+                cols={Math.ceil(window.innerWidth / 500)}
+                padding={15}
+                cellHeight={180}
+                className='gridList'>
               {this.state.userEvents.filter(event => event.date_time.slice(0,10) === today).map((event) => 
                 (<Link to='/details'>
                   <GridTile
+                  className="gridTile"
                   key={event.date_time}
                   title={event.date_time.slice(11,16)}
                   subtitle={<span><b>{event.name}</b></span>}
@@ -142,16 +142,17 @@ export default class EventsPageComponent extends React.Component {
             </GridList>
           </div>
         </Tab>
+
         <Tab className="tabsItem" label="All Plans" >
         <br/>
-        <br/>
-        <br/>
-        <br/>
-        <TextField
-          hintText="Hint Text"
-          floatingLabelText="Search:"
-          onChange={this.handleSearchEvents}
-        />
+        <div className="filterText">
+          <TextField
+            hintText="Hint Text"
+            fullWidth={true}
+            floatingLabelText="Search:"
+            onChange={this.handleSearchEvents}
+          />
+        </div>
             
           {this.props.createdEventsData.sort((a,b) => {
             return new Date(a.date) - new Date(b.date)
@@ -164,19 +165,19 @@ export default class EventsPageComponent extends React.Component {
             return new Date(event.date) >= date;
           })
           .map(eventdate => (
-            <div className='root'>
-              <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
+            <div className='tabGridContainer'>
+              <h1 className="gridTitle">{eventdate.date.slice(0,10)}</h1>
               <GridList
-                cols={1}
+                cols={Math.ceil(window.innerWidth / 500)}
                 padding={15}
                 cellHeight={180}
                 className='gridList'
                 key={eventdate.date_time}
               >
-                <Subheader>&nbsp;</Subheader>
                 {eventdate.events.map(event => 
                   (<Link to='/details'>
                     <GridTile 
+                    className="gridTile"
                     key={event.date_time}
                     title={event.date_time.slice(11,16)}
                     subtitle={<span><b>{event.name}</b></span>}

@@ -7,28 +7,28 @@
 }
 
 .headline {
-	fontSize: 24;
-	paddingTop: 16;
-	marginBottom: 12;
-	fontWeight: 400;
+	font-size: 24;
+	padding-top: 16;
+	margin-bottom: 12;
+	font-weight: 400;
 }
 
 .root {
 	display: flex;
-	flexWrap: wrap;
-	justifyContent: center;
-	minHeight: 85vh;
+	flex-wrap: wrap;
+	justify-content: center;
+	min-height: 85vh;
 	padding: 10pt;
 }
 
 .gridList {
 	width: 727;
-	overflowY: auto;
+	overflow-Y: auto;
 }
 
 .customContentStyle {
 	width: 100%;
-	maxWidth: none;
+	max-width: none;
 }
 
 .googleMapStyle {
@@ -41,41 +41,41 @@
 	height: 100px;
 }
 
-.headline: {
-    fontSize: 24,
-    paddingTop: 16,
-    marginBottom: 12,
-    fontWeight: 400,
+.headline {
+  font-size: 24;
+  padding-top: 16;
+  margin-bottom: 12;
+  font-weight: 400;
 }
 
-.root: {
-    display: flex;
-    flexWrap: wrap;
-    justifyContent: center;
-    minHeight: 85vh;
-    padding: 10pt;
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  min-height: 85vh;
+  padding: 10pt;
 }
 
-.gridList: {
+.gridList {
     width: 727;
-    overflowY: auto;
+    overflow-Y: auto;
 }
 
-.customContentStyle: {
+.customContentStyle {
     width: 100%;
-    maxWidth: none;
+    max-width: none;
 }
 
-.googleMapStyle: {
+.googleMapStyle {
     width: 720px;
     height: 450px;
 }
 
-.wrapper: {
+.wrapper {
     display: flex;
-    flexWrap: wrap;
+    flex-wrap: wrap;
 }
 
-.chip: {
+.chip {
    margin: 5
 }

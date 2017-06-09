@@ -11,6 +11,10 @@
 		padding: 0 0 !important;
 	}
 
+	.imformation {
+		margin-left: 20pt !important;
+	}
+
 	.commentStyle {
 		width: 94% !important;
 		margin-left: 3% !important;
@@ -23,7 +27,7 @@
 		margin-top: 10pt !important;
 	}
 	.inviteSendBtn {
-		margin: 10pt 0 0 4% !important;
+		margin: 0 0 0 2% !important;
 		padding: 0 0 !important;
 	}
 	.chipDiv {
@@ -31,36 +35,44 @@
     flex-wrap: wrap;
 	}
 	.chipStyle {
-		margin-bottom: 10pt !important;
 		margin-left: 20pt !important;
 	}
 	.imgSytle {
 		width: 300px !important;
 		height: 180px;
+
 	}
 	.directionBtn {
 		margin: 0 10pt !important;
 	}
-
 	@media screen and (min-width: 750px) {
     .imgSytle {
     	width: 500px !important;
 			height: 300px;
+			margin-left: 3% !important;
     }
 	}
 }
-
 .googleMapBtn{
   display:flex;     
   flex-direction: row;
   justify-content: space-around;
   flex-wrap: wrap;
 }
-
 .directionBtn{
   min-width: 100pt;
   margin-top: 15pt;
 
 }
 
+.googleMap {
+	width: 250px !important;
+	height: 200px;
+}
 
+@media screen and (min-width: 750px) {
+  .googleMap {
+	  width: 700px !important;
+	  height: 450px;
+  }
+}

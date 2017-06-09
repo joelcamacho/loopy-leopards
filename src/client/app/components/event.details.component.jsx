@@ -321,43 +321,134 @@ export default class EventDetailsPageComponent extends React.Component {
       />,
     ];
 
-    return this.props.event.creator_id === this.props.profile.id ? (
-      <div className="eventDetails">
+    return this.props.event.creator_id === this.props.profile.id ? 
+      (<div className="eventDetails">
         <Paper className="eventPaper">
         <br/>
-        {this.props.event.img !== '' ? (<img className="imgSytle" src={this.props.event.img} alt="eventImg"/>) : null}
+        {this.props.event.img !== '' ? 
+          (<img className="imgSytle" 
+                src={this.props.event.img} 
+                alt="eventImg"
+          />
+          ) 
+          : 
+          null
+        }
         {this.state.weather !== '' ?
-          (
-            <List>
-              <div>
-                <Subheader>Weather:</Subheader>
-                <Skycons 
-                  color='orange'
-                  icon={this.state.weather.icon}
-                  autoplay={true} 
-                  style={styles.weather}
-                />
-                <p className='inputs'>
-                  {this.state.weather.summary}
-                </p>
-                <p className='inputs'>
-                  {this.state.weather.temperature}&deg;F
-                </p>
-              </div>
-            </List>
+          (<List>
+            <div className='inputs'>
+              <Subheader>Weather:</Subheader>
+              <Skycons 
+                color='orange'
+                icon={this.state.weather.icon}
+                autoplay={true} 
+                style={styles.weather}
+              />
+              <p className='inputs'>
+                {this.state.weather.summary}
+              </p>
+              <p className='inputs'>
+                {this.state.weather.temperature}&deg;F
+              </p>
+            </div>
+           </List>
           ) 
           :
           null
         }
         <br/>
-        {this.props.event.name !== '' ? (<List><div><Subheader>Event:</Subheader><p className='inputs'>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.name}</p></div><Divider/></List>) : null}
-        {this.props.event.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p className='inputs'>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.description.length > 100 ? this.props.event.description.slice(0,100) + '...' : this.props.event.description }{this.props.event.url ? (<a href={this.props.event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
-        {this.props.event.date_time !== '' ? (<List><div><Subheader>Event start:</Subheader><p className='inputs'>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.date_time.slice(0,16).replace("T", " ")}</p></div><Divider/></List>) : null}
-        {this.props.event.address !== '' ? (<List><div><Subheader>Address:</Subheader><p className='inputs'>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.address}</p><RaisedButton labelColor="white" backgroundColor="#009688" className="inviteSendBtn" label="Map Open" onTouchTap={() => this.handleGoogleMapOpen(this.state.eventDetails)} /></div><br/><Divider/></List>) : null}
-        {this.props.event.city !== '' ? (<List><div><Subheader>City & State:</Subheader><p className='inputs'>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.city}</p></div><Divider/></List>) : null}
+        {this.props.event.name !== '' ? 
+          (<List>
+            <div className='inputs'>
+              <Subheader>Event:</Subheader>
+              <p className='imformation'>
+                {this.props.event.name}
+              </p>
+            </div>
+            <Divider/>
+           </List>
+          ) 
+          : 
+          null
+        }
+        {this.props.event.description !== undefined ? 
+          (<List>
+            <div className='inputs'>
+              <Subheader>Description:</Subheader>
+              <p className='imformation'>
+                {this.props.event.description.length > 100 ? 
+                  this.props.event.description.slice(0,100) + '...' 
+                  : this.props.event.description 
+                }
+                {this.props.event.url ? 
+                  ( <a href={this.props.event.url} 
+                      target="_blank"
+                    >&nbsp;more details
+                    </a>
+                  ) 
+                  : 
+                  null
+                }
+              </p>
+            </div>
+            <Divider/>
+           </List>
+          ) 
+          : 
+          null
+        }
+        {this.props.event.date_time !== '' ? 
+          (<List>
+            <div className='inputs'>
+              <Subheader>Event start:</Subheader>
+              <p className='imformation'>
+                {this.props.event.date_time.slice(0,16).replace("T", " ")}
+              </p>
+            </div>
+            <Divider/>
+          </List>) 
+          : 
+          null
+        }
+        {this.props.event.address !== '' ? 
+          (<List>
+            <div className='inputs'>
+              <Subheader>Address:</Subheader>
+              <p className='imformation'>
+                {this.props.event.address}
+              </p>
+              <RaisedButton 
+                labelColor="white" 
+                backgroundColor="#009688" 
+                className="inviteSendBtn" 
+                label="Map Open" 
+                onTouchTap={() => this.handleGoogleMapOpen(this.state.eventDetails)} 
+              />
+            </div>
+            <br/>
+            <Divider/>
+          </List>
+          ) 
+          : 
+          null
+        }
+        {this.props.event.city !== '' ? 
+          (<List>
+            <div className='inputs'>
+              <Subheader>City & State:</Subheader>
+              <p className='imformation'>
+                {this.props.event.city}
+              </p>
+            </div>
+            <Divider/>
+          </List>
+          ) 
+          : 
+          null
+        }
         {this.props.event.invitees !== null ? (
         <List>
-          <div>
+          <div className='inputs'>
           <Subheader>Invitees:</Subheader>
           <div className='chipDiv'>
             {
@@ -374,9 +465,9 @@ export default class EventDetailsPageComponent extends React.Component {
           </div>
           </div><Divider/></List>) : null}
         <List>
-          <div>
+          <div className='inputs'>
             <Subheader>Invite Friends</Subheader>
-            <RaisedButton labelColor="white" backgroundColor="#009688" className="inviteSendBtn" label="Invite Friends" onTouchTap={this.handleTextMessageOpen} />
+            <RaisedButton labelColor="white" backgroundColor="#009688" className='imformation' label="Invite Friends" onTouchTap={this.handleTextMessageOpen} />
             <Dialog
               title="Invite your friends"
               actions={actions}
@@ -397,10 +488,10 @@ export default class EventDetailsPageComponent extends React.Component {
           <Divider/>
         </List>
         <List>
-          <div>
+          <div className='inputs'>
             <Subheader>Comment:</Subheader>
             <TextField
-              className="commentStyle"
+              className='imformation'
               hintText="Hint Text"
               floatingLabelText="Anything important?"
               onChange={this.handleCommentText}
@@ -452,7 +543,7 @@ export default class EventDetailsPageComponent extends React.Component {
           </div>)
           : null
         }
-        <div id="map" style={styles.googleMapStyle}></div>
+        <div id="map" className="googleMap"></div>
         <br/>
         <div className="googleMapBtn">
         {this.state.directionButtonShowOrHide ? (<RaisedButton fullWidth={true} labelColor="white" backgroundColor="#009688" className="eventBtn" label="Direction" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}

@@ -263,7 +263,7 @@ export default class CreatePageComponent extends React.Component {
               <div>
                 <Subheader>Date and Time:</Subheader>
                 <p className='inputs'>
-                  {this.props.createEventData.date_time}
+                  {this.props.createEventData.date_time.replace("T", " ")}
                 </p>
               </div>
               <Divider/>

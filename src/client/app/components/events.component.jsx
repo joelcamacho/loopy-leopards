@@ -15,38 +15,6 @@ import helpers from '../helpers/fetch.helper.jsx';
 import { HashRouter, Router, Link } from 'react-router-dom';
 import Paper from 'material-ui/Paper';
 
-const styles = {
-  headline: {
-    fontSize: 24,
-    paddingTop: 16,
-    marginBottom: 12,
-    fontWeight: 400,
-  },
-  root: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    minHeight: '85vh',
-    padding: '10pt',
-  },
-  gridList: {
-    width: 727,
-    overflowY: 'auto',
-  },
-  customContentStyle: {
-    width: '100%',
-    maxWidth: 'none',
-  },
-  googleMapStyle: {
-    width: '720px',
-    height: '450px',
-  },
-  weather: {
-    width: '150px',
-    height: '100px',
-  }
-};
-
 export default class EventsPageComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -147,12 +115,12 @@ export default class EventsPageComponent extends React.Component {
       (<div>
         <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
         <Tab className="tabsItem" label="Schedule" >
-          <div style={styles.root}>
+          <div className='root'>
             <h1 style={{margin:'40 20 0 0'}}>Today</h1>
             <GridList
               cols={1}
               cellHeight={180}
-              style={styles.gridList}
+              className='gridList'
             >
               <Subheader>&nbsp;</Subheader>
               {this.state.userEvents.filter(event => event.date_time.slice(0,10) === today).map((event) => 
@@ -184,14 +152,22 @@ export default class EventsPageComponent extends React.Component {
             
           {this.props.createdEventsData.sort((a,b) => {
             return new Date(a.date) - new Date(b.date)
-          }).map(eventdate => (
-            <div style={styles.root}>
+          })
+          .map(event => {
+            event.events = event.events.filter(ev => ev.status === "active" || ev.status === "suggested");
+            return event;
+          })
+          .filter(event => {
+            return new Date(event.date) >= date;
+          })
+          .map(eventdate => (
+            <div className='root'>
               <h1 style={{margin:'40 20 0 0'}}>{eventdate.date.slice(0,10)}</h1>
               <GridList
                 cols={1}
                 padding={15}
                 cellHeight={180}
-                style={styles.gridList}
+                className='gridList'
                 key={eventdate.date_time}
               >
                 <Subheader>&nbsp;</Subheader>

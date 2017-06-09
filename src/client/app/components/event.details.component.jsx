@@ -329,7 +329,7 @@ export default class EventDetailsPageComponent extends React.Component {
         <Paper>
         <br/>
         {this.props.event.img !== '' ? (<img src={this.props.event.img} alt="eventImg"/>) : null}
-        {this.state.weather !== '' ? (<List><div><Subheader>Weather:</Subheader><Skycons color='orange' icon={this.state.weather.icon} autoplay={true} style={styles.weather}/><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather.summary}</p><p>{this.state.weather.temperature}&#8451;</p></div><Divider/></List>) : null}
+        {this.state.weather !== '' ? (<List><div><Subheader>Weather:</Subheader><Skycons color='orange' icon={this.state.weather.icon} autoplay={true} className='weather'/><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.weather.summary}</p><p>{this.state.weather.temperature}&#8451;</p></div><Divider/></List>) : null}
         {this.props.event.name !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.name}</p></div><Divider/></List>) : null}
         {this.props.event.description !== undefined ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.description.length > 100 ? this.props.event.description.slice(0,100) + '...' : this.props.event.description }{this.props.event.url ? (<a href={this.props.event.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : null}
         {this.props.event.date_time !== '' ? (<List><div><Subheader>Event start:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.event.date_time.slice(0,16).replace("T", " ")}</p></div><Divider/></List>) : null}
@@ -339,12 +339,12 @@ export default class EventDetailsPageComponent extends React.Component {
         <List>
           <div>
           <Subheader>Invitees:</Subheader>
-          <div style={styles.wrapper}>
+          <div className='wrapper'>
             {
               this.props.event.invitees.map(user => (
                 <Chip
                   key={user.id} 
-                  style={styles.chip}
+                  className='chip'
                 >
                   <Avatar src={!!user.photo ? user.photo : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />
                   {user.first_name + " " + user.last_name}
@@ -391,8 +391,23 @@ export default class EventDetailsPageComponent extends React.Component {
         <Link to='/plans'>
           <FlatButton label="Confirm" primary={true} onTouchTap={this.handleConfirm} disabled={this.state.confirmButton}/>
         </Link>
-        <FlatButton label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
-        <FlatButton label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
+        {this.props.eventDetails.invitees.find(invitee => 
+            {
+              console.log('INVITEE ID:', invitee.id, 'status', invitee._pivot_status, 'PROFILE ID:',this.props.profile.id)
+              return invitee.id === this.props.profile.id
+            })._pivot_status === 'confirmed' ?
+            (
+              <div> You have confirmed you are attending this event </div>
+              
+            ) 
+            : 
+            (
+              <div>
+                <FlatButton label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
+                <FlatButton label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
+              </div>
+            )
+          }
         <br/>
         <br/>
       </Paper>
@@ -430,7 +445,7 @@ export default class EventDetailsPageComponent extends React.Component {
           </div>)
           : null
         }
-        <div id="map" style={styles.googleMapStyle}></div>
+        <div id="map" className='googleMapStyle'></div>
         <br/>
         {this.state.directionButtonShowOrHide ? (<RaisedButton label="Direction" fullWidth="true" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
         {this.state.displaydirectionDetails ? (<RaisedButton label="TRANSIT" fullWidth="true" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'TRANSIT')}/>) : null}
@@ -561,7 +576,7 @@ export default class EventDetailsPageComponent extends React.Component {
               return invitee.id === this.props.profile.id
             })._pivot_status === 'confirmed' ?
             (
-              <div> You are confirmed for this event </div>
+              <div> You have confirmed you are attending this event </div>
               
             ) 
             : 

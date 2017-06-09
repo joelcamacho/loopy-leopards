@@ -122,9 +122,9 @@ export default class EventsPageComponent extends React.Component {
     return (
       <div>
         <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
-        <Tab className="tabsItem" label="Schedule" >
+        <Tab className="tabsItem" label="Today" >
           <div className='root'>
-            <h1 style={{margin:'40 20 0 0'}}>Today</h1>
+            <h1 style={{margin:'40 20 0 0'}}>Your Events for the Day</h1>
             <GridList
               cols={1}
               cellHeight={180}

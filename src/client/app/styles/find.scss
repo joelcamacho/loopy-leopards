@@ -1,65 +1,65 @@
 .find {
   padding: 20pt 10pt 30pt 10pt;
-
-	.findPaper {
-		padding: 10pt 20pt 20pt 20pt !important;
-	}
-
-	.findBtn {
-		width: 94%;
-		margin: 0 3% !important;
-		padding: 0 0 !important;
-		margin-top: 20pt !important;
-	}
-
-	.findShowBtn {
-  	width: 94%;
-		margin: 10pt 3% !important;
-		padding: 0 0 !important;
-	}
-
-	.findResults {
-		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
-	}
-
-	.findMedia {
-    background-color: black !important;
-    margin: 0;
-    height: 100%;
-    width: 100%;
-	}
-
-	.findCard {
-		height: 200px;
-    width: 100%;
-    margin-top: 10pt;
-	}
-
-	.inputs {
-		width: 94% !important;
-		margin: 10pt 3% !important;
-		padding: 0 0 !important;
-	}
-
-	@media screen and (min-width: 650px) {
-    .findCard {
-    	height: 230px;
-    	width: 47%;
-    	margin: 10pt 1.5%;
-    }
-	}
-
-	@media screen and (min-width: 1000px) {
-    .findCard {
-    	height: 275px;
-    	width: 30%;
-    	margin: 10pt 1.5%;
-    }
-	}
-
 }
+
+.findPaper {
+  padding: 10pt 20pt 20pt 20pt !important;
+}
+
+.findBtn {
+  width: 94%;
+  margin: 0 3% !important;
+  padding: 0 0 !important;
+  margin-top: 20pt !important;
+}
+
+.findShowBtn {
+  width: 94%;
+  margin: 10pt 3% !important;
+  padding: 0 0 !important;
+}
+
+.findResults {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.findMedia {
+  background-color: black !important;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.findCard {
+  height: 200px;
+  width: 100%;
+  margin-top: 10pt;
+}
+
+.inputs {
+  width: 94% !important;
+  margin: 10pt 3% !important;
+  padding: 0 0 !important;
+}
+
+@media screen and (min-width: 650px) {
+  .findCard {
+    height: 230px;
+    width: 47%;
+    margin: 10pt 1.5%;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .findCard {
+    height: 275px;
+    width: 30%;
+    margin: 10pt 1.5%;
+  }
+}
+
 
 .progress {
   position: fixed !important;

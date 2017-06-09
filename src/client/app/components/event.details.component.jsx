@@ -48,7 +48,7 @@ const styles = {
   },
   weather: {
     float: 'left',
-    width: '150px',
+    width: '190px',
     height: '100px',
   },
   directionBtnl: {
@@ -454,12 +454,12 @@ export default class EventDetailsPageComponent extends React.Component {
         }
         <div id="map" style={styles.googleMapStyle}></div>
         <br/>
-        <div style={styles.directionBtnl}>
+        <div className="googleMapBtn">
         {this.state.directionButtonShowOrHide ? (<RaisedButton fullWidth={true} labelColor="white" backgroundColor="#009688" className="eventBtn" label="Direction" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton labelColor="white" backgroundColor="#009688" className="directionBtn" label="TRANSIT" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'TRANSIT')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton labelColor="white" backgroundColor="#009688" className="directionBtn" label="DRIVING" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton labelColor="white" backgroundColor="#009688" className="directionBtn" label="BICYCLING" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'BICYCLING')}/>) : null}
-        {this.state.displaydirectionDetails ? (<RaisedButton labelColor="white" backgroundColor="#009688" className="directionBtn" label="WALKING" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'WALKING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton className="directionBtn" labelColor="white" backgroundColor="#009688" className="directionBtn" label="TRANSIT" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'TRANSIT')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton className="directionBtn" labelColor="white" backgroundColor="#009688" className="directionBtn" label="DRIVING" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton className="directionBtn" labelColor="white" backgroundColor="#009688" className="directionBtn" label="BICYCLING" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'BICYCLING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton className="directionBtn" labelColor="white" backgroundColor="#009688" className="directionBtn" label="WALKING" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'WALKING')}/>) : null}
         </div>
       </Dialog>
       </div>

@@ -35,8 +35,8 @@
 		margin-left: 20pt !important;
 	}
 	.imgSytle {
-		width: 350px !important;
-		height: 200px;
+		width: 300px !important;
+		height: 180px;
 	}
 	.directionBtn {
 		margin: 0 10pt !important;
@@ -48,5 +48,19 @@
 			height: 300px;
     }
 	}
+}
+
+.googleMapBtn{
+  display:flex;     
+  flex-direction: row;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.directionBtn{
+  min-width: 100pt;
+  margin-top: 15pt;
 
 }
+
+

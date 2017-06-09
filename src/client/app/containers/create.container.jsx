@@ -6,6 +6,7 @@ import action from '../actions/events.action.jsx';
 export default connect(
   //App is listening to state
   function mapStateToProps(state) {
+    console.log("state.createEvent.toJS()", state.createEvent.toJS())
     return { 
       events: state.events,
       createEventData: state.createEvent.toJS(),

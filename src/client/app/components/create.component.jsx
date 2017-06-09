@@ -142,7 +142,7 @@ export default class CreatePageComponent extends React.Component {
     return !!this.props.profile.id ?
       (<div className="create">
         <Paper className="createPaper">
-          {this.state.currentEvent.img !== '' ? 
+          {this.props.createEventData.img !== '' ? 
             (<img className="imgStyle" 
                   src={this.state.currentEvent.img} 
                   alt="eventImg"/>
@@ -155,7 +155,7 @@ export default class CreatePageComponent extends React.Component {
              </div>
             )
           }
-          {this.state.currentEvent.title !== '' ? 
+          {this.props.createEventData.title !== '' ? 
             (<List>
               <div className='inputs'>
                 <Subheader>Event:</Subheader>
@@ -178,18 +178,18 @@ export default class CreatePageComponent extends React.Component {
              </div>
             )
           }
-          {this.state.currentEvent.description !== '' ?
+          {this.props.createEventData.description !== '' ?
             (<List>
               <div className='inputs'>
                 <Subheader>Description:</Subheader>
                 <p>
-                  {this.state.currentEvent.description.length > 100 ?
-                   this.state.currentEvent.description.slice(0,100) + '...' 
+                  {this.props.createEventData.description.length > 100 ?
+                   this.props.createEventData.description.slice(0,100) + '...' 
                    : 
-                   this.state.currentEvent.description 
+                   this.props.createEventData.description 
                   }
-                  {this.state.currentEvent.url ?
-                    (<a href={this.state.currentEvent.url} target="_blank">&nbsp;more details</a>
+                  {this.props.createEventData.url ?
+                    (<a href={this.props.createEventData.url} target="_blank">&nbsp;more details</a>
                     ) 
                     : 
                     null
@@ -211,12 +211,12 @@ export default class CreatePageComponent extends React.Component {
              </div>
             )
           }
-          {this.state.currentEvent.address !== '' ? 
+          {this.props.createEventData.address !== '' ? 
             (<List>
               <div className='inputs'>
                 <Subheader>Address:</Subheader>
                 <p>
-                  {this.state.currentEvent.address}
+                  {this.props.createEventData.address}
                 </p>
               </div>
               <Divider/>
@@ -233,13 +233,13 @@ export default class CreatePageComponent extends React.Component {
              </div>
             )
           }
-          {this.state.currentEvent.city !== '' ? 
+          {this.props.createEventData.city !== '' ? 
             (<List>
                 <div className='inputs'>
                 <Subheader>City & State:</Subheader>
                 <p>
-                {this.state.currentEvent.city}&nbsp;
-                {this.state.currentEvent.state}
+                {this.props.createEventData.city}&nbsp;
+                {this.props.createEventData.state}
                 </p>
               </div>
               <Divider/>
@@ -258,12 +258,12 @@ export default class CreatePageComponent extends React.Component {
           }
           <List>
           </List>
-          {this.state.currentEvent.date_time !== undefined ? 
+          {this.props.createEventData.date_time !== undefined ? 
             (<List>
               <div>
                 <Subheader>Date and Time:</Subheader>
                 <p className='inputs'>
-                  {this.state.currentEvent.date_time}
+                  {this.props.createEventData.date_time}
                 </p>
               </div>
               <Divider/>
@@ -294,7 +294,7 @@ export default class CreatePageComponent extends React.Component {
           {
             !!this.props.createEventData.title ?
             (
-              (!!this.state.value12 && !!this.state.controlledDate) || !!this.state.currentEvent.date_time ?
+              (!!this.state.value12 && !!this.state.controlledDate) || !!this.props.createEventData.date_time ?
               (
                 <Link to="/plans">
                   <RaisedButton labelColor="white" backgroundColor="#009688" className="createBtn" label="Confirm" disabled={false} onClick={() => this.handleConfirm()}/>

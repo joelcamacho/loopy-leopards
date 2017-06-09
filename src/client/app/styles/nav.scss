@@ -16,7 +16,7 @@ $divider-color:        #BDBDBD;
   color: $primary-color-light !important;
 
   .navbar {
-    background-color: $primary-color-dark !important;
+    background-color: #004D40 !important;
   }
 
   .homeIcon {
@@ -47,7 +47,7 @@ $divider-color:        #BDBDBD;
 }
 
 .childrenContainer {
-  background-color: #004D40;
+  background-color: #B0BEC5 !important;
   min-height: 100vh;
   width: 100%;
   margin: 0;
@@ -78,7 +78,7 @@ $divider-color:        #BDBDBD;
   padding: 5pt 0pt;
   text-align: center;
   max-width: 800px;
-  background-color: $primary-color !important;
+  background-color: #004D40 !important;
 
   .bottomNavItem {
     max-width: 18% !important;
@@ -89,7 +89,7 @@ $divider-color:        #BDBDBD;
 }
 
 .bottomNavComponent {
-  background-color: $primary-color !important;
+  background-color: #004D40 !important;
 }
 
 .bottomNavLabel {

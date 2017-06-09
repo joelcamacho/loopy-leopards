@@ -25,6 +25,13 @@
     }
   }
 
+  #profileImage {
+    background-color: transparent !important;
+    height: 250px !important;
+    width: 250px !important;
+    margin: 25px;
+  }
+
 }
 
 .notifyBtn {
@@ -61,8 +68,11 @@
   .profile {
     padding: 5pt 0 30pt 0;
   }
+
+
 }
 
 .tabsItem {
   background-color: rgb(0, 150, 136) !important;
 }
+

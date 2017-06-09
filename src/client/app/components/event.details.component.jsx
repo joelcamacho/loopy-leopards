@@ -456,7 +456,8 @@ export default class EventDetailsPageComponent extends React.Component {
               this.props.event.invitees.map(user => (
                 <Chip
                   key={user.id}
-                  className='chipStyle' 
+                  className='chipStyle'
+                  backgroundColor={user._pivot_status === 'confirmed' ? 'rgb(0, 150, 136)' : 'rgb(188, 188, 188)'}
                 >
                   <Avatar src={!!user.photo ? user.photo : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />
                   {user.first_name + " " + user.last_name}
@@ -503,7 +504,7 @@ export default class EventDetailsPageComponent extends React.Component {
           <Divider/>
         </List>
         <Link to='/plans'>
-          <RaisedButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="Confirm" primary={true} onTouchTap={this.handleConfirm} disabled={this.state.confirmButton}/>
+          <RaisedButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="Confirm" onTouchTap={this.handleConfirm} disabled={this.state.confirmButton}/>
         </Link>
         {
           this.props.eventDetails.invitees.filter(invitee => {
@@ -521,8 +522,8 @@ export default class EventDetailsPageComponent extends React.Component {
           : 
           (
             <div>
-              <RaisedButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
-              <RaisedButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
+              <RaisedButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP YES" onTouchTap={this.acceptInvitationToEvent} />
+              <RaisedButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP NO" onTouchTap={this.rejectInvitationToEvent}/>
             </div>
           )
         }
@@ -587,6 +588,29 @@ export default class EventDetailsPageComponent extends React.Component {
               />) 
               : null
             }
+
+            {this.state.weather !== '' ?
+          (<List>
+            <div className='inputs'>
+              <Subheader>Weather:</Subheader>
+              <Skycons 
+                color='orange'
+                icon={this.state.weather.icon}
+                autoplay={true} 
+                style={styles.weather}
+              />
+              <p className='inputs'>
+                {this.state.weather.summary}
+              </p>
+              <p className='inputs'>
+                {this.state.weather.temperature}&deg;F
+              </p>
+            </div>
+           </List>
+          ) 
+          :
+          null
+        }
 
             {this.props.eventDetails.name !== '' ? (
               <List>
@@ -680,16 +704,23 @@ export default class EventDetailsPageComponent extends React.Component {
           
           {this.props.eventDetails && this.props.eventDetails.invitees.length >= 0 ?
             (<List>
-              <div  className='inputs'>
-                <Subheader>Invitees:</Subheader>
-                <ul>
-                  { this.props.eventDetails.invitees
-                    .map(user => (<li>{user.first_name} {user.last_name} : {user._pivot_status}</li>)) 
-                  }
-                </ul>
-              </div>
-              <Divider/>
-            </List>
+          <div className='inputs'>
+          <Subheader>Invitees:</Subheader>
+          <div className='chipDiv'>
+            {
+              this.props.event.invitees.map(user => (
+                <Chip
+                  key={user.id}
+                  className='chipStyle'
+                  backgroundColor={user._pivot_status === 'confirmed' ? 'rgb(0, 150, 136)' : 'rgb(188, 188, 188)'}
+                >
+                  <Avatar src={!!user.photo ? user.photo : 'http://sites.austincc.edu/jrnl/wp-content/uploads/sites/50/2015/07/placeholder.gif'} />
+                  {user.first_name + " " + user.last_name}
+                </Chip>
+              ))
+            }
+          </div>
+          </div><Divider/></List>
             )
             : null
           }
@@ -705,13 +736,54 @@ export default class EventDetailsPageComponent extends React.Component {
             : 
             (
               <div>
-                <FlatButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
-                <FlatButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
+                <FlatButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP YES" onTouchTap={this.acceptInvitationToEvent} />
+                <FlatButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP NO" onTouchTap={this.rejectInvitationToEvent}/>
               </div>
             )
           }
           
           </Paper>
+
+          <Dialog
+        title="The Location Of Your Event"
+        actions={<FlatButton label="Cancle" primary={true} onTouchTap={this.handleGoogleMapClose} />}
+        modal={false}
+        open={this.state.googleMapOpen}
+        onRequestClose={this.handleGoogleMapClose}
+        autoScrollBodyContent={true}
+      >
+        <br/>
+        { this.state.displaydirectionDetails ? 
+          (<div>
+            <div>
+              <p>Current Address(A): {this.state.directionDetails.currentAddress}</p>
+            </div>
+            <div>
+              <p>Derection Address(B): {this.state.eventDetails.address}</p>
+            </div>
+            <div>
+              <p>Transportation: {this.state.directionDetails.transportation}</p>
+            </div>
+            <div>
+              <p>Distance: {this.state.directionDetails.distance}</p>
+            </div>
+            <div>
+              <p>Time: {this.state.directionDetails.time}</p>
+            </div>
+          </div>)
+          : null
+        }
+        <div id="map" className="googleMap"></div>
+        <br/>
+        <div className="googleMapBtn">
+        {this.state.directionButtonShowOrHide ? (<RaisedButton fullWidth={true} labelColor="white" backgroundColor="#009688" className="eventBtn" label="Direction" disabled={this.state.directionButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton className="directionBtn" labelColor="white" backgroundColor="#009688" className="directionBtn" label="TRANSIT" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'TRANSIT')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton className="directionBtn" labelColor="white" backgroundColor="#009688" className="directionBtn" label="DRIVING" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'DRIVING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton className="directionBtn" labelColor="white" backgroundColor="#009688" className="directionBtn" label="BICYCLING" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'BICYCLING')}/>) : null}
+        {this.state.displaydirectionDetails ? (<RaisedButton className="directionBtn" labelColor="white" backgroundColor="#009688" className="directionBtn" label="WALKING" disabled={this.state.transportationButton} onTouchTap={() => this.handleGetDirection(this.state.eventDetails, 'WALKING')}/>) : null}
+        </div>
+      </Dialog>
+
         </div>
       )
   }

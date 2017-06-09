@@ -20,9 +20,9 @@ export default class CreatePageComponent extends React.Component {
       controlledDate: null,
       value12: null,
       commentTestValue: '',
-      titleTestValue: '',
-      addressTestValue: '',
-      cityTestValue: '',
+      titleTestValue: null,
+      addressTestValue: null,
+      cityTestValue: null,
       stateTestValue: '',
       phoneTestValue: '',
       open: false,
@@ -31,7 +31,7 @@ export default class CreatePageComponent extends React.Component {
       invitedUsers: [],
       userGroupData: [],
       currentEvent: {description: ''},
-      descriptionTestValue: '',
+      descriptionTestValue: null,
     };
 
     this.handleChangeTimePicker12 = this.handleChangeTimePicker12.bind(this);
@@ -133,6 +133,7 @@ export default class CreatePageComponent extends React.Component {
   render() {
     const { event } = this.props;
     const { users } = this.props;
+    console.log()
     const styles = {
       wrapper: {
         display: 'flex',
@@ -169,9 +170,45 @@ export default class CreatePageComponent extends React.Component {
           }
            <br/>
           <div>
-            <Link to="/plans">
-            <FlatButton className="drawerItem" label="Confirm" onClick={() => this.handleConfirm()}/>
-            </Link>
+          {
+            !!this.props.createEventData.title ?
+            (
+              (!!this.state.value12 && !!this.state.controlledDate) || !!this.state.currentEvent.date_time ?
+              (
+                <Link to="/plans">
+                  <FlatButton className="drawerItem" label="Confirm" disabled={false} onClick={() => this.handleConfirm()}/>
+                </Link>
+              )
+              : (
+                  <FlatButton className="drawerItem" label="Confirm" disabled={true} onClick={() => this.handleConfirm()}/>
+                )
+            )
+            : (
+                !!this.state.value12 && !!this.state.controlledDate && !!this.state.addressTestValue ?
+                (
+                  <Link to="/plans">
+                    <FlatButton className="drawerItem" label="Confirm" disabled={false} onClick={() => this.handleConfirm()}/>
+                  </Link>
+                ) 
+              : (
+                  <FlatButton className="drawerItem" label="Confirm" disabled={true} onClick={() => this.handleConfirm()}/>         
+                )
+              )
+
+
+
+
+
+
+
+          }
+
+
+
+
+
+
+
           </div>
           <br/>
         </Paper>

@@ -3,8 +3,8 @@ const apiKeys = require('../config/config.js');
 const rp = require('request-promise');
 
 routes.post('/api/weather', (req, res) => {
-  let latitude = req.body.latitude || null;
-  let longitude = req.body.longitude || null;
+  let latitude = req.body.latitude || 40.7128;
+  let longitude = req.body.longitude || 74.0059;
   let time = req.body.time || null;
 
 	const options = {

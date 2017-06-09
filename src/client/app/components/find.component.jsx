@@ -13,7 +13,7 @@ export default class SearchPageComponent extends React.Component {
 
     this.state = {
       expanded: false,
-      userLocation: 'Please enter your location',
+      userLocation: null,
       latitude: 0,
       longitude: 0,
       toggleCheckBox: false,
@@ -32,6 +32,7 @@ export default class SearchPageComponent extends React.Component {
     this.handleMoreSearchResult = this.handleMoreSearchResult.bind(this);
     this.handleBackToTop = this.handleBackToTop.bind(this);
     this.handleClickedEvent = this.handleClickedEvent.bind(this);
+    this.getCurrentUserAddress = this.getCurrentUserAddress.bind(this);
   }
 
   handleExpandChange (expanded) {
@@ -181,6 +182,16 @@ export default class SearchPageComponent extends React.Component {
       that.setState({searchButton: false});
     }}
 
+  getCurrentUserAddress() {
+    this.props.profile && this.props.profile.address ? 
+    this.setState({userLocation: this.props.profile.address + ' ' + this.props.profile.city + ' ' + this.props.profile.state})
+    : this.setState({userLocation: 'Please enter your location'})
+  }
+
+  componentDidMount() {
+    this.getCurrentUserAddress();
+  }
+
   render() {
     const { events } = this.props;
 
@@ -192,7 +203,7 @@ export default class SearchPageComponent extends React.Component {
             <TextField
               className='inputs'
               id="text-field-controlled"
-              value={!!this.props.profile.address ? this.props.profile.address : this.state.userLocation}
+              value={this.state.userLocation}
               onChange={this.handleAddressTextFieldChange}
               multiLine={true}
             />

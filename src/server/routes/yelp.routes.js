@@ -35,7 +35,7 @@ routes.get('/api/yelp', (req, res) => {
 	        location: location,
 	        longitude: longitude,
 	        latitude: latitude,
-	        // limit: 20,
+	        limit: 30,
 	        term: terms,
 	        sort_by: 'distance',
 	        radius: 5000

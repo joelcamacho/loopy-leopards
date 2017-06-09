@@ -96,6 +96,7 @@ export default class EventDetailsPageComponent extends React.Component {
     this.handleUserPhoneNumber = this.handleUserPhoneNumber.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
     this.handleCommentText = this.handleCommentText.bind(this);
+    this.handleBroadcastButton = this.handleBroadcastButton.bind(this);
   }
 
   handleTextMessageOpen () {
@@ -255,7 +256,7 @@ export default class EventDetailsPageComponent extends React.Component {
       this.props.getGroupUsers(groupUsers);
     })
     this.setState({eventDetails: this.props.event});
-    this.props.event.status === 'suggested' ?
+    this.props.event.status !== 'suggested' ?
       this.setState({confirmButton: true})
     : this.setState({confirmButton: false})
   }
@@ -285,14 +286,7 @@ export default class EventDetailsPageComponent extends React.Component {
 
   handleConfirm() {
     let event;
-    let comment;
     event = this.props.event;
-    comment = this.state.commentText
-    if (comment) {
-      comment = {body: comment};
-      helpers.fetchSendEventBroadcast(event, comment)
-      .then(res => console.log("fetchSendEventBroadcast: ", res))
-    }
     helpers.fetchConfirmEvent(event)
     .then(res => {
       if (res.result === 'Not enough people confirmed for this event') {
@@ -301,6 +295,18 @@ export default class EventDetailsPageComponent extends React.Component {
         alert("Success");
       }
     });
+  }
+
+  handleBroadcastButton () {
+    let comment;
+    let event;
+    event = this.props.event;
+    comment = this.state.commentText;
+    if (comment) {
+      comment = {body: comment};
+      helpers.fetchSendEventBroadcast(event, comment)
+      .then(res => console.log("fetchSendEventBroadcast: ", res))
+    }
   }
   
   render() {
@@ -374,9 +380,10 @@ export default class EventDetailsPageComponent extends React.Component {
             <Subheader>Comment:</Subheader>
             <TextField
               hintText="Hint Text"
-              floatingLabelText="Anything you want to say?"
+              floatingLabelText="Anything important?"
               onChange={this.handleCommentText}
             />
+            <RaisedButton label="Send Message" onTouchTap={this.handleBroadcastButton} />
           </div>
           <br/>
           <Divider/>
@@ -384,6 +391,8 @@ export default class EventDetailsPageComponent extends React.Component {
         <Link to='/plans'>
           <FlatButton label="Confirm" primary={true} onTouchTap={this.handleConfirm} disabled={this.state.confirmButton}/>
         </Link>
+        <FlatButton label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
+        <FlatButton label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
         <br/>
         <br/>
       </Paper>

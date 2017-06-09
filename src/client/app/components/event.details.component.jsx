@@ -326,9 +326,10 @@ export default class EventDetailsPageComponent extends React.Component {
         <Paper className="eventPaper">
         <br/>
         {this.props.event.img !== '' ? 
-          (<img className="imgSytle" 
-                src={this.props.event.img} 
-                alt="eventImg"
+          (<img 
+            className="imgSytle" 
+            src={this.props.event.img} 
+            alt="eventImg"
           />
           ) 
           : 
@@ -555,23 +556,24 @@ export default class EventDetailsPageComponent extends React.Component {
       </Dialog>
       </div>
     ) : (
-            <div>
-        <Paper>
+        <div className="eventDetails">
+          <Paper className="eventPaper">
             <br/>
 
             {this.props.eventDetails && this.props.eventDetails.img !== '' ? (
               <img 
                src={this.props.eventDetails.img} 
                alt="eventImg"
+               className="imgSytle"
               />) 
               : null
             }
 
             {this.props.eventDetails.name !== '' ? (
               <List>
-                <div>
+                <div className='inputs'>
                   <Subheader>Event:</Subheader>
-                  <p>&nbsp;&nbsp;&nbsp;&nbsp;{this.props.eventDetails.name}</p>
+                  <p className='imformation'>{this.props.eventDetails.name}</p>
                 </div>
                 <Divider/>
               </List>)
@@ -580,9 +582,9 @@ export default class EventDetailsPageComponent extends React.Component {
 
           {this.props.eventDetails && this.props.eventDetails.description !== '' ? 
             (<List>
-              <div>
+              <div className='inputs'>
                 <Subheader> Description: </Subheader>
-                <p> 
+                <p className='imformation'> 
                   { this.props.eventDetails.description.length > 100 ? 
                     this.props.eventDetails.description.slice(0,100) + '...' 
                     : this.props.eventDetails.description }
@@ -599,9 +601,9 @@ export default class EventDetailsPageComponent extends React.Component {
           
           {this.props.eventDetails && this.props.eventDetails.date_time !== '' ?
             (<List>
-              <div>
+              <div className='inputs'>
                 <Subheader>Event start:</Subheader>
-                <p> 
+                <p className='imformation'> 
                   {this.props.eventDetails.date_time}
                 </p>
               </div>
@@ -612,9 +614,9 @@ export default class EventDetailsPageComponent extends React.Component {
           
           {this.props.eventDetails && this.props.eventDetails.address !== '' ? 
             (<List>
-              <div>
+              <div className='inputs'>
                 <Subheader>Address:</Subheader>
-                <p>
+                <p className='imformation'>
                   {this.props.eventDetails.address}
                 </p>
                 <RaisedButton 
@@ -633,9 +635,9 @@ export default class EventDetailsPageComponent extends React.Component {
           
           {this.props.eventDetails && this.props.eventDetails.city !== '' ? 
             (<List>
-              <div>
+              <div className='inputs'>
                 <Subheader>City:</Subheader>
-                <p>
+                <p className='imformation'>
                   {this.props.eventDetails.city} 
                 </p>
               </div>
@@ -646,9 +648,9 @@ export default class EventDetailsPageComponent extends React.Component {
 
           {this.props.eventDetails && this.props.eventDetails.state !== '' ?
             (<List>
-              <div>
+              <div className='inputs'>
                 <Subheader>State:</Subheader>
-                <p>
+                <p className='imformation'>
                   {this.props.eventDetails.state}
                 </p>
               </div>
@@ -659,7 +661,7 @@ export default class EventDetailsPageComponent extends React.Component {
           
           {this.props.eventDetails && this.props.eventDetails.invitees.length >= 0 ?
             (<List>
-              <div>
+              <div  className='inputs'>
                 <Subheader>Invitees:</Subheader>
                 <ul>
                   { this.props.eventDetails.invitees
@@ -679,14 +681,14 @@ export default class EventDetailsPageComponent extends React.Component {
               return invitee.id === this.props.profile.id
             })._pivot_status === 'confirmed' ?
             (
-              <div> You are confirmed for this event </div>
+              <div  className='inputs'> You are confirmed for this event </div>
               
             ) 
             : 
             (
               <div>
-                <FlatButton label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
-                <FlatButton label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
+                <FlatButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
+                <FlatButton labelColor="white" backgroundColor="#009688" className="eventBtn" label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
               </div>
             )
           }

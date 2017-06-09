@@ -4,9 +4,9 @@ import action from '../actions/events.action.jsx';
 
 export default connect(
   function mapStateToProps(state) {
-    console.log("state.events: ", state.events)
     return {
-      createdEventsData: state.createdEvents
+      createdEventsData: state.createdEvents,
+      profile: state.profile.toJS(),
     };
   },
   function mapDispatchToProps(dispatch) {

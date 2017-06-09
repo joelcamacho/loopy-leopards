@@ -8,6 +8,7 @@ export default connect(
   function mapStateToProps(state) {
     return { 
       events: state.events,
+      profile: state.profile.toJS(),
     };
   },
 
@@ -18,9 +19,6 @@ export default connect(
     	},
       createEvent: function(event) {
         return dispatch(action.createEvent(event));
-      },
-      updateProfile: function(profile) {
-        return dispatch(profileActions.updateProfile(profile));
       },
     }
   }

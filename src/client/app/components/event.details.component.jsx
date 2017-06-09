@@ -81,6 +81,7 @@ export default class EventDetailsPageComponent extends React.Component {
       textMessageOpen: false,
       userPhoneNumber: null,
       commentText: null,
+      confirmButton: null,
     }
     this.acceptInvitationToEvent = this.acceptInvitationToEvent.bind(this);
     this.rejectInvitationToEvent = this.rejectInvitationToEvent.bind(this);
@@ -95,6 +96,7 @@ export default class EventDetailsPageComponent extends React.Component {
     this.handleUserPhoneNumber = this.handleUserPhoneNumber.bind(this);
     this.handleConfirm = this.handleConfirm.bind(this);
     this.handleCommentText = this.handleCommentText.bind(this);
+    this.handleBroadcastButton = this.handleBroadcastButton.bind(this);
   }
 
   handleTextMessageOpen () {
@@ -254,20 +256,28 @@ export default class EventDetailsPageComponent extends React.Component {
       this.props.getGroupUsers(groupUsers);
     })
     this.setState({eventDetails: this.props.event});
+    this.props.event.status !== 'suggested' ?
+      this.setState({confirmButton: true})
+    : this.setState({confirmButton: false})
   }
 
   componentDidMount() {
-    this.fetchDatas();
-    helpers.fetchWeatherData(event.latitude, event.longitude, event.date_time)//fix this later
+    let latitude;
+    let longitude;
+    let date_time;
+    let hour;
+    latitude = this.props.event.latitude;
+    longitude = this.props.event.longitude;
+    date_time = this.props.event.date_time.slice(0,19);
+    hour = +this.props.event.date_time.slice(11,13);
+    helpers.fetchWeatherData(latitude, longitude, date_time)
     .then(res => {
       res = JSON.parse(res.result);
-      console.log('fetchWeatherData', res);
-
-
       let icon = '' 
-      res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
-      this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
+      res.hourly.data[hour].icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
+      this.setState({weather: {summary: res.hourly.data[hour].summary, temperature: res.hourly.data[hour].temperature, icon: icon}});
     });
+    this.fetchDatas();
   }
 
   handleCommentText (event) {
@@ -276,14 +286,7 @@ export default class EventDetailsPageComponent extends React.Component {
 
   handleConfirm() {
     let event;
-    let comment;
     event = this.props.event;
-    comment = this.state.commentText
-    if (comment) {
-      comment = {body: comment};
-      helpers.fetchSendEventBroadcast(event, comment)
-      .then(res => console.log("fetchSendEventBroadcast: ", res))
-    }
     helpers.fetchConfirmEvent(event)
     .then(res => {
       if (res.result === 'Not enough people confirmed for this event') {
@@ -293,13 +296,20 @@ export default class EventDetailsPageComponent extends React.Component {
       }
     });
   }
+
+  handleBroadcastButton () {
+    let comment;
+    let event;
+    event = this.props.event;
+    comment = this.state.commentText;
+    if (comment) {
+      comment = {body: comment};
+      helpers.fetchSendEventBroadcast(event, comment)
+      .then(res => console.log("fetchSendEventBroadcast: ", res))
+    }
+  }
   
   render() {
-
-  	console.log("THIS event is FROM PROPS: ", this.props.event);
-    console.log("ThIS profile is FROM PROPS: ", this.props.profile);
-    console.log('------- Event details FROM PROPS -------', this.props.eventDetails)
-    console.log("this.state.weather: ", this.state.weather)
     const actions = [
       <FlatButton
         label="Cancel"
@@ -370,16 +380,19 @@ export default class EventDetailsPageComponent extends React.Component {
             <Subheader>Comment:</Subheader>
             <TextField
               hintText="Hint Text"
-              floatingLabelText="Anything you want to say?"
+              floatingLabelText="Anything important?"
               onChange={this.handleCommentText}
             />
+            <RaisedButton label="Send Message" onTouchTap={this.handleBroadcastButton} />
           </div>
           <br/>
           <Divider/>
         </List>
         <Link to='/plans'>
-          <FlatButton label="Confirm" primary={true} onTouchTap={this.handleConfirm} />
+          <FlatButton label="Confirm" primary={true} onTouchTap={this.handleConfirm} disabled={this.state.confirmButton}/>
         </Link>
+        <FlatButton label="RSVP YES" primary={true} onTouchTap={this.acceptInvitationToEvent} />
+        <FlatButton label="RSVP NO" primary={true} onTouchTap={this.rejectInvitationToEvent}/>
         <br/>
         <br/>
       </Paper>

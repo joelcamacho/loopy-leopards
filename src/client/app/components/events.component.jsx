@@ -13,6 +13,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import Skycons from 'react-skycons';
 import helpers from '../helpers/fetch.helper.jsx';
 import { HashRouter, Router, Link } from 'react-router-dom';
+import Paper from 'material-ui/Paper';
 
 const styles = {
   headline: {
@@ -53,7 +54,7 @@ export default class EventsPageComponent extends React.Component {
     this.state = {
       userEvents: [],
       voteStatus: false,
-      eventsDays: [],
+      daysWithEvents: [],
       open: false,
       eventDetails: {},
       googleMapOpen: false,
@@ -72,16 +73,6 @@ export default class EventsPageComponent extends React.Component {
   }
 
   handleOpen (event)  {
-
-    // helpers.fetchWeatherData(event.latitude, event.longitude, event.time)
-    // .then(res => {
-    //   let icon = '' 
-    //   res.currently.icon.split("").forEach(ele => ele === "-" ? icon += '_' : icon += ele.toUpperCase());
-    //   this.setState({weather: {summary: res.currently.summary, temperature: res.currently.temperature, icon: icon}});
-    // });
-    // this.setState({eventDetails: event})
-    // this.setState({open: true});
-
     console.log("events components, handleOpen", event);
     this.props.updateEvent(event);
     // this.props.eventDetails(event);
@@ -95,7 +86,6 @@ export default class EventsPageComponent extends React.Component {
       res = res.created;
       let eventsDays = [];
       res.map(event => event.voteStatus = false);
-      console.log('response', res);
       this.setState({userEvents: res});
       res.forEach(event => eventsDays.push(event.date_time));
       eventsDays = eventsDays
@@ -106,7 +96,7 @@ export default class EventsPageComponent extends React.Component {
         rObj.events = res.filter(event => event.date_time === date);
         return rObj;
       })
-      console.log('eventsDays: ', eventsDays);
+      this.setState({daysWithEvents: eventsDays});
       this.props.createdEvents(eventsDays);
     })
   }
@@ -118,19 +108,21 @@ export default class EventsPageComponent extends React.Component {
   handleSearchEvents (event, userInput) {
     let searchEventsDays;
     if (!!userInput) {
-      searchEventsDays = this.props.createdEventsData
+      searchEventsDays = this.state.daysWithEvents
       .map(userEvents => 
         userEvents.events.filter(event => 
-        event.name.indexOf(userInput) > -1 
+        event.name.toLowerCase().indexOf(userInput.toLowerCase()) > -1 
       ))
       let result = []
       for (var i = 0; i < searchEventsDays.length; i++) {
         if (searchEventsDays[i].length !== 0) {
-          result.push({date: this.props.createdEventsData[i].date, events: searchEventsDays[i]});
+          result.push({date: this.state.daysWithEvents[i].date, events: searchEventsDays[i]});
         } else {
           continue;
         }
       }
+      console.log("user input: ", userInput);
+      console.log("search Result: ", result);
       this.props.createdEvents(result);
     } else {
       this.fetchEvents();
@@ -151,8 +143,8 @@ export default class EventsPageComponent extends React.Component {
       month = "0" + month;
     }
     today = year + '-' + month + '-' + day;
-    return (
-      <div>
+    return !!this.props.profile.id ?
+      (<div>
         <Tabs className="tabsContainer" inkBarStyle={{background: '#D7CCC8', zIndex: '6'}} tabItemContainerStyle={{position: 'fixed', zIndex: '5'}}>
         <Tab className="tabsItem" label="Schedule" >
           <div style={styles.root}>
@@ -220,6 +212,25 @@ export default class EventsPageComponent extends React.Component {
           ))}
         </Tab>
       </Tabs>
-    </div>);
+    </div>
+      )
+      : (<div className="alertsContainer">
+            <h2 className="alertsTitle"> Plans </h2>
+            <div className="group">
+                <Paper className="groupAuth">
+                  <div> Please Sign In With Google To See Your Events Plans </div>
+                  <br />
+                  <a className="add" href="/#/profile">
+                    <RaisedButton
+                      labelColor="white"
+                      backgroundColor="#009688"
+                      className="add"
+                      label="Go To Profile"
+                    />
+                  </a>
+                  </Paper>
+              </div>
+          </div>
+        )
   }
 }

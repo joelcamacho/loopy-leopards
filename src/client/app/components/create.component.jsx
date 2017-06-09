@@ -10,6 +10,7 @@ import DatePicker from 'material-ui/DatePicker';
 import TextField from 'material-ui/TextField';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import helpers from '../helpers/fetch.helper.jsx';
+import RaisedButton from 'material-ui/RaisedButton';
 
 export default class CreatePageComponent extends React.Component {
   constructor(props) {
@@ -19,9 +20,9 @@ export default class CreatePageComponent extends React.Component {
       controlledDate: null,
       value12: null,
       commentTestValue: '',
-      titleTestValue: '',
-      addressTestValue: '',
-      cityTestValue: '',
+      titleTestValue: null,
+      addressTestValue: null,
+      cityTestValue: null,
       stateTestValue: '',
       phoneTestValue: '',
       open: false,
@@ -30,7 +31,7 @@ export default class CreatePageComponent extends React.Component {
       invitedUsers: [],
       userGroupData: [],
       currentEvent: {description: ''},
-      descriptionTestValue: '',
+      descriptionTestValue: null,
     };
 
     this.handleChangeTimePicker12 = this.handleChangeTimePicker12.bind(this);
@@ -39,6 +40,7 @@ export default class CreatePageComponent extends React.Component {
     this.handleDescriptionTestValue = this.handleDescriptionTestValue.bind(this);
     this.handleAddressTestValue = this.handleAddressTestValue.bind(this);
     this.handleCityTestValue = this.handleCityTestValue.bind(this);
+    this.handleFetchEventbriteAddress = this.handleFetchEventbriteAddress.bind(this);
   }
 
   handleTitleTestValue (event) {
@@ -65,19 +67,23 @@ export default class CreatePageComponent extends React.Component {
     this.setState({controlledDate: date});
   };
 
+  handleFetchEventbriteAddress () {
+    helpers.fetchEventbriteAddress(this.props.createEventData.venue_id)
+    .then(res => {
+      let currentEvent = this.props.createEventData;
+      currentEvent.address = res.address.localized_address_display;
+      currentEvent.city = res.address.city;
+      currentEvent.latitude = res.latitude;
+      currentEvent.longitude = res.longitude;
+      this.setState({currentEvent: currentEvent});
+    })
+  }
+
   componentDidMount() {
-    if (this.props.event.venue_id) {
-      helpers.fetchEventbriteAddress(this.props.event.venue_id)
-      .then(res => {
-        let currentEvent = this.props.event;
-        currentEvent.address = res.address.localized_address_display;
-        currentEvent.city = res.address.city;
-        currentEvent.latitude = res.latitude;
-        currentEvent.longitude = res.longitude;
-        this.setState({currentEvent: currentEvent});
-      })
+    if (this.props.createEventData.venue_id) {
+      this.handleFetchEventbriteAddress();
     } else {
-      this.setState({currentEvent: this.props.event});
+      this.setState({currentEvent: this.props.createEventData});
     }
   }
 
@@ -103,23 +109,23 @@ export default class CreatePageComponent extends React.Component {
     }
     time = date + hour + time.slice(2);
     time = time.replace('T', ' ');
-    eventTime = this.props.event.date_time
+    eventTime = this.props.createEventData.date_time
     if (eventTime) {
       eventTime = eventTime.replace('T', ' ');
     }
     event = {
-              img: this.props.event.img || '',
+              img: this.props.createEventData.img || '',
               date_time: eventTime || time,
-              description: this.props.event.description.slice(0,200) || this.state.descriptionTestValue,
-              address: this.props.event.address || this.state.addressTestValue,
-              city: this.props.event.city || this.state.cityTestValue,
-              state: this.props.event.state || this.state.stateTestValue,
-              latitude: this.props.event.latitude || '',
-              longitude: this.props.event.longitude || '',
+              description: this.props.createEventData.description.slice(0,200) || this.state.descriptionTestValue,
+              address: this.props.createEventData.address || this.state.addressTestValue,
+              city: this.props.createEventData.city || this.state.cityTestValue,
+              state: this.props.createEventData.state || this.state.stateTestValue,
+              latitude: this.props.createEventData.latitude || '',
+              longitude: this.props.createEventData.longitude || '',
             }
-    helpers.fetchCreateNewEvent(this.props.event.title || this.state.titleTestValue, event)
+    helpers.fetchCreateNewEvent(this.props.createEventData.title || this.state.titleTestValue, event)
       .then(res => {
-        console.log('fetchCreateNewEvent', res);
+        // console.log('fetchCreateNewEvent', res);
       })
     this.props.setStateBackToDefault({});
   }
@@ -127,15 +133,15 @@ export default class CreatePageComponent extends React.Component {
   render() {
     const { event } = this.props;
     const { users } = this.props;
+    console.log()
     const styles = {
       wrapper: {
         display: 'flex',
         flexWrap: 'wrap',
       },
     };
-
-    return (
-      <div className="createContainer">
+    return !!this.props.profile.id ?
+      (<div className="createContainer">
         <Paper className="container">
           {this.state.currentEvent.img !== '' ? (<img src={this.state.currentEvent.img} alt="eventImg"/>) : (<div><br/><h1>Create Your Own Event</h1><Divider/></div>)}
           {this.state.currentEvent.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.title}</p></div><Divider/></List>) : (<div><TextField hintText="Hint Text" floatingLabelText="Title" onChange={this.handleTitleTestValue}/><br/></div>)}
@@ -164,13 +170,67 @@ export default class CreatePageComponent extends React.Component {
           }
            <br/>
           <div>
-            <Link to="/plans">
-            <FlatButton className="drawerItem" label="Confirm" onClick={() => this.handleConfirm()}/>
-            </Link>
+          {
+            !!this.props.createEventData.title ?
+            (
+              (!!this.state.value12 && !!this.state.controlledDate) || !!this.state.currentEvent.date_time ?
+              (
+                <Link to="/plans">
+                  <FlatButton className="drawerItem" label="Confirm" disabled={false} onClick={() => this.handleConfirm()}/>
+                </Link>
+              )
+              : (
+                  <FlatButton className="drawerItem" label="Confirm" disabled={true} onClick={() => this.handleConfirm()}/>
+                )
+            )
+            : (
+                !!this.state.value12 && !!this.state.controlledDate && !!this.state.addressTestValue ?
+                (
+                  <Link to="/plans">
+                    <FlatButton className="drawerItem" label="Confirm" disabled={false} onClick={() => this.handleConfirm()}/>
+                  </Link>
+                ) 
+              : (
+                  <FlatButton className="drawerItem" label="Confirm" disabled={true} onClick={() => this.handleConfirm()}/>         
+                )
+              )
+
+
+
+
+
+
+
+          }
+
+
+
+
+
+
+
           </div>
           <br/>
         </Paper>
       </div>
-    );
+    )
+    : (<div className="alertsContainer">
+        <h2 className="alertsTitle"> Create </h2>
+        <div className="group">
+          <Paper className="groupAuth">
+            <div> Please Sign In With Google To Create Events </div>
+            <br />
+            <a className="add" href="/#/profile">
+              <RaisedButton
+                labelColor="white"
+                backgroundColor="#009688"
+                className="add"
+                label="Go To Profile"
+              />
+            </a>
+          </Paper>
+        </div>
+      </div>
+      )
   }
 }

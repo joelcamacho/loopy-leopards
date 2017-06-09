@@ -87,7 +87,6 @@ export default class ProfilePageComponent extends React.Component {
             address: !this.refs.addressTextField.getValue() ? this.props.profile.address : this.refs.addressTextField.getValue(),
             city: !this.refs.cityTextField.getValue() ? this.props.profile.city : this.refs.cityTextField.getValue(),
             state: !this.refs.stateTextField.getValue() ? this.props.profile.state : this.refs.stateTextField.getValue(),
-            birthdate: !this.refs.birthdateTextField.getValue() ? this.props.profile.birthdate.split('T')[0] : this.refs.birthdateTextField.getValue(),
             first_name: !this.refs.firstNameTextField.getValue() ? this.props.profile.first_name : this.refs.firstNameTextField.getValue(),
             last_name: !this.refs.lastNameTextField.getValue() ? this.props.profile.last_name : this.refs.lastNameTextField.getValue(),
             photo: !this.refs.photoTextField.getValue() ? this.props.profile.photo : this.refs.photoTextField.getValue(),
@@ -129,9 +128,6 @@ export default class ProfilePageComponent extends React.Component {
                     
                     <div className="profileHeader"> Address </div>
                     <div> {this.props.profile.address ? this.props.profile.address + ' ' + this.props.profile.city + ' ' + this.props.profile.state : 'No Address'}</div>
-                    
-                    <div className="profileHeader"> Birthday </div>
-                    <div> {this.props.profile.birthdate ? this.props.profile.birthdate.split('T')[0] : 'No Birthday'} </div>
                     
                     <div className="profileHeader"> Photo </div>
                     <div> {this.props.profile.photo ? this.props.profile.photo : 'No photo'} </div>
@@ -285,7 +281,6 @@ export default class ProfilePageComponent extends React.Component {
           <TextField className='textFields' ref='addressTextField' floatingLabelText="Address"/>
           <TextField className='textFields' ref='cityTextField' floatingLabelText="City"/>
           <TextField className='textFields' ref='stateTextField' floatingLabelText="State"/>
-          <TextField className='textFields' ref='birthdateTextField' hintText="2000-01-01" floatingLabelText="Birthday"/>
           <TextField className='textFields' ref='photoTextField' floatingLabelText="Photo Url"/>
         </Dialog>
 

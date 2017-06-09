@@ -13,7 +13,7 @@ export default class SearchPageComponent extends React.Component {
 
     this.state = {
       expanded: false,
-      userLocation: 'Please enter your location',
+      userLocation: null,
       latitude: 0,
       longitude: 0,
       toggleCheckBox: false,
@@ -32,6 +32,7 @@ export default class SearchPageComponent extends React.Component {
     this.handleMoreSearchResult = this.handleMoreSearchResult.bind(this);
     this.handleBackToTop = this.handleBackToTop.bind(this);
     this.handleClickedEvent = this.handleClickedEvent.bind(this);
+    this.getCurrentUserAddress = this.getCurrentUserAddress.bind(this);
   }
 
   handleExpandChange (expanded) {
@@ -59,14 +60,6 @@ export default class SearchPageComponent extends React.Component {
   handleBackToTop () {
     window.scrollBy(0,-10);
     scrolldelay = setTimeout(this.handleBackToTop(),100);
-  }
-
-  componentDidMount() {
-    fetch('/api/user', {credentials: 'include'})
-    .then(res => res.json())
-    .then(res => {
-      this.props.updateProfile(res);
-    })
   }
 
   handleSearchResult () {
@@ -189,6 +182,16 @@ export default class SearchPageComponent extends React.Component {
       that.setState({searchButton: false});
     }}
 
+  getCurrentUserAddress() {
+    this.props.profile && this.props.profile.address ? 
+    this.setState({userLocation: this.props.profile.address + ' ' + this.props.profile.city + ' ' + this.props.profile.state})
+    : this.setState({userLocation: 'Please enter your location'})
+  }
+
+  componentDidMount() {
+    this.getCurrentUserAddress();
+  }
+
   render() {
     const { events } = this.props;
 
@@ -299,25 +302,3 @@ export default class SearchPageComponent extends React.Component {
     ); 
   }
 }
-
-
-
-// <CardMedia
-//   expandable={true}
-//   overlay={<CardTitle title="Overlay title" subtitle="Overlay subtitle" />}
-// >
-//   <img src="images/nature-600-337.jpg" />
-// </CardMedia>
-
-// this.handleReduce = this.handleReduce.bind(this);
-// handleReduce () {
-//   this.setState({expanded: false});
-// };
-//<RaisedButton label="Reduce" onTouchTap={this.handleReduce} />
-// <CardTitle title="Card title" subtitle="Card subtitle" expandable={true} />
-// <CardText expandable={true}>
-//   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-//   Donec mattis pretium massa. Aliquam erat volutpat. Nulla facilisi.
-//   Donec vulputate interdum sollicitudin. Nunc lacinia auctor quam sed pellentesque.
-//   Aliquam dui mauris, mattis quis lacus id, pellentesque lobortis odio.
-// </CardText>

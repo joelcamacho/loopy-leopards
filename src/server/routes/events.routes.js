@@ -24,7 +24,6 @@ router.route('/events')
 		.then(result => res.send(result));
 	})
 	.post((req,res) => {
-		console.log(req.body)
 		let google_id = req.user ? req.user.id : null;
 		let options = req.body;
 		let user_id = null;
@@ -380,6 +379,7 @@ router.post('/events/:id/confirm',(req,res) => {
 	if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
 	if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
 
+
 	helpers.getCurrentUserFromGoogleId(google_id)
 	.then(user => {
 		user_id = user.serialize().id;
@@ -399,7 +399,13 @@ router.post('/events/:id/confirm',(req,res) => {
 			event_details = isFound;
 			confirmedEvent_dateTime = isFound.date_time;
 
-			return helpers.getGroup(isFound.group_id)
+			if(isFound.group_id) {
+				return helpers.getGroup(isFound.group_id)
+			} else {
+				helpers.updateEventFromId(event_id, {status: 'active'})
+				return null;
+			}
+			
 		} else {
 			failed = true;
 			return res.send({result: 'Event needs to have a "suggested" status to be confirmed'})
@@ -424,7 +430,7 @@ router.post('/events/:id/confirm',(req,res) => {
 		}).length;
 
 		if (confirmedSize >= (groupSize * 0.5)) {
-			return helpers.updateEventFromId(event_id, {status: 'confirmed'})
+			return helpers.updateEventFromId(event_id, {status: 'active'})
 		} else {
 			failed = true;
 			res.send({result: 'Not enough people confirmed for this event'})

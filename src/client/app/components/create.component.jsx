@@ -133,7 +133,6 @@ export default class CreatePageComponent extends React.Component {
   render() {
     const { event } = this.props;
     const { users } = this.props;
-    console.log()
     const styles = {
       wrapper: {
         display: 'flex',
@@ -143,14 +142,134 @@ export default class CreatePageComponent extends React.Component {
     return !!this.props.profile.id ?
       (<div className="create">
         <Paper className="createPaper">
-          {this.state.currentEvent.img !== '' ? (<img className="imgStyle" src={this.state.currentEvent.img} alt="eventImg"/>) : (<div><br/><h1>Create Your Own Event</h1><Divider/></div>)}
-          {this.state.currentEvent.title !== '' ? (<List><div><Subheader>Event:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.title}</p></div><Divider/></List>) : (<div><TextField className='inputs' hintText="Hint Text" floatingLabelText="Title" onChange={this.handleTitleTestValue}/><br/></div>)}
-          {this.state.currentEvent.description !== '' ? (<List><div><Subheader>Description:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.description.length > 100 ? this.state.currentEvent.description.slice(0,100) + '...' : this.state.currentEvent.description }{this.state.currentEvent.url ? (<a href={this.state.currentEvent.url} target="_blank">&nbsp;more details</a>) : null}</p></div><Divider/></List>) : (<div><TextField className='inputs' hintText="Hint Text" floatingLabelText="Description" onChange={this.handleDescriptionTestValue}/><br/></div>)}
-          {this.state.currentEvent.address !== '' ? (<List><div><Subheader>Address:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.address}</p></div><Divider/></List>) : (<div><TextField className='inputs' hintText="Hint Text" floatingLabelText="Address" onChange={this.handleAddressTestValue}/><br/></div>)}
-          {this.state.currentEvent.city !== '' ? (<List><div><Subheader>City & State:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.city}&nbsp;{this.state.currentEvent.state}</p></div><Divider/></List>) : (<div><TextField className='inputs' hintText="Hint Text" floatingLabelText="City & State" onChange={this.handleCityTestValue}/><br/></div>)}
+          {this.state.currentEvent.img !== '' ? 
+            (<img className="imgStyle" 
+                  src={this.state.currentEvent.img} 
+                  alt="eventImg"/>
+            ) 
+            : 
+            (<div>
+              <br/>
+              <h1>Create Your Own Event</h1>
+              <Divider/>
+             </div>
+            )
+          }
+          {this.state.currentEvent.title !== '' ? 
+            (<List>
+              <div className='inputs'>
+                <Subheader>Event:</Subheader>
+                <p>
+                  {this.state.currentEvent.title}
+                </p>
+                </div>
+                <Divider/>
+             </List>
+            ) 
+            : 
+            (<div>
+              <TextField 
+                className='inputs' 
+                hintText="Hint Text" 
+                floatingLabelText="Title" 
+                onChange={this.handleTitleTestValue}
+              />
+              <br/>
+             </div>
+            )
+          }
+          {this.state.currentEvent.description !== '' ?
+            (<List>
+              <div className='inputs'>
+                <Subheader>Description:</Subheader>
+                <p>
+                  {this.state.currentEvent.description.length > 100 ?
+                   this.state.currentEvent.description.slice(0,100) + '...' 
+                   : 
+                   this.state.currentEvent.description 
+                  }
+                  {this.state.currentEvent.url ?
+                    (<a href={this.state.currentEvent.url} target="_blank">&nbsp;more details</a>
+                    ) 
+                    : 
+                    null
+                  }
+                </p>
+              </div>
+              <Divider/>
+             </List>
+            ) 
+            : 
+            (<div>
+              <TextField 
+                className='inputs' 
+                hintText="Hint Text" 
+                floatingLabelText="Description" 
+                onChange={this.handleDescriptionTestValue}
+              />
+              <br/>
+             </div>
+            )
+          }
+          {this.state.currentEvent.address !== '' ? 
+            (<List>
+              <div className='inputs'>
+                <Subheader>Address:</Subheader>
+                <p>
+                  {this.state.currentEvent.address}
+                </p>
+              </div>
+              <Divider/>
+             </List>) 
+            : 
+            (<div>
+              <TextField 
+                className='inputs' 
+                hintText="Hint Text" 
+                floatingLabelText="Address" 
+                onChange={this.handleAddressTestValue}
+              />
+              <br/>
+             </div>
+            )
+          }
+          {this.state.currentEvent.city !== '' ? 
+            (<List>
+                <div className='inputs'>
+                <Subheader>City & State:</Subheader>
+                <p>
+                {this.state.currentEvent.city}&nbsp;
+                {this.state.currentEvent.state}
+                </p>
+              </div>
+              <Divider/>
+             </List>) 
+            : 
+            (<div>
+              <TextField 
+                className='inputs' 
+                hintText="Hint Text" 
+                floatingLabelText="City & State" 
+                onChange={this.handleCityTestValue}
+              />
+              <br/>
+             </div>
+            )
+          }
           <List>
           </List>
-          {this.state.currentEvent.date_time !== undefined ? (<List><div><Subheader>Date and Time:</Subheader><p>&nbsp;&nbsp;&nbsp;&nbsp;{this.state.currentEvent.date_time}</p></div><Divider/></List>) : 
+          {this.state.currentEvent.date_time !== undefined ? 
+            (<List>
+              <div>
+                <Subheader>Date and Time:</Subheader>
+                <p className='inputs'>
+                  {this.state.currentEvent.date_time}
+                </p>
+              </div>
+              <Divider/>
+             </List>
+            ) 
+            : 
             (<List>
             <div>
               <TimePicker
@@ -170,7 +289,7 @@ export default class CreatePageComponent extends React.Component {
             </div>
             </List>)
           }
-           <br/>
+          <br/>
           <div>
           {
             !!this.props.createEventData.title ?
@@ -181,58 +300,48 @@ export default class CreatePageComponent extends React.Component {
                   <RaisedButton labelColor="white" backgroundColor="#009688" className="createBtn" label="Confirm" disabled={false} onClick={() => this.handleConfirm()}/>
                 </Link>
               )
-              : (
-                  <RaisedButton labelColor="white" backgroundColor="#009688" className="createBtn" label="Confirm" disabled={true} onClick={() => this.handleConfirm()}/>
-                )
-            )
-            : (
-                !!this.state.value12 && !!this.state.controlledDate && !!this.state.addressTestValue ?
-                (
-                  <Link to="/plans">
-                    <RaisedButton labelColor="white" backgroundColor="#009688" className="createBtn" label="Confirm" disabled={false} onClick={() => this.handleConfirm()}/>
-                  </Link>
-                ) 
-              : (
-                  <RaisedButton labelColor="white" backgroundColor="#009688" className="createBtn" label="Confirm" disabled={true} onClick={() => this.handleConfirm()}/>         
-                )
+              : 
+              (
+                <RaisedButton labelColor="white" backgroundColor="#009688" className="createBtn" label="Confirm" disabled={true} onClick={() => this.handleConfirm()}/>
               )
-
-
-
-
-
-
-
+            )
+            : 
+            (
+              !!this.state.value12 && !!this.state.controlledDate && !!this.state.addressTestValue ?
+              (
+                <Link to="/plans">
+                  <RaisedButton labelColor="white" backgroundColor="#009688" className="createBtn" label="Confirm" disabled={false} onClick={() => this.handleConfirm()}/>
+                </Link>
+              ) 
+              : 
+              (
+                <RaisedButton labelColor="white" backgroundColor="#009688" className="createBtn" label="Confirm" disabled={true} onClick={() => this.handleConfirm()}/>         
+              )
+            )
           }
-
-
-
-
-
-
-
           </div>
           <br/>
         </Paper>
-      </div>
-    )
-    : (<div className="alertsContainer">
+       </div>
+      )
+      : 
+      (<div className="alertsContainer">
         <h2 className="alertsTitle"> Create </h2>
         <div className="group">
           <Paper className="groupAuth">
-            <div> Please Sign In With Google To Create Events </div>
-            <br />
-            <a className="add" href="/#/profile">
-              <RaisedButton
-                labelColor="white"
-                backgroundColor="#009688"
-                className="add"
-                label="Go To Profile"
-              />
-            </a>
+          <div> Please Sign In With Google To Create Events </div>
+          <br />
+          <a className="add" href="/#/profile">
+            <RaisedButton
+              labelColor="white"
+              backgroundColor="#009688"
+              className="add"
+              label="Go To Profile"
+            />
+          </a>
           </Paper>
         </div>
-      </div>
+       </div>
       )
   }
 }

@@ -58,14 +58,15 @@ router.route('/events')
 		})
 		.catch(err => res.send({result: err}))
 		.then(result => {
-			let message = user_name +' has created an event called ' + options.name + '! Please log on to HanginHubs to vote for this event!';
+			let message = user_name +' has created an event called ' + options.name + '! Please go on HanginHubs to vote for this event!';
 
 			// SEND TEXT MESSAGE TO PHONE
 			util.sendEventInvitations(result.serialize().members, message);
 
 			// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
 			util.pushToUsers(result.serialize().members, {
-				body: message
+				body: message,
+				icon: result.serialize().img
 			});
 
 			res.send({result: 'You have created an event!'});
@@ -128,7 +129,8 @@ router.route('/events/:id')
 
 			// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
 			util.pushToUsers(members, {
-				body: message
+				body: message,
+				icon: event_details.img
 			});
 
 			res.send(result)
@@ -234,6 +236,7 @@ router.route('/events/:id/invitations')
 		let invitees = [];
 		let event_details = {};
 		let failed = false;
+		let photo =  null;
 
 		if(!google_id) return res.send({result: 'User must be authenticated to invite others to events!'});
 		if(!event_id) return res.send({result: 'Params must contain id, /api/events/:id'});
@@ -242,6 +245,7 @@ router.route('/events/:id/invitations')
 		.then(user => {
 			user_id = user.serialize().id;
 			user_name = user.serialize().first_name;
+			photo = user.serialize().photo;
 			return helpers.getEventFromId(event_id);
 		})
 		.catch(err => res.send({result: err}))
@@ -273,7 +277,8 @@ router.route('/events/:id/invitations')
 
 				// SEND NOTIFICATION TO MEMBERS OF THIS EVENT
 				util.pushToUsers(invitees, {
-					body: message
+					body: message,
+					icon: photo
 				});
 			}
 			res.send({result: result});
@@ -344,6 +349,8 @@ router.post('/events/:id/broadcast',(req,res) => {
 		if(event.serialize().creator_id !== user_id) {
 			res.send({result: 'User is not creator of this event!'});
 		} else {
+			options.icon = event.serialize().img;
+
 			util.pushToUsers(confirmedInvitees, options);
 			util.sendEventAnnouncement(event.serialize(), confirmedInvitees, options.body);
 			res.send({result: 'Broadcast sent!'});
@@ -463,8 +470,10 @@ router.post('/events/:id/confirm',(req,res) => {
 			let confirmedInvitees = invitees.filter(user => user._pivot_status === 'confirmed');
 
 			let options = {
-				body: user_name + ' has confirmed event, ' + event_details.name + ', for ' + event_details.date_time + '! Please log on to HanginHubs to see details! Enjoy your hangout!' 
+				body: user_name + ' has confirmed event, ' + event_details.name + ', for ' + event_details.date_time + '! Please go on HanginHubs to see details! Enjoy your hangout!' 
 			}
+
+			options.icon = event_details.img;
 
 			util.pushToUsers(confirmedInvitees, options);
 			util.sendEventInvitations(confirmedInvitees, options.body);

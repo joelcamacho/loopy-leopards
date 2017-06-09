@@ -122,6 +122,7 @@ router.route('/group')
 		let user_name = null;
 		let members = [];
 		let group_details = null;
+		let photo = null;
 
 		if(!google_id) return res.send({result: 'Must be authenticated'});
 
@@ -129,6 +130,7 @@ router.route('/group')
 		.then(user => {
 			user_id = user.serialize().id;
 			user_name = user.serialize().first_name;
+			photo = user.serialize().photo;
 			return helpers.getCurrentUserGroup(user_id);
 		})
 		.then(group => {
@@ -152,6 +154,7 @@ router.route('/group')
 
 			// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
 			util.pushToUsers(result.serialize().members, {
+				icon: photo,
 				body: message
 			});
 
@@ -255,6 +258,7 @@ router.route('/group/invitations')
 		let members = [];
 		let group_details = null;
 		let failed = false;
+		let photo = null;
 
 		if(!google_id) return res.send('User must be authenticated');
 		if(!group_id) return res.send('Body must contain group_id field');
@@ -263,6 +267,7 @@ router.route('/group/invitations')
 		.then(user => {
 			user_id = user.serialize().id;
 			user_name = user.serialize().first_name;
+			photo = user.serialize().photo;
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {
@@ -291,7 +296,8 @@ router.route('/group/invitations')
 
 				// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
 				util.pushToUsers(result.serialize().members, {
-					body: message
+					body: message,
+					icon: photo
 				});
 			
 				res.send({result: 'You have joined the group!'});
@@ -392,6 +398,7 @@ router.route('/group/requests')
 		let group_id = null;
 		let group_details = {};
 		let failed = false;
+		let photo = null;
 
 		if(!name) return res.send({result: 'Must include a name'})
 		if(!google_id) return res.send({result: 'Must be authenticated'});
@@ -400,6 +407,7 @@ router.route('/group/requests')
 		.then(user => {
 			user_id = user.serialize().id;
 			user_name = user.serialize().first_name;
+			photo = user.serialize().photo;
 			return helpers.getGroupByName(name);
 		})
 		.then(group => {			
@@ -422,7 +430,8 @@ router.route('/group/requests')
 
 				// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
 				util.pushToUsers(group_details.members, {
-					body: message
+					body: message,
+					icon: photo
 				});
 			}
 			
@@ -436,10 +445,12 @@ router.route('/group/requests')
 		let group_id = null;
 		let guest_id = req.body.guest_id;
 		let failed = false;
+		let photo = null;
 
 		helpers.getCurrentUserFromGoogleId(google_id)
 		.then(user => {
 			user_id = user.serialize().id;
+			photo = user.serialize().photo;
 			return helpers.getCurrentUserGroup(user_id)
 		})
 		.then(groups => {
@@ -481,7 +492,8 @@ router.route('/group/requests')
 
 				// SEND NOTIFICATION TO MEMBERS OF THIS GROUP
 				util.pushToUsers(result.serialize().members, {
-					body: message
+					body: message,
+					icon: photo
 				});
 			
 				res.send({result: 'You have joined the group!'});

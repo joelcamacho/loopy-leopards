@@ -5,3 +5,38 @@
 .h1 {
 	margin: 40 10 0 0;
 }
+
+.headline {
+	fontSize: 24;
+	paddingTop: 16;
+	marginBottom: 12;
+	fontWeight: 400;
+}
+
+.root {
+	display: 'flex';
+	flexWrap: 'wrap';
+	justifyContent: 'center';
+	minHeight: '85vh';
+	padding: '10pt';
+}
+
+.gridList {
+	width: 727;
+	overflowY: 'auto';
+}
+
+.customContentStyle {
+	width: '100%';
+	maxWidth: 'none';
+}
+
+.googleMapStyle {
+	width: '720px';
+	height: '450px';
+}
+
+.weather {
+	width: '150px';
+	height: '100px';
+}

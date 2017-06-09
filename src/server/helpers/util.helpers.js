@@ -22,7 +22,7 @@ const _pushToUserFromId = (id, options = {}) => {
     'title': options.title || 'Hangin\'Hubs',
     'body': options.body || 'This is the default notification',
     'icon': options.icon || 'https://www.iconfinder.com/data/icons/basic-application-vol-1/128/Material_Design-15-512.png',
-    'click_action': options.click_action || 'http://www.google.com'
+    'click_action': options.click_action || 'http://127.0.0.1:3000'
   };
   return new Promise(function (resolve, reject) {
     helpers.getCurrentUserTokenFromId(id)

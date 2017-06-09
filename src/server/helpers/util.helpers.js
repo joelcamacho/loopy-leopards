@@ -110,7 +110,7 @@ exports.sendMessageToPhone = (phone, message, callback = (res) => res) => {
   });
 }
 
-exports.sendCodeToPhone = (phone, profile, message = "To verify your HanginHubs please reply with the following 5 numbers and \'_" + profile.id + "\': \n(e.g. 12345_12)\n") => {
+exports.sendCodeToPhone = (phone, profile, message = "To verify with HanginHubs please reply with the following 5 numbers and \'_" + profile.id + "\': \n(e.g. 12345_12)\n") => {
   return twilioAuthService.sendCode(phone, message);
 }
 

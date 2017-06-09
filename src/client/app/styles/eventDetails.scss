@@ -1,0 +1,52 @@
+.eventDetails {
+  padding: 20pt 10pt 30pt 10pt;
+
+	.eventPaper {
+		padding: 10pt 20pt 20pt 20pt !important;
+	}
+
+	.inputs {
+		width: 94% !important;
+		margin: 10pt 3% !important;
+		padding: 0 0 !important;
+	}
+
+	.commentStyle {
+		width: 94% !important;
+		margin-left: 3% !important;
+		padding: 0 0 !important;
+	}
+	.eventBtn {
+		width: 94%;
+		margin: 0 3% !important;
+		padding: 0 0 !important;
+		margin-top: 10pt !important;
+	}
+	.inviteSendBtn {
+		margin: 10pt 0 0 4% !important;
+		padding: 0 0 !important;
+	}
+	.chipDiv {
+		display: flex;
+    flex-wrap: wrap;
+	}
+	.chipStyle {
+		margin-bottom: 10pt !important;
+		margin-left: 20pt !important;
+	}
+	.imgSytle {
+		width: 350px !important;
+		height: 200px;
+	}
+	.directionBtn {
+		margin: 0 10pt !important;
+	}
+
+	@media screen and (min-width: 750px) {
+    .imgSytle {
+    	width: 500px !important;
+			height: 300px;
+    }
+	}
+
+}

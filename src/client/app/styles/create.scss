@@ -17,9 +17,14 @@
     padding: 0 0 !important;
     margin-top: 20pt !important;
   }
-
-  .imgStyle {
-    width: 500px;
-    height: 300px;
+  .imgSytle {
+    width: 350px !important;
+    height: 200px;
+  }
+  @media screen and (min-width: 750px) {
+    .imgSytle {
+      width: 500px !important;
+      height: 300px;
+    }
   }
 }

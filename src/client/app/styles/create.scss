@@ -1,18 +1,31 @@
-img {
-	width: 200px;
-	height: 100px;
-}
+.create {
+  padding: 20pt 10pt 30pt 10pt;
 
-.createContainer {
-  padding: 20 20pt 50pt 20pt;
-  min-height: 85vh;
-}
+  .createPaper {
+    padding: 10pt 20pt 20pt 20pt !important;
+  }
 
-.createItem {
-  min-height: 100px;
-  margin: 20px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  .inputs {
+    width: 94% !important;
+    margin: 10pt 3% !important;
+    padding: 0 0 !important;
+  }
+
+  .createBtn {
+    width: 94%;
+    margin: 0 3% !important;
+    padding: 0 0 !important;
+    margin-top: 20pt !important;
+  }
+  .imgStyle {
+    width: 350px !important;
+    height: 200px;
+  }
+  @media screen and (min-width: 750px) {
+    .imgStyle {
+      width: 500px !important;
+      height: 300px;
+      margin-left: 3% !important;
+    }
+  }
 }

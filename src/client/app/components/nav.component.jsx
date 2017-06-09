@@ -119,7 +119,7 @@ export default class NavComponent extends React.Component {
           </div>
         </div>
 
-        <BottomNav />
+        <BottomNav setStateBackToDefault={this.props.setStateBackToDefault} />
         
         <Snackbar
           bodyStyle={{ backgroundColor: 'teal', color: 'coral' }}

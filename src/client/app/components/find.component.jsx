@@ -244,7 +244,7 @@ export default class SearchPageComponent extends React.Component {
                       <CardMedia
                         key={event.title}
                         expandable={true}
-                        overlay={<CardTitle title={event.title}/>}
+                        overlay={<CardTitle title={event.title.length > 50 ? event.title.slice(0,50) + '...' : event.title}/>}
                         onClick={() => this.handleClickedEvent(event)}
                       >
                         <img className='findMedia' src={event.img}/>
@@ -263,7 +263,7 @@ export default class SearchPageComponent extends React.Component {
                       <CardMedia
                         key={event.title}
                         expandable={true}
-                        overlay={<CardTitle title={event.title}/>}
+                        overlay={<CardTitle title={event.title.length > 50 ? event.title.slice(0,50) + '...' : event.title}/>}
                         onClick={() => this.handleClickedEvent(event)}
                       >
                         <img className='findMedia' src={event.img}/>

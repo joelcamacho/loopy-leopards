@@ -110,6 +110,7 @@ export default class ProfilePageComponent extends React.Component {
               <div className="tabsPage">
                 <Card className="profileCard">
                   <CardHeader
+                    style={{width: "80%"}}
                     title={this.props.profile.first_name + ' ' + this.props.profile.last_name}
                     subtitle={this.props.profile.phone ? this.props.profile.phone : 'Please Verify Your Phone Number!!!'}
                     avatar={this.props.profile.photo ? this.props.profile.photo : 'https://openclipart.org/download/247319/abstract-user-flat-3.svg'}
@@ -141,7 +142,7 @@ export default class ProfilePageComponent extends React.Component {
 
                 <Card className="profileCard">
                   <CardHeader
-                    style={{width: "95%"}}
+                    style={{width: "80%"}}
                     title="Push Notifications"
                     subtitle="Enable or Disable Push Notifications to Current Device"
                     avatar={<ActionAnnouncement />}
@@ -175,7 +176,7 @@ export default class ProfilePageComponent extends React.Component {
 
                 <Card className="profileCard">
                   <CardHeader
-                    style={{width: "95%"}}
+                    style={{width: "80%"}}
                     title="SMS / Text Messages"
                     subtitle="Verify your phone number and get all your event and group invitations"
                     avatar={<CommunicationPhone />}
@@ -247,8 +248,9 @@ export default class ProfilePageComponent extends React.Component {
                 <div className="profile">
                   <Paper className="container">
                     <Image 
-                    imageStyle={{borderRadius: '50%'}} 
-                    style={{backgroundColor: 'clear', height: '250px', width: '250px', margin: '25px'}}
+                    imageStyle={{borderRadius: '50%'}}
+                    style={{backgroundColor: 'transparent', marginBottom: '60pt'}}
+                    id="profileImage"
                     src={'https://openclipart.org/download/247319/abstract-user-flat-3.svg'}/>
                     <h3> {'Anonymous User'} </h3>
                     <div> 

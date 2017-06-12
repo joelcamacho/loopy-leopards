@@ -50,6 +50,10 @@
 	    flex-wrap: wrap;
 	}
 
+.gridList {
+  width: 100%;
+  margin: 0 3% !important;
+}
 	.chip {
 	   margin: 5;
 	}
@@ -63,3 +67,34 @@
 	}
 }
 
+.chip {
+   margin: 5
+}
+
+.tabGridContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.gridTitle {
+  width: 90%;
+  margin: auto;
+  margin-top: 50pt;
+  font-weight: 400;
+  margin-bottom: 20pt;
+  color: black;
+}
+
+.gridTile {
+  width: 90%;
+  margin: auto;
+}
+
+.filterText {
+  background-color: white !important;
+  padding: 10pt 5%;
+  width: 70% !important;
+  margin: 0 auto !important;
+  margin-top: 50pt !important;
+}
